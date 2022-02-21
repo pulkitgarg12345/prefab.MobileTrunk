@@ -11,12 +11,19 @@ back_left_wheel_position = [-0.229, 0.235, 0.0]
 front_right_wheel_position = [0.229, -0.235, 0.0]
 back_right_wheel_position = [-0.229, -0.235, 0.0]
 
+front_left_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
+front_right_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
+back_left_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
+back_right_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
 
-def createWheel(parent, name, wheel_position):
+
+
+def createWheel(parent, name, wheel_position, wheel_orientation):
     body = parent.addChild(name)
     body.addObject('MechanicalObject', name='dofs', showObject=True, template='Rigid3',
-                    position=[wheel_position[0], wheel_position[1], wheel_position[2],0., 0., 0., 1.],
-                    showObjectScale=0.09)
+                    position=[wheel_position[0], wheel_position[1], wheel_position[2],
+                              wheel_orientation[0], wheel_orientation[1], wheel_orientation[2],
+                              wheel_orientation[3]],showObjectScale=0.09)
     body.addObject('UniformMass', totalMass=0.01)
     visual = body.addChild('VisualModel')
 
@@ -56,12 +63,19 @@ def createScene(rootNode):
                         src='@loader',
                         color=[0.6, 0.6, 0.6, 0.6])
     
-    #q1 = Quat.createFromAxisAngle([1.0, 0., 0], pi/2.)
+    #reflect1 = Quat.createFromAxisAngle([1.0, 0., 0], pi/2.)
 
-    wheel1 = createWheel(rootNode.Simulation, 'front_left_wheel', front_left_wheel_position )
-    wheel2 = createWheel(rootNode.Simulation, 'back_left_wheel', back_left_wheel_position)
-    wheel3 = createWheel(rootNode.Simulation, 'front_right_wheel', front_right_wheel_position )
-    wheel4 = createWheel(rootNode.Simulation, 'back_right_wheel',back_right_wheel_position )
+    wheel1 = createWheel(rootNode.Simulation, 'front_left_wheel',
+                         front_left_wheel_position, front_left_wheel_orientation)
+    
+    wheel2 = createWheel(rootNode.Simulation, 'back_left_wheel',
+                         back_left_wheel_position, back_left_wheel_orientation)
+    
+    wheel3 = createWheel(rootNode.Simulation, 'front_right_wheel',
+                         front_right_wheel_position, front_right_wheel_orientation)
+    
+    wheel4 = createWheel(rootNode.Simulation, 'back_right_wheel',
+                         back_right_wheel_position, back_right_wheel_orientation)
 
 
 
