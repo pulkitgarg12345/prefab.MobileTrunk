@@ -1,7 +1,5 @@
 import os
 import Sofa
-from Sofa import *
-
 from stlib3.scene import Scene
 from splib3.numerics import Quat
 from math import pi
@@ -16,6 +14,13 @@ front_right_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
 back_left_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
 back_right_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
 
+
+def wheel_orientation():
+    wheel_orientation = [0.0, 0.0, 0.0, 0.0]
+    wheel_orientation = Quat.createFromAxisAngle([1.0, 0., 0], pi/2.)
+    wheel_orientation.rotateFromEuler([pi/2, 0. , 0.])
+    
+    return wheel_orientation
 
 
 def createWheel(parent, name, wheel_position, wheel_orientation):
@@ -63,8 +68,11 @@ def createScene(rootNode):
                         src='@loader',
                         color=[0.6, 0.6, 0.6, 0.6])
     
-    #reflect1 = Quat.createFromAxisAngle([1.0, 0., 0], pi/2.)
 
+    front_right_wheel_orientation = wheel_orientation()
+   
+    back_right_wheel_orientation = wheel_orientation()
+    
     wheel1 = createWheel(rootNode.Simulation, 'front_left_wheel',
                          front_left_wheel_position, front_left_wheel_orientation)
     
