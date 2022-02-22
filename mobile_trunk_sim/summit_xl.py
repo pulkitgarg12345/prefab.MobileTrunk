@@ -58,7 +58,7 @@ def createScene(rootNode):
     chassis = rootNode.Simulation.addChild("Chassis")
     chassis.addObject('MechanicalObject', name='dofs', template='Rigid3',
                              position=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.],
-                             showObject=False, showObjectScale=5.0,
+                             showObject=True, showObjectScale=0.09,
                             )
     chassis.addObject('UniformMass', totalMass=0.01)
     visual = chassis.addChild("VisualModel")
