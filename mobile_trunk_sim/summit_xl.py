@@ -3,6 +3,8 @@ import Sofa
 from stlib3.scene import Scene
 from splib3.numerics import Quat
 from math import pi
+from summit_xl_controller import *
+
 
 front_left_wheel_position = [0.229, 0.235, 0.0]
 back_left_wheel_position = [-0.229, 0.235, 0.0]
@@ -15,10 +17,10 @@ back_left_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
 back_right_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
 
 
-def wheel_orientation():
+def wheel_orientation(angle):
     wheel_orientation = [0.0, 0.0, 0.0, 0.0]
-    wheel_orientation = Quat.createFromAxisAngle([1.0, 0., 0], pi/2.)
-    wheel_orientation.rotateFromEuler([pi/2, 0. , 0.])
+    wheel_orientation = Quat.createFromAxisAngle([1.0, 0., 0], angle)
+    wheel_orientation.rotateFromEuler([angle, 0. , 0.])
     
     return wheel_orientation
 
@@ -69,9 +71,13 @@ def createScene(rootNode):
                         color=[0.6, 0.6, 0.6, 0.6])
     
 
-    front_right_wheel_orientation = wheel_orientation()
+    front_right_wheel_orientation = wheel_orientation(pi/2)
    
-    back_right_wheel_orientation = wheel_orientation()
+    back_right_wheel_orientation = wheel_orientation(pi/2)
+    
+    front_left_wheel_orientation = wheel_orientation(pi)
+   
+    back_left_wheel_orientation = wheel_orientation(pi)
     
     wheel1 = createWheel(rootNode.Simulation, 'front_left_wheel',
                          front_left_wheel_position, front_left_wheel_orientation)
@@ -85,10 +91,6 @@ def createScene(rootNode):
     wheel4 = createWheel(rootNode.Simulation, 'back_right_wheel',
                          back_right_wheel_position, back_right_wheel_orientation)
 
+    scene.Simulation.addObject(SummitxlController(scene.Simulation, chassis = chassis, wheels = [wheel1, wheel2, wheel3, wheel4]))
 
-
-    
-
-
-    
     return rootNode
