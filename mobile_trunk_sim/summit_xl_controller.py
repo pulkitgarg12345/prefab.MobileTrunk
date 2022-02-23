@@ -13,7 +13,8 @@ class SummitxlController(Sofa.Core.Controller):
     
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
 
-        self.stepsize = 0.0005
+        self.move_forward = 0.0005
+        self.move_backward = -0.0005
         self.wheels = kwargs["wheels"]
         self.chassis = kwargs["chassis"]
         self.angle = pi/64
@@ -24,15 +25,37 @@ class SummitxlController(Sofa.Core.Controller):
         #self.initSummit(key)
         #self.animateSummit(key)
 
-        if key == "A":
+        if key == Key.leftarrow:
             chassis_rigid = RigidDof(self.chassis.dofs)
-            chassis_rigid.translate([self.stepsize,0.0,0.0])
+            chassis_rigid.translate([self.move_backward,0.0,0.0])
             chassis_rigid.rotateAround([0, 1, 0],self.angle)
-
             for i in range(0,4):
                 wheel_rigid = RigidDof(self.wheels[i].dofs)
-                wheel_rigid.translate([self.stepsize, 0.0, 0.0])
+                wheel_rigid.translate([self.move_backward, 0.0, 0.0])
                 wheel_rigid.rotateAround([0, 1, 0],self.angle)
+        
+        elif key == Key.rightarrow:
+            chassis_rigid = RigidDof(self.chassis.dofs)
+            chassis_rigid.translate([self.move_forward,0.0,0.0])
+            chassis_rigid.rotateAround([0, 1, 0],self.angle)
+            for i in range(0,4):
+                wheel_rigid = RigidDof(self.wheels[i].dofs)
+                wheel_rigid.translate([self.move_forward, 0.0, 0.0])
+                wheel_rigid.rotateAround([0, 1, 0],self.angle)
+        
+        elif key == Key.uparrow:
+            chassis_rigid = RigidDof(self.chassis.dofs)
+            chassis_rigid.rotateAround([0, 0, 1],self.angle)
+            for i in range(0,4):
+                wheel_rigid = RigidDof(self.wheels[i].dofs)
+                wheel_rigid.rotateAround([0, 0, 1],self.angle)
+
+        elif key == Key.downarrow:
+            chassis_rigid = RigidDof(self.chassis.dofs)
+            chassis_rigid.rotateAround([0, 0, 1],-self.angle)
+            for i in range(0,4):
+                wheel_rigid = RigidDof(self.wheels[i].dofs)
+                wheel_rigid.rotateAround([0, 0, 1],-self.angle)
 
     
     
