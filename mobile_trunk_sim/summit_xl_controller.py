@@ -28,16 +28,14 @@ class SummitxlController(Sofa.Core.Controller):
         if key == Key.leftarrow:
             chassis_rigid = RigidDof(self.chassis.dofs)
             chassis_rigid.translate([self.move_backward,0.0,0.0])
-            chassis_rigid.rotateAround([0, 1, 0],self.angle)
             for i in range(0,4):
                 wheel_rigid = RigidDof(self.wheels[i].dofs)
                 wheel_rigid.translate([self.move_backward, 0.0, 0.0])
-                wheel_rigid.rotateAround([0, 1, 0],self.angle)
+                wheel_rigid.rotateAround([0, 1, 0],-self.angle)
         
         elif key == Key.rightarrow:
             chassis_rigid = RigidDof(self.chassis.dofs)
             chassis_rigid.translate([self.move_forward,0.0,0.0])
-            chassis_rigid.rotateAround([0, 1, 0],self.angle)
             for i in range(0,4):
                 wheel_rigid = RigidDof(self.wheels[i].dofs)
                 wheel_rigid.translate([self.move_forward, 0.0, 0.0])
