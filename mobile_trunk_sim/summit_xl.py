@@ -31,7 +31,6 @@ def createWheel(parent, name, wheel_position, wheel_orientation):
                     position=[wheel_position[0], wheel_position[1], wheel_position[2],
                               wheel_orientation[0], wheel_orientation[1], wheel_orientation[2],
                               wheel_orientation[3]],showObjectScale=0.09)
-    body.addObject('UniformMass', totalMass=0.01)
     visual = body.addChild('VisualModel')
 
     visual.addObject('MeshSTLLoader', name='loader1', filename='meshes/wheel.stl')
@@ -47,30 +46,29 @@ def createWheel(parent, name, wheel_position, wheel_orientation):
     return body
 def createScene(rootNode):
     
-    scene = Scene(rootNode, plugins=['SofaConstraint', 'SofaGeneralRigid', 'SofaOpenglVisual', 'SofaRigid'], iterative=False)
+    scene = Scene(rootNode, plugins=[ 'SofaConstraint', 'SofaGeneralRigid', 'SofaOpenglVisual', 'SofaRigid'], iterative=False)
     scene.addMainHeader()
     scene.addObject('DefaultVisualManagerLoop')
-    scene.addObject('FreeMotionAnimationLoop')
+    scene.addObject('DefaultAnimationLoop')
     scene.addObject('GenericConstraintSolver', maxIterations=1e3, tolerance=1e-5)
     scene.Simulation.addObject('GenericConstraintCorrection')
-
     scene.dt = 0.01
     scene.gravity = [0., -9810., 0.]
 
     chassis = rootNode.Simulation.addChild("Chassis")
     chassis.addObject('MechanicalObject', name='dofs', template='Rigid3',
                              position=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.],
-                             showObject=True, showObjectScale=0.09,
-                            )
-    chassis.addObject('UniformMass', totalMass=0.01)
+                             showObject=True, showObjectScale=0.09)
     visual = chassis.addChild("VisualModel")
     visual.addObject('MeshSTLLoader', name='loader', filename='meshes/summit_xl_chassis_simple.stl')
     visual.addObject('MeshTopology', src='@loader')
     visual.addObject('OglModel', name='renderer',
                         src='@loader',
                         color=[0.6, 0.6, 0.6, 0.6])
+    visual.addObject('RigidMapping',
+                        input=chassis.dofs.getLinkPath(),
+                        output=visual.renderer.getLinkPath())
     
-
     front_right_wheel_orientation = wheel_orientation(pi/2)
    
     back_right_wheel_orientation = wheel_orientation(pi/2)
