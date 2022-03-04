@@ -13,8 +13,8 @@ class SummitxlController(Sofa.Core.Controller):
     
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
 
-        self.move_forward = 0.0005
-        self.move_backward = -0.0005
+        self.move_forward = 0.005
+        self.move_backward = -0.005
         self.wheels = kwargs["wheels"]
         self.chassis = kwargs["chassis"]
         self.angle = pi/64
@@ -22,8 +22,6 @@ class SummitxlController(Sofa.Core.Controller):
     def onKeypressedEvent(self, event):
         key = event['key']
         print("press on {}".format(key))
-        #self.initSummit(key)
-        #self.animateSummit(key)
 
         if key == Key.leftarrow:
             chassis_rigid = RigidDof(self.chassis.dofs)
