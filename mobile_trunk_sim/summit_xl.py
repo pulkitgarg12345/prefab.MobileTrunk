@@ -62,7 +62,8 @@ def createScene(rootNode):
     rootNode.dt = 0.01
     rootNode.gravity = [0., -9810., 0.]
 
-    chassis = rootNode.addChild("Chassis")
+    robot = rootNode.addChild("Summit_xl")
+    chassis = robot.addChild("Chassis")
     chassis.addObject('MechanicalObject', name='dofs', template='Rigid3',
                              position=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.],
                              showObject=True, showObjectScale=0.09)
@@ -84,20 +85,20 @@ def createScene(rootNode):
    
     back_left_wheel_orientation = wheel_orientation(pi)
     
-    wheel1 = createWheel(rootNode, 'front_left_wheel',
+    wheel1 = createWheel(robot, 'front_left_wheel',
                          front_left_wheel_position, front_left_wheel_orientation)
     
-    wheel2 = createWheel(rootNode, 'back_left_wheel',
+    wheel2 = createWheel(robot, 'back_left_wheel',
                          back_left_wheel_position, back_left_wheel_orientation)
     
-    wheel3 = createWheel(rootNode, 'front_right_wheel',
+    wheel3 = createWheel(robot, 'front_right_wheel',
                          front_right_wheel_position, front_right_wheel_orientation)
     
-    wheel4 = createWheel(rootNode, 'back_right_wheel',
+    wheel4 = createWheel(robot, 'back_right_wheel',
                          back_right_wheel_position, back_right_wheel_orientation)
 
     floor = Floor(rootNode)
 
-    rootNode.addObject(SummitxlController(rootNode, chassis = chassis, wheels = [wheel1, wheel2, wheel3, wheel4]))
+    robot.addObject(SummitxlController(robot, chassis = chassis, wheels = [wheel1, wheel2, wheel3, wheel4]))
 
     return rootNode
