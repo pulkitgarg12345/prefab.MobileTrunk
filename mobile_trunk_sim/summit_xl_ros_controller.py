@@ -10,7 +10,7 @@ global ray , speed
 speed = 1
 ray = 0.001 #rayon de la roue
 dx = 2*ray*pi # deplacement pour un tour de roue
-w = speed/ray
+w = speed/ray #rotation des roues
 
 def send(data):
     msg = Float32MultiArray()
@@ -31,7 +31,6 @@ class SummitxlrosController(Sofa.Core.Controller):
 
     def onAnimateBeginEvent(self, event):
         self.chassis.dofs.position = self.robot.dofs.position
-        print(self.chassis.dofs.position.value[0][0])
         for i in range(0,4):
             wheel_rigid = RigidDof(self.wheels[i].dofs)
             wheel_rigid.translate([dx, 0.0, 0.0])
