@@ -3,6 +3,7 @@
 
 import Sofa
 from splib3.numerics import RigidDof
+from splib3.constants import Key
 from std_msgs.msg import Float32MultiArray 
 from math import *
 
@@ -29,7 +30,7 @@ class SummitxlrosController(Sofa.Core.Controller):
         self.robot = kwargs["robot"]
         self.wheels = kwargs["wheels"]
 
-    def onAnimateBeginEvent(self, event):
+    def onAnimateEndEvent(self, event):
         self.chassis.dofs.position = self.robot.dofs.position
         for i in range(0,4):
             wheel_rigid = RigidDof(self.wheels[i].dofs)
