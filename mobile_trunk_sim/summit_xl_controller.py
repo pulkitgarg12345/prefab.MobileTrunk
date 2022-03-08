@@ -22,11 +22,10 @@ class SummitxlController(Sofa.Core.Controller):
         self.wheels = kwargs["wheels"]
         self.chassis = kwargs["chassis"]
         self.angle = w
+        self.rotation_angle = pi/64
 
     def onKeypressedEvent(self, event):
         key = event['key']
-        print("press on {}".format(key))
-
         if key == Key.leftarrow:
             chassis_rigid = RigidDof(self.chassis.dofs)
             chassis_rigid.translate([self.move_backward,0.0,0.0])
@@ -45,17 +44,17 @@ class SummitxlController(Sofa.Core.Controller):
         
         elif key == Key.uparrow: 
             chassis_rigid = RigidDof(self.chassis.dofs)
-            #chassis_rigid.rotateAround([0, 0, 1],self.angle)
+            chassis_rigid.rotateAround([0, 0, 1],self.rotation_angle)
             for i in range(0,4):
                 wheel_rigid = RigidDof(self.wheels[i].dofs)
-                wheel_rigid.rotateAround([0, 0, 1],self.angle)
+                #wheel_rigid.rotateAround([0, 0, 1],self.rotation_angle)
 
         elif key == Key.downarrow:
             chassis_rigid = RigidDof(self.chassis.dofs)
-            #chassis_rigid.rotateAround([0, 0, 1],-self.angle)
+            chassis_rigid.rotateAround([0, 0, 1],-self.rotation_angle)
             for i in range(0,4):
                 wheel_rigid = RigidDof(self.wheels[i].dofs)
-                wheel_rigid.rotateAround([0, 0, 1],-self.angle)
+                #wheel_rigid.rotateAround([0, 0, 1],-self.rotation_angle)
 
     
     
