@@ -9,7 +9,7 @@ from math import *
 
 global ray , speed
 speed = 1
-ray = 0.001 #rayon de la roue
+ray = 0.0015 #rayon de la roue
 dx = 2*ray*pi # deplacement pour un tour de roue
 w = speed/ray #rotation des roues
 
@@ -36,3 +36,14 @@ class SummitxlrosController(Sofa.Core.Controller):
             wheel_rigid = RigidDof(self.wheels[i].dofs)
             wheel_rigid.translate([dx, 0.0, 0.0])
             wheel_rigid.rotateAround([0, 1, 0], w)
+    
+    def onKeypressedEvent(self, event):
+        global speed, w
+        key = event['key']
+        if key == Key.minus:
+            speed-=0.1
+            if speed < 1:
+                speed = 1
+        elif key == Key.plus:
+            speed+=0.1
+        w = speed/ray #mis à jour de la vitesse angulaire

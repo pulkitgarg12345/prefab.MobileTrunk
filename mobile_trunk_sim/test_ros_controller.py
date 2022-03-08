@@ -54,7 +54,7 @@ def createWheel(parent, name, wheel_position, wheel_orientation):
 
     visual.addObject('MeshTopology', src='@loader1')
 
-    visual.addObject('OglModel', name='renderer', src='@loader1', color=[0.15, 0.45, 0.75, 0.7])
+    visual.addObject('OglModel', name='renderer', src='@loader1', color="Black")
 
     visual.addObject('RigidMapping',
                         input=body.dofs.getLinkPath(),
@@ -82,7 +82,7 @@ def createScene(rootNode):
     visual.addObject('MeshTopology', src='@loader')
     visual.addObject('OglModel', name='renderer',
                         src='@loader',
-                        color=[0.6, 0.6, 0.6, 0.6])
+                        color="Ebony")
     visual.addObject('RigidMapping',
                         input=chassis.dofs.getLinkPath(),
                         output=visual.renderer.getLinkPath())
