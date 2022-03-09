@@ -16,6 +16,7 @@ front_right_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
 back_left_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
 back_right_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
 
+front_rgbd_camera_offset = [0.35850, 0.0, 0.25062]
 
 def wheel_orientation(angle):
     wheel_orientation = [0.0, 0.0, 0.0, 0.0]
@@ -55,6 +56,27 @@ def createWheel(parent, name, wheel_position, wheel_orientation):
                         output=visual.renderer.getLinkPath())
 
     return body
+def create_front_camera(parent):
+
+    body = parent.addChild("Front_Camera")
+    body.addObject('MechanicalObject', name='dofs', showObject=True, template='Rigid3',
+                    position=[front_rgbd_camera_offset [0], front_rgbd_camera_offset [1], 
+                              front_rgbd_camera_offset[2], 0.0, 0.0, 0.0, 0.0],
+                                showObjectScale=0.09)
+    visual = body.addChild('VisualModel')
+
+    visual.addObject('MeshSTLLoader', name='loader1', filename='meshes/camera_axis_q8641.stl')
+
+    visual.addObject('MeshTopology', src='@loader1')
+
+    visual.addObject('OglModel', name='renderer', src='@loader1', color=[0.6, 0.6, 0.6, 0.6])
+
+    visual.addObject('RigidMapping',
+                        input=body.dofs.getLinkPath(),
+                        output=visual.renderer.getLinkPath())
+
+    return body
+    
 def createScene(rootNode):
     rootNode.addObject('DefaultVisualManagerLoop')
     rootNode.addObject('DefaultAnimationLoop')
@@ -97,6 +119,7 @@ def createScene(rootNode):
     wheel4 = createWheel(robot, 'back_right_wheel',
                          back_right_wheel_position, back_right_wheel_orientation)
 
+    camera = create_front_camera(rootNode)
     floor = Floor(rootNode)
 
     robot.addObject(SummitxlController(robot, chassis = chassis, wheels = [wheel1, wheel2, wheel3, wheel4]))
