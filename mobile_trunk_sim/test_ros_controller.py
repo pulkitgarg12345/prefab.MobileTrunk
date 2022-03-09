@@ -72,7 +72,8 @@ def createScene(rootNode):
     robot = rootNode.addChild("Summit_xl")    
     chassis = robot.addChild("Chassis")
     robot.addObject('MechanicalObject', name = 'dofs', template ='Rigid3', position=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.], showObject=True, showObjectScale=0.09)
-    
+    robot.addData(name="velocity", value=[0.0, 0.0, 0.0], type="Vec3d", help="Summit_xl velocity", group="Summitxl_cmd_vel")
+
     chassis.addObject('MechanicalObject', name='dofs', template='Rigid3',
                              position=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.],
                              showObject=False, showObjectScale=0.09)
@@ -110,12 +111,10 @@ def createScene(rootNode):
     floor = Floor(rootNode)
 
     rootNode.addObject(sofaros.RosReceiver(rosNode, "/summit_xl_control/cmd_vel",
-                                           robot.dofs.findData("position"), Float32MultiArray, recv))
+                                           robot.findData("velocity"), Float32MultiArray, recv))
 
-    rootNode.addObject(sofaros.RosSender(rosNode, "/summit_xl_control/cmd_vel",
-                                           robot.dofs.findData("position"), Float32MultiArray, send))
-    
-
+    #robots.finData("velocity")
+                                           
     robot.addObject(SummitxlrosController(rootNode, chassis=chassis, robot=robot,wheels = [wheel1, wheel2, wheel3, wheel4]))
 
     return rootNode
