@@ -85,6 +85,8 @@ def createScene(rootNode):
     rootNode.gravity = [0., -9810., 0.]
 
     robot = rootNode.addChild("Summit_xl")
+    robot.addObject('MechanicalObject', name = 'dofs', template ='Rigid3', position=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.]
+                    , showObject=True, showObjectScale=0.09)
     robot.addData(name="velocity", value=[0.0, 0.0, 0.0], type="Vec3d", help="Summit_xl velocity", group="Summitxl_cmd_vel")
 
     chassis = robot.addChild("Chassis")
@@ -124,6 +126,6 @@ def createScene(rootNode):
     camera = create_front_camera(robot)
     floor = Floor(rootNode)
 
-    robot.addObject(SummitxlController(robot, chassis = chassis, wheels = [wheel1, wheel2, wheel3, wheel4]))
+    robot.addObject(SummitxlController(rootNode, robot=robot, chassis=chassis, wheels = [wheel1, wheel2, wheel3, wheel4]))
 
     return rootNode
