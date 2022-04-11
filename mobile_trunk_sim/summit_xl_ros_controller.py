@@ -3,8 +3,6 @@
 
 import Sofa
 from splib3.numerics import RigidDof
-from splib3.constants import Key
-from std_msgs.msg import Float32MultiArray 
 from math import *
 
 global ray , speed
