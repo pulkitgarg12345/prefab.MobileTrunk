@@ -7,6 +7,7 @@ import sofaros
 from sofaros import *
 from std_msgs.msg import Float32MultiArray
 from summit_xl_ros_controller import *
+from summit_xl_description import *
 
 rosNode = sofaros.init("SofaNode")
 
@@ -60,7 +61,8 @@ def createScene(rootNode):
     robot = rootNode.addChild("Summit_xl")
     chassis = robot.addChild("Chassis")
     robot.addObject('MechanicalObject', name = 'dofs', template ='Rigid3', position=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.], showObject=True, showObjectScale=0.09)
-    robot.addData(name="velocity", value=[0.0, 0.0, 0.0], type="Vec3d", help="Summit_xl velocity", group="Summitxl_cmd_vel")
+    robot.addData(name="velocity", value=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0], type="Vec6d", help="Summit_xl velocity", group="Summitxl_cmd_vel")
+
 
     chassis.addObject('MechanicalObject', name='dofs', template='Rigid3',
                              position=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.],
