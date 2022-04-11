@@ -29,6 +29,7 @@ class SummitxlrosController(Sofa.Core.Controller):
 
     def onAnimateBeginEvent(self, event):
         self.dt = event['dt']
+        print(self.robot.velocity[0], self.robot.velocity[1], self.robot.velocity[2])
         self.dx = self.robot.velocity[0] * self.dt
         self.robot.dofs.position[0][0]+= self.dx #mettre à jour la position
         #écrire un scrpit ros qui vient mettre à jour la commande vitesse

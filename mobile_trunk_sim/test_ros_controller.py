@@ -8,19 +8,7 @@ from sofaros import *
 from std_msgs.msg import Float32MultiArray
 from summit_xl_ros_controller import *
 
-front_left_wheel_position = [0.229, 0.235, 0.0]
-back_left_wheel_position = [-0.229, 0.235, 0.0]
-front_right_wheel_position = [0.229, -0.235, 0.0]
-back_right_wheel_position = [-0.229, -0.235, 0.0]
-
-front_left_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
-front_right_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
-back_left_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
-back_right_wheel_orientation = [0.0, 0.0, 0.0, 0.0]
-
 rosNode = sofaros.init("SofaNode")
-
-
 
 
 def wheel_orientation(angle):
