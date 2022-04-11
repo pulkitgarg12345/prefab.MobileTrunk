@@ -13,7 +13,10 @@ class MinimalPublisher(Node):
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
     def timer_callback(self):
-        msg = Float32MultiArray(layout=std_msgs.msg.MultiArrayLayout(dim=[], data_offset=0), data=[-10, 3.0, 0.1])
+        linear = [0, 1, 1]
+        angular = [0, 0, 0]
+        msg = Float32MultiArray(layout=std_msgs.msg.MultiArrayLayout( data_offset=0), data=[linear[0],linear[1],
+                                                                    linear[2],angular[0],angular[1],angular[2]])
         self.publisher_.publish(msg)
 
 
