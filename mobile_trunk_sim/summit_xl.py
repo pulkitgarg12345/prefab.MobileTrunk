@@ -37,27 +37,29 @@ def createWheel(parent, name, wheel_position, wheel_orientation):
 
     visual.addObject('MeshTopology', src='@loader1')
 
-    visual.addObject('OglModel', name='renderer', src='@loader1', color=[0.15, 0.45, 0.75, 0.7])
+    visual.addObject('OglModel', name='renderer', src='@loader1', color="black")
 
     visual.addObject('RigidMapping',
                         input=body.dofs.getLinkPath(),
                         output=visual.renderer.getLinkPath())
 
     return body
-def create_camera(parent, camera_position):
+def create_sensor(parent, sensor_name):
 
-    body = parent.addChild("Front_Camera")
+    sensor_position = sensor_dict[sensor_name]
+
+    body = parent.addChild(sensor_name)
     body.addObject('MechanicalObject', name='dofs',  template='Rigid3',
-                    position=[camera_position[0], camera_position[1],
-                              camera_position[2], 0.0, 0.0, 0.0, 0.0],
+                    position=[sensor_position[0], sensor_position[1],
+                              sensor_position[2], 0.0, 0.0, 0.0, 0.0],
                                 showObjectScale=0.09, showObject=True)
     visual = body.addChild('VisualModel')
-
-    visual.addObject('MeshSTLLoader', name='loader1', filename='meshes/camera_axis_q8641.stl')
+    path = sensorname_to_path(sensor_name)
+    visual.addObject('MeshSTLLoader', name='loader1', filename=path)
 
     visual.addObject('MeshTopology', src='@loader1')
 
-    visual.addObject('OglModel', name='renderer', src='@loader1', color=[0.6, 0.6, 0.6, 0.6])
+    visual.addObject('OglModel', name='renderer', src='@loader1', color="blue")
 
     visual.addObject('RigidMapping',
                         input=body.dofs.getLinkPath(),
@@ -86,7 +88,7 @@ def createScene(rootNode):
     visual.addObject('MeshTopology', src='@loader')
     visual.addObject('OglModel', name='renderer',
                         src='@loader',
-                        color=[0.6, 0.6, 0.6, 0.6])
+                        color="Ebony")
     visual.addObject('RigidMapping',
                         input=chassis.dofs.getLinkPath(),
                         output=visual.renderer.getLinkPath())
@@ -111,7 +113,9 @@ def createScene(rootNode):
     wheel4 = createWheel(robot, 'back_right_wheel',
                          back_right_wheel_position, back_right_wheel_orientation)
 
-    camera = create_camera(robot, front_rgbd_camera_offset)
+    camera = create_sensor(robot, "front_rgbd_camera_offset")
+    antenna = create_sensor(robot, "imu_offset")
+    gps = create_sensor(robot, "gps_offset")
     floor = Floor(rootNode)
 
     robot.addObject(SummitxlController(rootNode, robot=robot, chassis=chassis, wheels = [wheel1, wheel2, wheel3, wheel4]))
