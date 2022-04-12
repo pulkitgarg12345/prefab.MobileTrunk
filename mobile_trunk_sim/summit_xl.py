@@ -4,62 +4,7 @@ from summit_xl_controller import *
 from summit_xl_description import *
 
 
-def Floor(parentNode, color=[0.5, 0.5, 0.5, 1.], rotation=[0, 0, 0],
-          position=[0.0, 0.0, 0, 0.0, 0.0, 0.0, 1.], translation=[-1, -1, -0.15]):
-    floor = parentNode.addChild('Floor')
-    floor.addObject('MeshObjLoader', name='loader', filename='mesh/square1.obj', scale=2, rotation=rotation, translation=translation)
-    floor.addObject('OglModel', src='@loader', color=color)
-    floor.addObject('MeshTopology', src='@loader', name='topo')
-    floor.addObject('MechanicalObject')
-    floor.addObject('TriangleCollisionModel')
-    floor.addObject('LineCollisionModel')
-    floor.addObject('PointCollisionModel')
-    return floor
 
-def createWheel(parent, name, wheel_position, wheel_orientation):
-    body = parent.addChild(name)
-    body.addObject('MechanicalObject', name='dofs', showObject=True, template='Rigid3',
-                    position=[wheel_position[0], wheel_position[1], wheel_position[2],
-                              wheel_orientation[0], wheel_orientation[1], wheel_orientation[2],
-                              wheel_orientation[3]],showObjectScale=0.09)
-    visual = body.addChild('VisualModel')
-
-    visual.addObject('MeshSTLLoader', name='loader1', filename='meshes/wheel.stl')
-
-    visual.addObject('MeshTopology', src='@loader1')
-
-    visual.addObject('OglModel', name='renderer', src='@loader1', color="black")
-
-    visual.addObject('RigidMapping',
-                        input=body.dofs.getLinkPath(),
-                        output=visual.renderer.getLinkPath())
-
-    return body
-
-def create_sensor(parent, sensor_name, sensor_orientation = [0.0, 0.0, 0.0, 1.]):
-
-    sensor_position = sensor_dict[sensor_name]
-
-    body = parent.addChild(sensor_name)
-    body.addObject('MechanicalObject', name='dofs',  template='Rigid3',
-                    position=[sensor_position[0], sensor_position[1],
-                              sensor_position[2],sensor_orientation[0],
-                              sensor_orientation[1], sensor_orientation[2],
-                              sensor_orientation[3]],showObjectScale=0.09,
-                              showObject=True)
-    visual = body.addChild('VisualModel')
-    path = sensorname_to_path(sensor_name)
-    visual.addObject('MeshSTLLoader' , name='loader1', filename=path)
-
-    visual.addObject('MeshTopology', src='@loader1')
-
-    visual.addObject('OglModel', name='renderer', src='@loader1', color="blue")
-
-    visual.addObject('RigidMapping',
-                        input=body.dofs.getLinkPath(),
-                        output=visual.renderer.getLinkPath())
-
-    return body
 
 def createScene(rootNode):
     rootNode.addObject('DefaultVisualManagerLoop')
@@ -82,7 +27,7 @@ def createScene(rootNode):
     visual.addObject('MeshTopology', src='@loader')
     visual.addObject('OglModel', name='renderer',
                         src='@loader',
-                        color="Ebony")
+                        color="0.5 0.5 0.5 1")
     visual.addObject('RigidMapping',
                         input=chassis.dofs.getLinkPath(),
                         output=visual.renderer.getLinkPath())
@@ -104,6 +49,7 @@ def createScene(rootNode):
     #gps = create_sensor(robot, "gps_offset")
     floor = Floor(rootNode)
 
-    robot.addObject(SummitxlController(rootNode, robot=robot, chassis=chassis, wheels = [wheel1, wheel2, wheel3, wheel4]))
+    robot.addObject(SummitxlController(rootNode, robot=robot, camera=camera,
+                                       antenna=antenna, chassis=chassis, wheels = [wheel1, wheel2, wheel3, wheel4]))
 
     return rootNode
