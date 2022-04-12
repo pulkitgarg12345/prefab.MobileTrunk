@@ -13,8 +13,9 @@ w = speed/ray #rotation des roues
 
 def recv(data, datafield):
     t = data.tolist()
-    datafield.value = [t[0], t[1], t[2],
-                       t[3], t[4], t[5]]
+    datafield[0].value = [t[0], t[1], t[2]]
+    datafield[1].value = [t[0], t[1], t[2]]
+
 
 class SummitxlrosController(Sofa.Core.Controller):
     def __init__(self, *args, **kwargs):
@@ -30,10 +31,9 @@ class SummitxlrosController(Sofa.Core.Controller):
 
     def onAnimateBeginEvent(self, event):
         self.dt = event['dt']
-        print(self.robot.velocity[0], self.robot.velocity[1], self.robot.velocity[2])
-        self.dx = self.robot.velocity[0] * self.dt
-        self.robot.dofs.position[0][0]+= self.dx #mettre à jour la position
-        #écrire un scrpit ros qui vient mettre à jour la commande vitesse
+        print(self.robot.linear_vel[0], self.robot.linear_vel[1], self.robot.linear_vel[2])
+        self.dx = self.robot.linear_vel[0] * self.dt
+        self.robot.dofs.position[0][0]+= self.dx
         self.w = self.speed/self.ray
         self.chassis.dofs.position = self.robot.dofs.position
         for i in range(0,4):
