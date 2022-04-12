@@ -1,17 +1,8 @@
 import Sofa
 from stlib3.scene import Scene
-from splib3.numerics import Quat
-from math import pi
 from summit_xl_controller import *
 from summit_xl_description import *
 
-
-def wheel_orientation(angle):
-    wheel_orientation = [0.0, 0.0, 0.0, 0.0]
-    wheel_orientation = Quat.createFromAxisAngle([1.0, 0., 0], angle)
-    wheel_orientation.rotateFromEuler([angle, 0. , 0.])
-
-    return wheel_orientation
 
 def Floor(parentNode, color=[0.5, 0.5, 0.5, 1.], rotation=[0, 0, 0],
           position=[0.0, 0.0, 0, 0.0, 0.0, 0.0, 1.], translation=[-1, -1, -0.15]):
@@ -44,18 +35,21 @@ def createWheel(parent, name, wheel_position, wheel_orientation):
                         output=visual.renderer.getLinkPath())
 
     return body
-def create_sensor(parent, sensor_name):
+
+def create_sensor(parent, sensor_name, sensor_orientation = [0.0, 0.0, 0.0, 1.]):
 
     sensor_position = sensor_dict[sensor_name]
 
     body = parent.addChild(sensor_name)
     body.addObject('MechanicalObject', name='dofs',  template='Rigid3',
                     position=[sensor_position[0], sensor_position[1],
-                              sensor_position[2], 0.0, 0.0, 0.0, 0.0],
-                                showObjectScale=0.09, showObject=True)
+                              sensor_position[2],sensor_orientation[0],
+                              sensor_orientation[1], sensor_orientation[2],
+                              sensor_orientation[3]],showObjectScale=0.09,
+                              showObject=True)
     visual = body.addChild('VisualModel')
     path = sensorname_to_path(sensor_name)
-    visual.addObject('MeshSTLLoader', name='loader1', filename=path)
+    visual.addObject('MeshSTLLoader' , name='loader1', filename=path)
 
     visual.addObject('MeshTopology', src='@loader1')
 
@@ -93,14 +87,6 @@ def createScene(rootNode):
                         input=chassis.dofs.getLinkPath(),
                         output=visual.renderer.getLinkPath())
 
-    front_right_wheel_orientation = wheel_orientation(pi/2)
-
-    back_right_wheel_orientation = wheel_orientation(pi/2)
-
-    front_left_wheel_orientation = wheel_orientation(pi)
-
-    back_left_wheel_orientation = wheel_orientation(pi)
-
     wheel1 = createWheel(robot, 'front_left_wheel',
                          front_left_wheel_position, front_left_wheel_orientation)
 
@@ -113,9 +99,9 @@ def createScene(rootNode):
     wheel4 = createWheel(robot, 'back_right_wheel',
                          back_right_wheel_position, back_right_wheel_orientation)
 
-    camera = create_sensor(robot, "front_rgbd_camera_offset")
+    camera = create_sensor(robot, "front_rgbd_camera_offset", camera_orientation)
     antenna = create_sensor(robot, "imu_offset")
-    gps = create_sensor(robot, "gps_offset")
+    #gps = create_sensor(robot, "gps_offset")
     floor = Floor(rootNode)
 
     robot.addObject(SummitxlController(rootNode, robot=robot, chassis=chassis, wheels = [wheel1, wheel2, wheel3, wheel4]))
