@@ -38,11 +38,10 @@ back_right_wheel_orientation = orientation(pi/2, [1.0, 0., 0])
 front_left_wheel_orientation = orientation(pi, [1.0, 0., 0])
 
 back_left_wheel_orientation = orientation(pi, [1.0, 0., 0])
-
+#lazer_orientation = orientation(pi,[1., 0., 0.])
 
 sensor_dict = {"imu_offset":[-0.18, 0., 0.27], #correct
-               "gps_offset" : [0.22, -0.0, 0.275],
-               "rear_laser_offset" : [-0.2865, 0.20894, 0.2973],
+               "hokuyo_ust_10lx" : [0.0, 0.0, 0.27],  #lazer
                "front_rgbd_camera_offset": [0.19, 0.0, 0.245] #correct
             }
 
@@ -50,8 +49,9 @@ sensor_dict = {"imu_offset":[-0.18, 0., 0.27], #correct
 def sensorname_to_path(argument):
 	switcher = {
 		"imu_offset": dirPath+'meshes/antenna_3GO16.stl',
-		"gps_offset": dirPath+'meshes/wheel.stl',
+		"gps_offset": dirPath+'meshes/structure_ptz_rgbd_gps.stl',
 		"front_rgbd_camera_offset": dirPath+'meshes/axis_p5514.stl',
+        "hokuyo_ust_10lx": dirPath+'meshes/hokuyo_urg_04lx.stl'
 	}
 	return switcher.get(argument, "nothing")
 

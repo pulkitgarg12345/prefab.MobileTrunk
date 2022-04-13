@@ -18,6 +18,7 @@ class SummitxlController(Sofa.Core.Controller):
         self.wheels = kwargs["wheels"]
         self.antenna = kwargs["antenna"]
         self.camera = kwargs["camera"]
+        self.lazer = kwargs["lazer"]
         self.ray = 0.0015
         self.dt = None
         self.dx = 0
@@ -36,6 +37,7 @@ class SummitxlController(Sofa.Core.Controller):
             self.robot.dofs.position[0][0]+= self.dx
             self.chassis.dofs.position = self.robot.dofs.position
             self.camera.dofs.position[0][0] += self.dx
+            self.lazer.dofs.position[0][0] += self.dx
             self.antenna.dofs.position[0][0] += self.dx
             for i in range(0,4):
                 wheel_rigid = RigidDof(self.wheels[i].dofs)
@@ -48,6 +50,7 @@ class SummitxlController(Sofa.Core.Controller):
             self.chassis.dofs.position = self.robot.dofs.position
             self.camera.dofs.position[0][0] += self.dx
             self.antenna.dofs.position[0][0] += self.dx
+            self.lazer.dofs.position[0][0] += self.dx
             for i in range(0,4):
                 wheel_rigid = RigidDof(self.wheels[i].dofs)
                 wheel_rigid.translate([self.dx, 0.0, 0.0])

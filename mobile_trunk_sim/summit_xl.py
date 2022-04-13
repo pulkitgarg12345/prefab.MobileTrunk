@@ -55,7 +55,7 @@ def createScene(rootNode):
     lazer = create_sensor(robot, "hokuyo_ust_10lx")
     floor = Floor(rootNode)
 
-    robot.addObject(SummitxlController(rootNode, robot=robot, camera=camera,
+    robot.addObject(SummitxlController(rootNode, robot=robot, camera=camera, lazer = lazer,
                                        antenna=antenna, chassis=chassis, wheels = [wheel1, wheel2, wheel3, wheel4]))
 
     return rootNode

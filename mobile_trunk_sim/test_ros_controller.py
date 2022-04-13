@@ -60,6 +60,7 @@ def createScene(rootNode):
     floor = Floor(rootNode)
     camera = create_sensor(robot, "front_rgbd_camera_offset", camera_orientation)
     antenna = create_sensor(robot, "imu_offset")
+    lazer = create_sensor(robot, "hokuyo_ust_10lx")
 
     rootNode.addObject(sofaros.RosReceiver(rosNode, "/summit_xl_control/cmd_vel",
                                            [robot.findData("linear_vel"),robot.findData("angular_vel")],
@@ -67,7 +68,7 @@ def createScene(rootNode):
 
     #robots.finData("velocity")
     robot.addObject(SummitxlrosController(rootNode, chassis=chassis, camera=camera,
-                                          antenna=antenna, robot=robot,
+                                          antenna=antenna, robot=robot, lazer=lazer,
                                           wheels = [wheel1, wheel2, wheel3, wheel4]))
 
     return rootNode

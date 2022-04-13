@@ -25,6 +25,7 @@ class SummitxlrosController(Sofa.Core.Controller):
         self.wheels = kwargs["wheels"]
         self.antenna = kwargs["antenna"]
         self.camera = kwargs["camera"]
+        self.lazer = kwargs["lazer"]
         self.ray = 0.0015
         self.dt = None
         self.dx = 0
@@ -37,6 +38,7 @@ class SummitxlrosController(Sofa.Core.Controller):
         self.robot.dofs.position[0][0]+= self.dx
         self.camera.dofs.position[0][0] += self.dx
         self.antenna.dofs.position[0][0] += self.dx
+        self.lazer.dofs.position[0][0] += self.dx
         self.w = self.speed/self.ray
         self.chassis.dofs.position = self.robot.dofs.position
         for i in range(0,4):
