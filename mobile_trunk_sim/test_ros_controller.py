@@ -30,15 +30,20 @@ def createScene(rootNode):
                              position=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.],
                              showObject=False, showObjectScale=0.09)
 
-    visual = chassis.addChild("VisualModel")
-    visual.addObject('MeshSTLLoader', name='loader', filename='meshes/summit_xl_chassis_simple.stl')
-    visual.addObject('MeshTopology', src='@loader')
-    visual.addObject('OglModel', name='renderer',
-                        src='@loader',
-                        color="0.5 0.5 0.5 1")
-    visual.addObject('RigidMapping',
+    visual1 = None; visual2 = None; visual3 = None
+    visual_model  = [visual1, visual2, visual3]
+    filepath = ['meshes/summit_xl_chassis.stl', 'meshes/summit_xl_covers.stl',
+                'meshes/summit_xl_chassis_simple.stl']
+    color_ = ["0.1 0.1 0.1 1","0.8 0.8 0.8 1","0.5 0.5 0.5 1"]
+    for i in range(0,3):
+        visual_model[i] = chassis.addChild("VisualModel"+str(i))
+        visual_model[i].addObject('MeshSTLLoader', name='loader'+str(i), filename=filepath[i])
+        visual_model[i].addObject('MeshTopology', src='@loader'+str(i))
+        visual_model[i].addObject('OglModel', name="renderer",
+                               src='@loader'+str(i),color=color_[i])
+        visual_model[i].addObject('RigidMapping',
                         input=chassis.dofs.getLinkPath(),
-                        output=visual.renderer.getLinkPath())
+                        output=visual_model[i].renderer.getLinkPath())
 
     wheel1 = createWheel(robot, 'front_left_wheel',
                          front_left_wheel_position, front_left_wheel_orientation)
