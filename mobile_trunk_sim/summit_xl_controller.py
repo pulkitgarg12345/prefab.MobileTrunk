@@ -5,33 +5,38 @@ from splib3.constants import Key
 from stlib3.scene import Scene
 from math import *
 
-
-
 class SummitxlController(Sofa.Core.Controller):
-
+    """A Simple keyboard controller for the SummitXL
+       Key UP, DOWN, LEFT, RIGHT to move
+    """
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
-
-        self.chassis = kwargs["chassis"]
         self.robot = kwargs["robot"]
-        self.wheels = kwargs["wheels"]
-        self.antenna = kwargs["antenna"]
-        self.camera = kwargs["camera"]
-        self.lazer = kwargs["lazer"]
-        self.ray = 0.0015
-        self.dt = None
-        self.dx = 0
         self.forward_speed = 0
         self.angular_speed = 0
-        self.speed = 1
-        self.w = 0
 
     def move(self, fwd, angle):
-        robot = RigidDof(self.robot.dofs)
-        robot.translate(robot.left * fwd)
-        robot.rotateAround([0, 0, 1], angle)
-        
-    def onAnimateBeginEvent(self, event):        
+        """Move the robot using the forward speed and angular speed)"""
+        robot = RigidDof(self.robot.Chassis.position)
+        robot.translate(robot.forward * fwd)
+        robot.rotateAround([0, 1, 0], angle)
+
+        with self.robot.Chassis.WheelsMotors.angles.position.writeable() as angles:
+            #Make the wheel turn according to forward speed
+            # TODO: All the value are random, need to be really calculated
+            angles += (fwd*10)
+
+            #Make the wheel turn in reverse mode according to turning speed
+            # TODO: the value are random, need to be really calculated
+            angles[0] += (angle*10)
+            angles[2] += (angle*10)
+            angles[1] -= (angle*10)
+            angles[3] -= (angle*10)
+
+    def onAnimateBeginEvent(self, event):
+        """At each time step we move the robot by the given forward_speed and angular_speed)
+           TODO: normalize the speed by the dt so it is a real speed
+        """
         self.move(self.forward_speed, self.angular_speed)
 
     def onKeypressedEvent(self, event):
@@ -41,10 +46,10 @@ class SummitxlController(Sofa.Core.Controller):
         elif key == Key.uparrow:
             self.forward_speed = 0.01
         if key == Key.leftarrow:
-            self.angular_speed = 0.05
+            self.angular_speed = 0.01
         elif key == Key.rightarrow:
-            self.angular_speed = -0.05
-             
+            self.angular_speed = -0.01
+
     def onKeyreleasedEvent(self, event):
         key = event['key']
         if key == Key.downarrow:
