@@ -1,61 +1,109 @@
 import Sofa
 from stlib3.scene import Scene
+from splib3.numerics import Quat
+from math import pi
 from summit_xl_controller import *
 from summit_xl_description import *
 
+def Chassis():
+    """The summitXL chassis description.
+       The chassis is composed of:
+            - a rigid frame for its main position
+            - four wheels motors each with an angles describing the angular position of each wheel.
+    """
+    self = Sofa.Core.Node("Chassis")
+    self.addObject("MechanicalObject", name="position", template="Rigid3d", position=[[0,0,0,0,0,0,1]])
+
+    chain = self.addChild("WheelsMotors")
+    chain.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
+
+    ## The following is needed to describe the articulated chain from the chass's position
+    ## to the wheel's one.
+    chain.addObject('ArticulatedHierarchyContainer')
+    wheelPositions = [[0.229, 0,0.235],
+                      [-0.229, 0,0.235],
+                      [0.229, 0,-0.235],
+                      [-0.229, 0,-0.235]]
+    for i in range(4):
+        ac = chain.addChild("MotorToWheel{0}".format(i))
+        ac.addObject('ArticulationCenter', parentIndex=0, childIndex=1+i, posOnParent=wheelPositions[i])
+        a = ac.addChild("Articulation")
+        a.addObject('Articulation', translation=False, rotation=True, rotationAxis=[1, 0, 0], articulationIndex=i)
+
+    wheels = self.addChild("Wheels")
+    # There is one extra position in this mechanical object because there the articulated chain
+    # Needs a root one (in addition to the four wheels)
+    wheels.addObject("MechanicalObject", name="position", template="Rigid3d",
+                          position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
+                          showObject=True)
+
+    wheels.addObject('ArticulatedSystemMapping',
+                          input1=chain.angles.getLinkPath(),
+                          input2=self.position.getLinkPath(),
+                          output=wheels.position.getLinkPath())
+
+    ## Adds VisualModel for the chassis's body
+    visual = self.addChild("VisualModel")
+    parts = {
+        "Chassis" : ('meshes/summit_xl_chassis.stl', [0.5,0.5,0.5,1.0]) ,
+        "ChassisCover" : ('meshes/summit_xl_covers.stl', [0.1,0.1,0.1,1.0])
+    }
+    for name, (filepath, color) in parts.items():
+        part = visual.addChild(name)
+        part.addObject('MeshSTLLoader', name='loader', filename=filepath, rotation=[-90,-90,0])
+        part.addObject('MeshTopology', src='@loader')
+        part.addObject('OglModel', name="renderer", src='@loader', color=color)
+        part.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=0)
+
+    ## Add VisualModel for the wheels
+    visual = wheels.addChild("VisualModel")
+    visual.addObject('MeshSTLLoader', name='loader', filename='meshes/wheel.stl', rotation=[0,0,90])
+    visual.addObject('MeshTopology', name='geometry', src='@loader')
+    for i in range(4):
+        wheel = visual.addChild("Wheel{0}".format(i))
+        wheel.addObject("OglModel", src=visual.geometry.getLinkPath(), color=[0.2,0.2,0.2,1.0])
+        wheel.addObject("RigidMapping", input=self.Wheels.position.getLinkPath(), index=i+1)
 
 
+    return self
+
+def SummitXL(parentNode, name="SummitXL"):
+    self = parentNode.addChild(name)
+    self.addData(name="velocity", value=[0.0, 0.0, 0.0],
+                 type="Vec3d", help="Summit_xl velocity", group="Summitxl_cmd_vel")
+    self.addChild(Chassis())
+    return self
+
+def Floor(parentNode, color=[0.5, 0.5, 0.5, 1.], rotation=[0, 0, 0], translation=[0, 0, 0], scale=1):
+    floor = parentNode.addChild('Floor')
+    floor.addObject('MeshObjLoader', name='loader', filename='mesh/square1.obj', scale=scale, rotation=rotation, translation=translation)
+    floor.addObject('OglModel', src='@loader', color=color)
+    floor.addObject('MeshTopology', src='@loader', name='topo')
+    floor.addObject('MechanicalObject')
+    floor.addObject('TriangleCollisionModel')
+    floor.addObject('LineCollisionModel')
+    floor.addObject('PointCollisionModel')
+    return floor
 
 def createScene(rootNode):
-    rootNode.addObject('DefaultVisualManagerLoop')
-    rootNode.addObject('DefaultAnimationLoop')
+    scene = Scene(rootNode)
+    scene.addMainHeader()
+    scene.dt = 0.01
+    scene.gravity = [0., -9810., 0.]
 
-    rootNode.dt = 0.01
-    rootNode.gravity = [0., -9810., 0.]
+    SummitXL(scene.Modelling)
+    Floor(scene.Modelling, rotation=[90,0,0], translation=[-2,-0.12,-2], scale=4)
 
-    robot = rootNode.addChild("Summit_xl")
-    robot.addObject('MechanicalObject', name = 'dofs', template ='Rigid3', position=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.]
-                    , showObject=True, showObjectScale=0.09)
-    robot.addData(name="velocity", value=[0.0, 0.0, 0.0], type="Vec3d", help="Summit_xl velocity", group="Summitxl_cmd_vel")
+    #def myAnimation(target, body, factor):
+    #    body.position += [[0.0,0.0,0.001,0.0,0,0,1]]
+    #    target.position = [[factor* 3.14 * 2]]*len(target.position.value)
 
-    chassis = robot.addChild("Chassis")
-    chassis.addObject('MechanicalObject', name='dofs', template='Rigid3',
-                             position=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.],
-                             showObject=True, showObjectScale=0.09)
+    #animate(myAnimation, {
+    #        "body" : scene.Modelling.SummitXL.Chassis.position,
+    #        "target": scene.Modelling.SummitXL.Chassis.WheelsMotors.angles}, duration=2, mode="loop")
 
-    visual1 = None; visual2 = None; visual3 = None
-    visual_model  = [visual1, visual2, visual3]
-    filepath = ['meshes/summit_xl_chassis.stl', 'meshes/summit_xl_covers.stl',
-                'meshes/summit_xl_chassis_simple.stl']
-    color_ = ["0.1 0.1 0.1 1","0.8 0.8 0.8 1","0.5 0.5 0.5 1"]
-    for i in range(0,3):
-        visual_model[i] = chassis.addChild("VisualModel"+str(i))
-        visual_model[i].addObject('MeshSTLLoader', name='loader'+str(i), filename=filepath[i])
-        visual_model[i].addObject('MeshTopology', src='@loader'+str(i))
-        visual_model[i].addObject('OglModel', name="renderer",
-                               src='@loader'+str(i),color=color_[i])
-        visual_model[i].addObject('RigidMapping',
-                        input=chassis.dofs.getLinkPath(),
-                        output=visual_model[i].renderer.getLinkPath())
+    scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL))
 
-    wheel1 = createWheel(robot, 'front_left_wheel',
-                         front_left_wheel_position, front_left_wheel_orientation)
-
-    wheel2 = createWheel(robot, 'back_left_wheel',
-                         back_left_wheel_position, back_left_wheel_orientation)
-
-    wheel3 = createWheel(robot, 'front_right_wheel',
-                         front_right_wheel_position, front_right_wheel_orientation)
-
-    wheel4 = createWheel(robot, 'back_right_wheel',
-                         back_right_wheel_position, back_right_wheel_orientation)
-
-    camera = create_sensor(robot, "front_rgbd_camera_offset", camera_orientation)
-    antenna = create_sensor(robot, "imu_offset")
-    lazer = create_sensor(robot, "hokuyo_ust_10lx")
-    floor = Floor(rootNode)
-
-    robot.addObject(SummitxlController(rootNode, robot=robot, camera=camera, lazer = lazer,
-                                       antenna=antenna, chassis=chassis, wheels = [wheel1, wheel2, wheel3, wheel4]))
+    scene.Simulation.addChild(scene.Modelling)
 
     return rootNode

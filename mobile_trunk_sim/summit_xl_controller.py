@@ -5,67 +5,58 @@ from splib3.constants import Key
 from stlib3.scene import Scene
 from math import *
 
-
-
 class SummitxlController(Sofa.Core.Controller):
-
+    """A Simple keyboard controller for the SummitXL
+       Key UP, DOWN, LEFT, RIGHT to move
+    """
     def __init__(self, *args, **kwargs):
-
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
-
-        self.chassis = kwargs["chassis"]
         self.robot = kwargs["robot"]
-        self.wheels = kwargs["wheels"]
-        self.antenna = kwargs["antenna"]
-        self.camera = kwargs["camera"]
-        self.lazer = kwargs["lazer"]
-        self.ray = 0.0015
-        self.dt = None
-        self.dx = 0
-        self.speed = 1
-        self.w = 0
+        self.forward_speed = 0
+        self.angular_speed = 0
+
+    def move(self, fwd, angle):
+        """Move the robot using the forward speed and angular speed)"""
+        robot = RigidDof(self.robot.Chassis.position)
+        robot.translate(robot.forward * fwd)
+        robot.rotateAround([0, 1, 0], angle)
+
+        with self.robot.Chassis.WheelsMotors.angles.position.writeable() as angles:
+            #Make the wheel turn according to forward speed
+            # TODO: All the value are random, need to be really calculated
+            angles += (fwd*10)
+
+            #Make the wheel turn in reverse mode according to turning speed
+            # TODO: the value are random, need to be really calculated
+            angles[0] += (angle*10)
+            angles[2] += (angle*10)
+            angles[1] -= (angle*10)
+            angles[3] -= (angle*10)
 
     def onAnimateBeginEvent(self, event):
-        self.dt = event['dt']
-        self.dx = self.robot.velocity[0] * self.dt
-        self.w = self.speed/self.ray
+        """At each time step we move the robot by the given forward_speed and angular_speed)
+           TODO: normalize the speed by the dt so it is a real speed
+        """
+        self.move(self.forward_speed, self.angular_speed)
 
     def onKeypressedEvent(self, event):
         key = event['key']
+        if key == Key.downarrow:
+            self.forward_speed = -0.01
+        elif key == Key.uparrow:
+            self.forward_speed = 0.01
         if key == Key.leftarrow:
-            self.dx-=0.005
-            self.robot.dofs.position[0][0]+= self.dx
-            self.chassis.dofs.position = self.robot.dofs.position
-            self.camera.dofs.position[0][0] += self.dx
-            self.lazer.dofs.position[0][0] += self.dx
-            self.antenna.dofs.position[0][0] += self.dx
-            for i in range(0,4):
-                wheel_rigid = RigidDof(self.wheels[i].dofs)
-                wheel_rigid.translate([self.dx ,0.0, 0.0])
-                wheel_rigid.rotateAround([0, 1, 0],-self.w)
-
+            self.angular_speed = 0.01
         elif key == Key.rightarrow:
-            self.dx+=0.005
-            self.robot.dofs.position[0][0]+= self.dx
-            self.chassis.dofs.position = self.robot.dofs.position
-            self.camera.dofs.position[0][0] += self.dx
-            self.antenna.dofs.position[0][0] += self.dx
-            self.lazer.dofs.position[0][0] += self.dx
-            for i in range(0,4):
-                wheel_rigid = RigidDof(self.wheels[i].dofs)
-                wheel_rigid.translate([self.dx, 0.0, 0.0])
-                wheel_rigid.rotateAround([0, 1, 0],self.w)
+            self.angular_speed = -0.01
 
-        #elif key == Key.uparrow:
-            #chassis_rigid = RigidDof(self.chassis.dofs)
-            #chassis_rigid.rotateAround([0, 0, 1],self.rotation_angle)
-            #for i in range(0,4):
-                #wheel_rigid = RigidDof(self.wheels[i].dofs)
-                #wheel_rigid.rotateAround([0, 0, 1],self.rotation_angle)
-
-        #elif key == Key.downarrow:
-            #chassis_rigid = RigidDof(self.chassis.dofs)
-            #chassis_rigid.rotateAround([0, 0, 1],-self.rotation_angle)
-            #for i in range(0,4):
-                #wheel_rigid = RigidDof(self.wheels[i].dofs)
-                #wheel_rigid.rotateAround([0, 0, 1],-self.rotation_angle)
+    def onKeyreleasedEvent(self, event):
+        key = event['key']
+        if key == Key.downarrow:
+            self.forward_speed = 0
+        elif key == Key.uparrow:
+            self.forward_speed = 0
+        if key == Key.leftarrow:
+            self.angular_speed = 0
+        elif key == Key.rightarrow:
+            self.angular_speed = 0
