@@ -111,8 +111,11 @@ def Chassis():
 
 def SummitXL(parentNode, name="SummitXL"):
     self = parentNode.addChild(name)
-    self.addData(name="velocity", value=[0.0, 0.0, 0.0],
+    self.addData(name="linear_vel", value=[0.0, 0.0, 0.0],
                  type="Vec3d", help="Summit_xl velocity", group="Summitxl_cmd_vel")
+
+    self.addData(name="angular_vel", value=[0.0, 0.0, 0.0, 0.],
+                 type="Vec4d", help="Summit_xl velocity", group="Summitxl_cmd_vel")
     self.addChild(Chassis())
     return self
 

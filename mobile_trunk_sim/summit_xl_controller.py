@@ -12,7 +12,6 @@ class SummitxlController(Sofa.Core.Controller):
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.robot = kwargs["robot"]
-        self.forward_speed = 0
         self.angular_speed = 0
 
     def move(self, fwd, angle):
@@ -20,8 +19,7 @@ class SummitxlController(Sofa.Core.Controller):
         robot = RigidDof(self.robot.Chassis.position)
         robot.translate(robot.forward * fwd)
         robot.rotateAround([0, 1, 0], angle)
-
-        with self.robot.Chassis.WheelsMotors.angles.position.writeable() as angles:
+        with self.robot.angular_vel.writeable() as angles:
             #Make the wheel turn according to forward speed
             # TODO: All the value are random, need to be really calculated
             angles += (fwd*10)
@@ -37,14 +35,16 @@ class SummitxlController(Sofa.Core.Controller):
         """At each time step we move the robot by the given forward_speed and angular_speed)
            TODO: normalize the speed by the dt so it is a real speed
         """
-        self.move(self.forward_speed, self.angular_speed)
+        self.move(self.robot.linear_vel[0] , self.angular_speed)
+
+
 
     def onKeypressedEvent(self, event):
         key = event['key']
         if key == Key.downarrow:
-            self.forward_speed = -0.01
+            self.robot.linear_vel[0] = -0.01
         elif key == Key.uparrow:
-            self.forward_speed = 0.01
+            self.robot.linear_vel[0] = 0.01
         if key == Key.leftarrow:
             self.angular_speed = 0.01
         elif key == Key.rightarrow:
@@ -53,9 +53,9 @@ class SummitxlController(Sofa.Core.Controller):
     def onKeyreleasedEvent(self, event):
         key = event['key']
         if key == Key.downarrow:
-            self.forward_speed = 0
+            self.robot.linear_vel[0] = 0
         elif key == Key.uparrow:
-            self.forward_speed = 0
+            self.robot.linear_vel[0] = 0
         if key == Key.leftarrow:
             self.angular_speed = 0
         elif key == Key.rightarrow:
