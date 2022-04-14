@@ -45,8 +45,9 @@ def Chassis():
     ## Adds VisualModel for the chassis's body
     visual = self.addChild("VisualModel")
     parts = {
-        "Chassis" : ('meshes/summit_xl_chassis.stl', [0.5,0.5,0.5,1.0]) ,
-        "ChassisCover" : ('meshes/summit_xl_covers.stl', [0.1,0.1,0.1,1.0])
+        "Chassis" : ('meshes/summit_xl_chassis.stl', [0.1,0.1,0.1,1.0]) ,
+        "ChassisCover" : ('meshes/summit_xl_covers.stl', [0.8,0.8,0.8,1.0]),
+        "summit_xl_chassis_simple" : ('meshes/summit_xl_chassis_simple.stl', [0.5,0.5,0.5,1.0])
     }
     for name, (filepath, color) in parts.items():
         part = visual.addChild(name)
