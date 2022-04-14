@@ -15,6 +15,9 @@ class SummitxlController(Sofa.Core.Controller):
         self.chassis = kwargs["chassis"]
         self.robot = kwargs["robot"]
         self.wheels = kwargs["wheels"]
+        self.antenna = kwargs["antenna"]
+        self.camera = kwargs["camera"]
+        self.lazer = kwargs["lazer"]
         self.ray = 0.0015
         self.dt = None
         self.dx = 0
@@ -52,15 +55,3 @@ class SummitxlController(Sofa.Core.Controller):
             self.angular_speed = 0
         elif key == Key.rightarrow:
             self.angular_speed = 0
-        
-            
-            #for i in range(0,4):
-            #    wheel_rigid = RigidDof(self.wheels[i].dofs)
-            #    wheel_rigid.rotateAround([0, 0, 1], self.rotation_angle)
-
-        #elif key == Key.downarrow:
-            #chassis_rigid = RigidDof(self.chassis.dofs)
-            #chassis_rigid.rotateAround([0, 0, 1],-self.rotation_angle)
-            #for i in range(0,4):
-                #wheel_rigid = RigidDof(self.wheels[i].dofs)
-                #wheel_rigid.rotateAround([0, 0, 1],-self.rotation_angle)
