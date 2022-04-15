@@ -28,13 +28,12 @@ class SummitxlController(Sofa.Core.Controller):
             #Make the wheel turn according to forward speed
             # TODO: All the value are random, need to be really calculated
             angles += (fwd/self.wheel_ray)
-            print(angles)
             #Make the wheel turn in reverse mode according to turning speed
             # TODO: the value are random, need to be really calculated
-            angles[0] += (angle*10)
-            angles[2] += (angle*10)
-            angles[1] -= (angle*10)
-            angles[3] -= (angle*10)
+            angles[0] += (angle)
+            angles[2] += (angle)
+            angles[1] -= (angle)
+            angles[3] -= (angle)
 
     def onAnimateBeginEvent(self, event):
         """At each time step we move the robot by the given forward_speed and angular_speed)

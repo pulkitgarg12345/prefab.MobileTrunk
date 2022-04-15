@@ -1,47 +1,58 @@
 # coding: utf8
 #!/usr/bin/env python3
-
 import Sofa
-from splib3.numerics import RigidDof
+from splib3.numerics import RigidDof, Quat
+from splib3.animation import animate
+from splib3.constants import Key
+from stlib3.scene import Scene
 from math import *
 
-global ray , speed
-speed = 1
-ray = 0.0015 #rayon de la roue
-dx = 2*ray*pi # deplacement pour un tour de roue
-w = speed/ray #rotation des roues
 
 def recv(data, datafield):
     t = data.tolist()
     datafield[0].value = [t[0], t[1], t[2]]
-    datafield[1].value = [t[0], t[1], t[2]]
+    datafield[1].value = [t[3], t[4], t[5]]
 
-
-class SummitxlrosController(Sofa.Core.Controller):
+class SummitxlController(Sofa.Core.Controller):
+    """A Simple keyboard controller for the SummitXL
+       Key UP, DOWN, LEFT, RIGHT to move
+    """
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
-        self.chassis = kwargs["chassis"]
         self.robot = kwargs["robot"]
-        self.wheels = kwargs["wheels"]
-        self.antenna = kwargs["antenna"]
-        self.camera = kwargs["camera"]
-        self.lazer = kwargs["lazer"]
-        self.ray = 0.0015
-        self.dt = None
-        self.dx = 0
-        self.speed = 1
-        self.w = 0
+        self.max_angular_vel = 3
+        self.robot.linear_vel[0] = 0.1
+        self.robot.angular_vel[2] = 0
+        self.fwd = 0
+        self.dt = 0
+        self.wheel_ray = 0.0015
+
+    def move(self, fwd, angle):
+        """Move the robot using the forward speed and angular speed)"""
+        print()
+        robot = RigidDof(self.robot.Chassis.position)
+        robot.translate(robot.forward * fwd)
+        robot.rotateAround([0, 1, 0], angle)
+
+        with self.robot.Chassis.WheelsMotors.angles.position.writeable() as angles:
+            #Make the wheel turn according to forward speed
+            # TODO: All the value are random, need to be really calculated
+            angles += (fwd/self.wheel_ray)
+
+            #Make the wheel turn in reverse mode according to turning speed
+            # TODO: the value are random, need to be really calculated
+            angles[0] += (angle)
+            angles[2] += (angle)
+            angles[1] -= (angle)
+            angles[3] -= (angle)
 
     def onAnimateBeginEvent(self, event):
+        """At each time step we move the robot by the given forward_speed and angular_speed)
+           TODO: normalize the speed by the dt so it is a real speed
+        """
         self.dt = event['dt']
-        self.dx = self.robot.linear_vel[0] * self.dt
-        self.robot.dofs.position[0][0]+= self.dx
-        self.camera.dofs.position[0][0] += self.dx
-        self.antenna.dofs.position[0][0] += self.dx
-        self.lazer.dofs.position[0][0] += self.dx
-        self.w = self.speed/self.ray
-        self.chassis.dofs.position = self.robot.dofs.position
-        for i in range(0,4):
-            wheel_rigid = RigidDof(self.wheels[i].dofs)
-            wheel_rigid.translate([self.dx , 0.0, 0.0])
-            wheel_rigid.rotateAround([0, 1, 0], self.w)
+        self.fwd = self.robot.linear_vel[0]*self.dt
+        self.robot.angular_vel[2] = -self.robot.linear_vel[0] * self.dt * self.max_angular_vel
+        self.move(self.fwd , self.robot.angular_vel[2])
+
+
