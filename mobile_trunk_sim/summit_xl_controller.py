@@ -13,11 +13,13 @@ class SummitxlController(Sofa.Core.Controller):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.robot = kwargs["robot"]
         self.max_angular_vel = 3
-        self.robot.linear_vel[0] = 0.1
+        self.robot.linear_vel[0] = 0
         self.robot.angular_vel[2] = 0
         self.fwd = 0
-        self.dt = 0
         self.wheel_ray = 0.0015
+        self.min_velocity_level_ = 0.1
+        self.velocity_level_step_ = 0.1
+        self.max_velocity_level_ = 1
 
     def move(self, fwd, angle):
         """Move the robot using the forward speed and angular speed)"""
@@ -39,6 +41,7 @@ class SummitxlController(Sofa.Core.Controller):
         """At each time step we move the robot by the given forward_speed and angular_speed)
            TODO: normalize the speed by the dt so it is a real speed
         """
+
         self.dt = event['dt']
         self.move(self.fwd , self.robot.angular_vel[2])
 
@@ -46,14 +49,25 @@ class SummitxlController(Sofa.Core.Controller):
 
     def onKeypressedEvent(self, event):
         key = event['key']
-        if key == Key.downarrow:
+        if key == Key.plus:
+            self.robot.linear_vel[0] =  self.robot.linear_vel[0] + self.velocity_level_step_
+            if self.robot.linear_vel[0] > 2:
+                self.robot.linear_vel[0] = 2
+
+        elif key == Key.minus:
+            self.robot.linear_vel[0] = self.robot.linear_vel[0] - self.velocity_level_step_
+            if self.robot.linear_vel[0] <  0.1:
+                self.robot.linear_vel[0] = 0.1
+
+        elif key == Key.downarrow:
             self.fwd = self.robot.linear_vel[0] * self.dt
         elif key == Key.uparrow:
             self.fwd = -self.robot.linear_vel[0] * self.dt
-        if key == Key.leftarrow:
-            self.robot.angular_vel[2] = self.robot.linear_vel[0] * self.dt * self.max_angular_vel
+        elif key == Key.leftarrow:
+            self.robot.angular_vel[2] = -self.robot.linear_vel[0] * self.dt
         elif key == Key.rightarrow:
-            self.robot.angular_vel[2] = -self.robot.linear_vel[0] * self.dt * self.max_angular_vel
+            self.robot.angular_vel[2] = self.robot.linear_vel[0] * self.dt
+
 
     def onKeyreleasedEvent(self, event):
         key = event['key']

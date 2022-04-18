@@ -134,7 +134,7 @@ def Floor(parentNode, color=[0.5, 0.5, 0.5, 1.], rotation=[0, 0, 0], translation
 def createScene(rootNode):
     scene = Scene(rootNode)
     scene.addMainHeader()
-    scene.dt = 0.01
+    scene.dt = 0.001
     scene.gravity = [0., -9810., 0.]
 
     SummitXL(scene.Modelling)
