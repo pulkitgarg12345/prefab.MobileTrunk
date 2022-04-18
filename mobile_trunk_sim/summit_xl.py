@@ -25,7 +25,7 @@ def Chassis():
     sensor.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
 
     ## The following is needed to describe the articulated chain from the chass's position
-    ## to the wheel's one.
+    ## to the wheel's and the sensor's one .
     chain.addObject('ArticulatedHierarchyContainer')
     wheelPositions = [[0.229, 0,0.235],
                       [-0.229, 0,0.235],
@@ -83,8 +83,6 @@ def Chassis():
         part.addObject('MeshTopology', src='@loader')
         part.addObject('OglModel', name="renderer", src='@loader', color=color)
         part.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=0)
-        part.addObject('RigidMapping', input=self.Sensors.position.getLinkPath(), index=0)
-
 
     ## Add VisualModel for the wheels
     visual = wheels.addChild("VisualModel")
@@ -95,18 +93,21 @@ def Chassis():
         wheel.addObject("OglModel", src=visual.geometry.getLinkPath(), color=[0.2,0.2,0.2,1.0])
         wheel.addObject("RigidMapping", input=self.Wheels.position.getLinkPath(), index=i+1)
 
+
     ## Add VisualModel for the sensors
-
-    sensorfilepath = ['meshes/hokuyo_urg_04lx.stl', 'meshes/antenna_3GO16.stl', 'meshes/axis_p5514.stl']
     visual = sensors.addChild("VisualModel")
+    sensorfilepath = {
+        "lazer" : ('meshes/hokuyo_urg_04lx.stl', 1) ,
+        "antenna" : ('meshes/antenna_3GO16.stl', 2),
+        "imu" : ('meshes/axis_p5514.stl',3)
+    }
 
-    for i in range(3):
-        visual.addObject('MeshSTLLoader', name='loader'+str(i), filename=sensorfilepath[i], rotation=[0.,90. ,90.])
-        visual.addObject('MeshTopology', name='geometry', src='@loader'+str(i))
-        sensorName[i] = visual.addChild(sensorName[i].upper())
-        sensorName[i].addObject("OglModel", src=visual.geometry.getLinkPath(), color=[0.2,0.2,0.2,1.0])
-        sensorName[i].addObject("RigidMapping", input=self.Sensors.position.getLinkPath(), index=i+1)
-
+    for name, (filepath, index) in sensorfilepath.items():
+        visual_body = visual.addChild(name)
+        visual_body.addObject('MeshSTLLoader', name=name+'_loader', filename=filepath, rotation=[0,90,90])
+        visual_body.addObject('MeshTopology', src='@'+name+'_loader')
+        visual_body.addObject('OglModel', name=name+"_renderer", src='@'+name+'_loader', color=[0.2,0.2,0.2,1.0])
+        visual_body.addObject('RigidMapping', input=self.Sensors.position.getLinkPath(),index=index)
     return self
 
 def SummitXL(parentNode, name="SummitXL"):
