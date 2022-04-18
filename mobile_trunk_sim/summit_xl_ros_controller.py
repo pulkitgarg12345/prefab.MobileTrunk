@@ -20,8 +20,7 @@ class SummitxlController(Sofa.Core.Controller):
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.robot = kwargs["robot"]
-        self.max_angular_vel = 3
-        self.robot.linear_vel[0] = 0.1
+        self.robot.linear_vel[0] = 0
         self.robot.angular_vel[2] = 0
         self.fwd = 0
         self.dt = 0
@@ -29,7 +28,6 @@ class SummitxlController(Sofa.Core.Controller):
 
     def move(self, fwd, angle):
         """Move the robot using the forward speed and angular speed)"""
-        print()
         robot = RigidDof(self.robot.Chassis.position)
         robot.translate(robot.forward * fwd)
         robot.rotateAround([0, 1, 0], angle)
@@ -51,8 +49,11 @@ class SummitxlController(Sofa.Core.Controller):
            TODO: normalize the speed by the dt so it is a real speed
         """
         self.dt = event['dt']
+        if self.robot.linear_vel[0] <  0.1:
+            self.robot.linear_vel[0] = 0.1
+        if self.robot.linear_vel[0] > 2:
+            self.robot.linear_vel[0] = 2
+
         self.fwd = self.robot.linear_vel[0]*self.dt
-        self.robot.angular_vel[2] = -self.robot.linear_vel[0] * self.dt * self.max_angular_vel
+        self.robot.angular_vel[2] = -self.robot.linear_vel[0] * self.dt
         self.move(self.fwd , self.robot.angular_vel[2])
-
-
