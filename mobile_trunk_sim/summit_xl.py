@@ -31,13 +31,15 @@ def Chassis():
                       [-0.229, 0,0.235],
                       [0.229, 0,-0.235],
                       [-0.229, 0,-0.235]]
-    sensorName=["lazer", "imu", "camera"]
+    sensorName=["lazer", "gps", "camera", "camera_RGBD"]
     sensor.addObject('ArticulatedHierarchyContainer')
-    sensorPositions = [[0., 0.28 ,0.],
-                      [0., 0.27, -0.18],
-                      [0., 0.26, 0.19]]
+    sensorPositions = [[0., 0.28 ,0.],          # 2d lazer
+                       [0,0.275,-0.22],         # gps
+                       [0., 0.26, 0.19],        # front_ptz_camera
+                       [0.012, 0.172, 0.324]    # front_rgbd_camera
+                       ]
 
-    for i in range(3):
+    for i in range(4):
         sc = sensor.addChild(sensorName[i])
         sc.addObject('ArticulationCenter', parentIndex=0, childIndex=1+i, posOnParent=sensorPositions[i])
         s = sc.addChild("Articulation")
@@ -98,8 +100,9 @@ def Chassis():
     visual = sensors.addChild("VisualModel")
     sensorfilepath = {
         "lazer" : ('meshes/hokuyo_urg_04lx.stl', 1) ,
-        "antenna" : ('meshes/antenna_3GO16.stl', 2),
-        "imu" : ('meshes/axis_p5514.stl',3)
+        "gps" : ('meshes/antenna_3GO16.stl', 2),
+        "camera" : ('meshes/axis_p5514.stl',3),
+        "camera-RGBD" : ('meshes/orbbec_astra_embedded_s.stl', 4)
     }
 
     for name, (filepath, index) in sensorfilepath.items():

@@ -7,9 +7,9 @@ from summit_xl_controller import *
 import sofaros
 from sofaros import *
 from std_msgs.msg import Float32MultiArray
-from summit_xl_ros_controller import *
 from summit_xl import SummitXL, Floor
-
+from summit_xl_teleop_key import *
+from summit_xl_ros_controller import *
 rosNode = sofaros.init("SofaNode")
 
 
