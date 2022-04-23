@@ -8,8 +8,7 @@ import sofaros
 from sofaros import *
 from std_msgs.msg import Float32MultiArray
 from summit_xl import SummitXL, Floor
-from summit_xl_teleop_key import *
-from summit_xl_ros_controller import *
+from summitxl_roscontroller import *
 rosNode = sofaros.init("SofaNode")
 
 
@@ -22,7 +21,7 @@ def createScene(rootNode):
     SummitXL(scene.Modelling)
     Floor(scene.Modelling, rotation=[90,0,0], translation=[-2,-0.12,-2], scale=4)
     robot=scene.Modelling.SummitXL
-    scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL))
+    scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=scene.Modelling.SummitXL))
 
 
     scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl_control/cmd_vel",
