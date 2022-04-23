@@ -13,7 +13,7 @@ def recv(data, datafield):
     datafield[0].value = [t[0], t[1], t[2]]
     datafield[1].value = [t[3], t[4], t[5]]
 
-class SummitxlController(Sofa.Core.Controller):
+class SummitxlROSController(Sofa.Core.Controller):
     """A Simple keyboard controller for the SummitXL
        Key UP, DOWN, LEFT, RIGHT to move
     """
@@ -22,7 +22,6 @@ class SummitxlController(Sofa.Core.Controller):
         self.robot = kwargs["robot"]
         self.robot.linear_vel[0] = 0
         self.robot.angular_vel[2] = 0
-        self.fwd = 0
         self.dt = 0
         self.wheel_ray = 0.0015
 
@@ -49,11 +48,6 @@ class SummitxlController(Sofa.Core.Controller):
            TODO: normalize the speed by the dt so it is a real speed
         """
         self.dt = event['dt']
-        if self.robot.linear_vel[0] <  0.1:
-            self.robot.linear_vel[0] = 0.1
-        if self.robot.linear_vel[0] > 2:
-            self.robot.linear_vel[0] = 2
-
-        self.fwd = self.robot.linear_vel[0]*self.dt
-        self.robot.angular_vel[2] = -self.robot.linear_vel[0] * self.dt
-        self.move(self.fwd , self.robot.angular_vel[2])
+        self.robot.linear_vel[0] = self.robot.linear_vel[0]*self.dt
+        self.robot.angular_vel[2] = self.robot.angular_vel[2] * self.dt
+        self.move(self.robot.linear_vel[0], self.robot.angular_vel[2])
