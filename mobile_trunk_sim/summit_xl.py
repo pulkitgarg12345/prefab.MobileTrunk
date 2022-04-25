@@ -3,7 +3,7 @@ import Sofa
 from stlib3.scene import Scene
 from splib3.numerics import Quat
 from math import pi
-from summit_xl_controller import *
+from summitxl_controller import *
 
 def Chassis():
     """The summitXL chassis description.

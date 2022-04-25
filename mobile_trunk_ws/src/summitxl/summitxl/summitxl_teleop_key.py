@@ -72,8 +72,6 @@ def main():
    speed = 0.1
    turn = 0.1
    x = 0.0
-   y = 0.0
-   z = 0.0
    th = 0.0
    status = 0.0
    linear_vel = [0., 0., 0.]
@@ -86,8 +84,6 @@ def main():
             key = getKey(settings)
             if key in moveBindings.keys():
                x = moveBindings[key][0]
-               y = moveBindings[key][1]
-               z = moveBindings[key][2]
                th = moveBindings[key][3]
             elif key in speedBindings.keys():
                speed = speed * speedBindings[key][0]
@@ -99,15 +95,11 @@ def main():
                status = (status + 1) % 15
             else:
                x = 0.0
-               y = 0.0
-               z = 0.0
                th = 0.0
                if (key == '\x03'):
                   break
 
             linear_vel[0] = x * speed
-            #linear_vel[1] = y * speed
-            #linear_vel[2] = z * speed
             angular_vel[2] = th * turn
             twist = Float32MultiArray(layout=std_msgs.msg.MultiArrayLayout(data_offset=0),
                                       data=[linear_vel[0],linear_vel[1],
