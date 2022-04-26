@@ -55,7 +55,7 @@ class SummitxlController(Sofa.Core.Controller):
         self.robot.linear_vel[0] = 0
         self.robot.angular_vel[2] = 0
         self.wheel_ray = 0.0015
-        self.dt = None
+        self.dt = 0
 
         self.status = 0.
         self.speed = 0.1
