@@ -128,7 +128,7 @@ def SummitXL(parentNode, name="SummitXL"):
     self.addData(name="linear_acceleration", value=[0.0, 0.0, 0.0],
                  type="Vec3d", help="Summit_xl imu", group="Summitxl_cmd_vel")
 
-    self.addData(name="timestamp",value=[0, 0], type="vector<int>", help="Summit_xl imu", 
+    self.addData(name="timestamp",value=[0, 0], type="vector<int>", help="Summit_xl imu",
                  group="Summitxl_cmd_vel")
 
     self.addChild(Chassis())

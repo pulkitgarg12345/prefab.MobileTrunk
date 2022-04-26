@@ -38,7 +38,9 @@ def send(data):
     msg.linear_acceleration.x = data[2].value[1]
     msg.linear_acceleration.x = data[2].value[2]
 
-    msg.header.stamp.sec = data[3].value
+    msg.header.stamp.sec =  int(data[3].value[0])
+    msg.header.stamp.nanosec = int(data[3].value[1])
+
     return msg
 
 def recv(data, datafield):
@@ -84,7 +86,6 @@ class SummitxlROSController(Sofa.Core.Controller):
         self.robot.linear_vel[0] = self.robot.linear_vel[0]*dt
         self.robot.angular_vel[2] = self.robot.angular_vel[2] * dt
         self.robot.linear_acceleration[0] = self.robot.linear_vel[0]/dt
-        for i in range(0, 4):
+        for i in range(0, 3):
             self.robot.orientation[i] = self.robot.Chassis.position.position.value[0][i+3]
-        print(self.robot.orientation.value)
         self.move(self.robot.linear_vel[0], self.robot.angular_vel[2])

@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'summitxl_teleop_key = summitxl.summitxl_teleop_key:main'
+            'summitxl_teleop_key = summitxl.summitxl_teleop_key:main',
+            'summitxl_node = summitxl.summitxl_node:main'
         ],
     },
 )
