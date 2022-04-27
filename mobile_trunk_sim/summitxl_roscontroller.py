@@ -4,11 +4,12 @@ import Sofa
 from splib3.numerics import RigidDof, Quat
 import std_msgs
 from sensor_msgs.msg import Imu
+from geometry_msgs.msg import Twist
 
 
 from math import *
 
-
+receive_data = Twist()
 def send(data):
     """This is a message to hold data from an IMU (Inertial Measurement Unit)
 
@@ -40,17 +41,22 @@ def send(data):
 
     msg.header.stamp.sec =  int(data[3].value[0])
     msg.header.stamp.nanosec = int(data[3].value[1])
+    #print("orientation = ",msg.orientation.x, msg.orientation.y, msg.orientation.z)
+    #print(" msg.angular_velocity = ", msg.angular_velocity.x,  msg.angular_velocity.y,  msg.angular_velocity.z)
+    #print(" msg.linear_acceleration = ", msg.linear_acceleration.x,  msg.linear_acceleration.y,  msg.linear_acceleration.z)
+    #print(" msg.header.stamp = ", msg.header.stamp.sec, msg.header.stamp.nanosec)
+
 
     return msg
 
 def vel_recv(data, datafield):
-    t = data.tolist()
-    datafield[0].value = [t[0], t[1], t[2]]
-    datafield[1].value = [t[3], t[4], t[5]]
+    datafield[0].value = [data.angular.z ,data.angular.y, data.angular.x]
+    datafield[1].value = [data.linear.z ,data.linear.y, data.linear.x]
 
 def time_recv(data, datafield):
     t = data.tolist()
     datafield.value = [t[0], t[1]]
+
 
 class SummitxlROSController(Sofa.Core.Controller):
     """A Simple keyboard controller for the SummitXL

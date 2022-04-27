@@ -2,8 +2,7 @@
 #!/usr/bin/env python3
 import sys
 import rclpy
-import std_msgs
-from std_msgs.msg import Float32MultiArray
+from geometry_msgs.msg import Twist
 import termios
 import tty
 
@@ -67,15 +66,13 @@ def main():
    rclpy.init()
 
    node = rclpy.create_node('teleop_twist_keyboard')
-   pub = node.create_publisher(Float32MultiArray, '/summit_xl_control/cmd_vel', 10)
+   pub = node.create_publisher(Twist, '/summit_xl/robotnik_base_control/cmd_vel', 10)
 
    speed = 0.1
    turn = 0.1
    x = 0.0
    th = 0.0
-   status = 0.0
-   linear_vel = [0., 0., 0.]
-   angular_vel = [0., 0., 0.]
+   status = 0.
 
    try:
       print(msg)
@@ -98,26 +95,25 @@ def main():
                th = 0.0
                if (key == '\x03'):
                   break
-
-            linear_vel[0] = x * speed
-            angular_vel[2] = th * turn
-            twist = Float32MultiArray(layout=std_msgs.msg.MultiArrayLayout(data_offset=0),
-                                      data=[linear_vel[0],linear_vel[1],
-                                       linear_vel[2],angular_vel[0],
-                                       angular_vel[1],angular_vel[2]])
+            twist = Twist()
+            twist.linear.x = x * speed
+            twist.linear.y = 0.
+            twist.linear.z = 0.
+            twist.angular.x = 0.
+            twist.angular.y = 0.
+            twist.angular.z = th * turn
             pub.publish(twist)
 
    except Exception as e:
       print(e)
 
    finally:
-      linear_vel = [0., 0., 0.]
-      angular_vel = [0., 0., 0.]
-
-      twist = Float32MultiArray(layout=std_msgs.msg.MultiArrayLayout(data_offset=0),
-                                 data=[linear_vel[0],linear_vel[1],
-                                 linear_vel[2],angular_vel[0],
-                                 angular_vel[1],angular_vel[2]])
+      twist.linear.x = 0.
+      twist.linear.y = 0.
+      twist.linear.z = 0.
+      twist.angular.x = 0.
+      twist.angular.y = 0.
+      twist.angular.z = 0.
       pub.publish(twist)
 
       restoreTerminalSettings(settings)
