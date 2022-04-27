@@ -35,18 +35,22 @@ def send(data):
     msg.angular_velocity.z = data[1].value[2]
 
     msg.linear_acceleration.x = data[2].value[0]
-    msg.linear_acceleration.x = data[2].value[1]
-    msg.linear_acceleration.x = data[2].value[2]
+    msg.linear_acceleration.y = data[2].value[1]
+    msg.linear_acceleration.z= data[2].value[2]
 
     msg.header.stamp.sec =  int(data[3].value[0])
     msg.header.stamp.nanosec = int(data[3].value[1])
 
     return msg
 
-def recv(data, datafield):
+def vel_recv(data, datafield):
     t = data.tolist()
     datafield[0].value = [t[0], t[1], t[2]]
     datafield[1].value = [t[3], t[4], t[5]]
+
+def time_recv(data, datafield):
+    t = data.tolist()
+    datafield.value = [t[0], t[1]]
 
 class SummitxlROSController(Sofa.Core.Controller):
     """A Simple keyboard controller for the SummitXL
@@ -55,8 +59,9 @@ class SummitxlROSController(Sofa.Core.Controller):
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.robot = kwargs["robot"]
-        self.robot.linear_vel[0] = 0
-        self.robot.angular_vel[2] = 0
+        self.robot.linear_vel[0] = 0.
+        self.robot.angular_vel[2] = 0.
+        self.robot.linear_acceleration[0] = 0.
         self.robot.linear_acceleration[1] = 0.
         self.robot.linear_acceleration[2] = 0.
         self.wheel_ray = 0.0015
@@ -85,7 +90,7 @@ class SummitxlROSController(Sofa.Core.Controller):
         dt = event['dt']
         self.robot.linear_vel[0] = self.robot.linear_vel[0]*dt
         self.robot.angular_vel[2] = self.robot.angular_vel[2] * dt
-        self.robot.linear_acceleration[0] = self.robot.linear_vel[0]/dt
-        for i in range(0, 3):
+        self.robot.linear_acceleration[0] = self.robot.linear_vel[0]/(dt)
+        for i in range(0, 4):
             self.robot.orientation[i] = self.robot.Chassis.position.position.value[0][i+3]
         self.move(self.robot.linear_vel[0], self.robot.angular_vel[2])
