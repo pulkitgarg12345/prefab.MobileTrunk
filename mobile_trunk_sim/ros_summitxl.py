@@ -6,6 +6,7 @@ from math import pi
 import sofaros
 from sofaros import *
 from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Int32MultiArray
 from sensor_msgs.msg import Imu
 from summit_xl import SummitXL, Floor
 from summitxl_roscontroller import *
@@ -26,7 +27,11 @@ def createScene(rootNode):
 
     scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl_control/cmd_vel",
                                            [robot.findData('linear_vel'),robot.findData('angular_vel')],
-                                           Float32MultiArray, recv))
+                                           Float32MultiArray, vel_recv))
+
+    scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/clock",robot.findData('timestamp'),
+                                           Int32MultiArray, time_recv))
+
     scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/summit_xl/imu/data",[robot.findData('orientation'),
                                                         robot.findData('angular_vel'), robot.findData('linear_acceleration'),
                                                         robot.findData('timestamp')],Imu, send))
