@@ -115,10 +115,17 @@ def Chassis():
 
 def SummitXL(parentNode, name="SummitXL"):
     self = parentNode.addChild(name)
-    self.addData(name="linear_vel", value=[0.0, 0.0, 0.0],
+    self.addData(name="reelrobot_linear_vel", value=[0.0, 0.0, 0.0],
                  type="Vec3d", help="Summit_xl velocity", group="Summitxl_cmd_vel")
 
-    self.addData(name="angular_vel", value=[0.0, 0.0, 0.0],
+    self.addData(name="simrobot_linear_vel", value=[0.0, 0.0, 0.0],
+                 type="Vec3d", help="Summit_xl velocity", group="Summitxl_cmd_vel")
+
+    self.addData(name="reelrobot_angular_vel", value=[0.0, 0.0, 0.0],
+                 type="Vec3d", help="Summit_xl velocity", group="Summitxl_cmd_vel")
+
+
+    self.addData(name="simrobot_angular_vel", value=[0.0, 0.0, 0.0],
                  type="Vec3d", help="Summit_xl velocity", group="Summitxl_cmd_vel")
 
     self.addData(name="orientation", value=[0., 0., 0., 0.],
@@ -130,6 +137,9 @@ def SummitXL(parentNode, name="SummitXL"):
 
     self.addData(name="timestamp",value=[0, 0], type="vector<int>", help="Summit_xl imu",
                  group="Summitxl_cmd_vel")
+
+    self.addData(name="position",  value=[0.0, 0.0, 0.0],type="Vec3d",
+                 help="Summit_xl odom", group="Summitxl_cmd_vel")
 
     self.addChild(Chassis())
     return self
