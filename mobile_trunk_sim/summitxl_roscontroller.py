@@ -53,17 +53,23 @@ def vel_send(data):
     msg.angular.x = data[1].value[0]
     msg.angular.y = data[1].value[1]
     msg.angular.z = data[1].value[2]
-    print("-------->", msg, "\n")
     return msg
 
 def vel_recv(data, datafield):
     datafield[1].value = [data.angular.x ,data.angular.y, data.angular.z]
     datafield[0].value = [data.linear.x ,data.linear.y, data.linear.z]
-    print(" //////////////",datafield)
 
 def time_recv(data, datafield):
     t = data.tolist()
     datafield.value = [t[0], t[1]]
+
+def odom_recv(data, datafield):
+    datafield[0].value = [data.header.stamp.sec ,data.header.stamp.nanosec]
+    datafield[1].value = [data.pose.pose.position.x,data.pose.pose.position.z,
+                          data.pose.pose.position.y]
+    datafield[2].value = [data.pose.pose.orientation.x, data.pose.pose.orientation.w,
+                          data.pose.pose.orientation.y, data.pose.pose.orientation.z]
+
 
 def odom_send(data):
     msg = Odometry()
@@ -77,20 +83,21 @@ def odom_send(data):
 
     #odom orientation x y z w
     msg.pose.pose.orientation.x = data[2].value[0]
-    msg.pose.pose.orientation.y = data[2].value[1]
-    msg.pose.pose.orientation.z = data[2].value[2]
-    msg.pose.pose.orientation.w = data[2].value[3]
+    msg.pose.pose.orientation.w = data[2].value[1]
+    msg.pose.pose.orientation.y = data[2].value[2]
+    msg.pose.pose.orientation.z = data[2].value[3]
 
     #odom linear & angular vel
     #linear vel
     msg.twist.twist.linear.x = data[3].value[0]
-    msg.twist.twist.linear.y = data[3].value[1]
-    msg.twist.twist.linear.z = data[3].value[2]
+    msg.twist.twist.linear.z = data[3].value[1]
+    msg.twist.twist.linear.y = data[3].value[2]
 
     #angular vel
-    msg.twist.twist.angular.x = data[4].value[0]
-    msg.twist.twist.angular.y = data[4].value[1]
+    msg.twist.twist.angular.x = data[4].value[1]
+    msg.twist.twist.angular.y = data[4].value[0]
     msg.twist.twist.angular.z = data[4].value[2]
+    print(data[4].value, " ---------->", data[3].value)
     return msg
 
 
@@ -125,17 +132,33 @@ class SummitxlROSController(Sofa.Core.Controller):
            TODO: normalize the speed by the dt so it is a real speed
         """
         dt = event['dt']
-        self.robot.simrobot_linear_vel[0] = self.robot.reelrobot_linear_vel[0]  * 0.001# converson en  cm/s
-        self.robot.simrobot_angular_vel[2] = self.robot.reelrobot_angular_vel[2] * 0.001
-        #print("--->", self.robot.simrobot_linear_vel[0], self.robot.simrobot_angular_vel[2] )
-        #print("----> vel linear = ", self.robot.linear_vel[0])
-        #print("----> vel angular = ", self.robot.angular_vel[2])
+        self.robot.simrobot_linear_vel[0] = self.robot.reelrobot_linear_vel[0]  * dt
+        self.robot.simrobot_angular_vel[2] = self.robot.reelrobot_angular_vel[2] * dt
 
         self.robot.linear_acceleration[0] = self.robot.simrobot_linear_vel[0]/(dt)
-        for i in range(0, 4):
-            self.robot.orientation[i] = self.robot.Chassis.position.position.value[0][i+3]
-        for i in range(0, 3):
-            self.robot.position[i] = self.robot.Chassis.position.position.value[0][i]
-        #print("-------->self.robot.position = ",self.robot.position.value, "self.robot.Chassis",self.robot.Chassis.position.position.value[0][:3])
+
+        #initialisation de la position du robot
+        with self.robot.Chassis.position.position.writeable() as summit_pose:
+            #position x, y z
+            summit_pose[0][0] = self.robot.reel_position[0]
+            summit_pose[0][1] = self.robot.reel_position[1]
+            summit_pose[0][2] = self.robot.reel_position[2]
+
+            #orientaion x y z w
+            summit_pose[0][3] = self.robot.reel_orientation[0]
+            summit_pose[0][4] = self.robot.reel_orientation[1]
+            summit_pose[0][5] = self.robot.reel_orientation[2]
+            summit_pose[0][6] = self.robot.reel_orientation[3]
+
+        self.robot.sim_orientation[0] = self.robot.Chassis.position.position.value[0][0+3]
+        self.robot.sim_orientation[1] = -self.robot.Chassis.position.position.value[0][1+3]
+        self.robot.sim_orientation[2] = self.robot.Chassis.position.position.value[0][2+3]
+        self.robot.sim_orientation[3] = self.robot.Chassis.position.position.value[0][3+3]
+
+
+        self.robot.sim_position[0] = self.robot.Chassis.position.position.value[0][0]
+        self.robot.sim_position[1] = self.robot.Chassis.position.position.value[0][1]
+        self.robot.sim_position[2] = self.robot.Chassis.position.position.value[0][2]
+
 
         self.move(self.robot.simrobot_linear_vel[0], self.robot.simrobot_angular_vel[2])
