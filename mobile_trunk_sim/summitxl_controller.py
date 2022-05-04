@@ -52,8 +52,6 @@ class SummitxlController(Sofa.Core.Controller):
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.robot = kwargs["robot"]
-        self.robot.linear_vel[0] = 0
-        self.robot.angular_vel[2] = 0
         self.wheel_ray = 0.0015
         self.dt = 0
 
@@ -64,8 +62,8 @@ class SummitxlController(Sofa.Core.Controller):
         self.y = 0.0
         self.z = 0.0
         self.th = 0.0
-        self.linear_vel = [0., 0., 0.]
-        self.angular_vel = [0., 0., 0.]
+        self.robot.simrobot_angular_vel = [0., 0., 0.]
+        self.robot.simrobot_linear_vel = [0., 0., 0.]
 
     def move(self, fwd, angle):
         """Move the robot using the forward speed and angular speed)"""
@@ -89,8 +87,18 @@ class SummitxlController(Sofa.Core.Controller):
            TODO: normalize the speed by the dt so it is a real speed
         """
         self.dt = event['dt']
-        print("self.robot.linear_vel[0] = ", self.robot.linear_vel[0], "self.robot.angular_vel[2] = ", self.robot.angular_vel[2])
-        self.move(self.robot.linear_vel[0] , self.robot.angular_vel[2])
+        self.move(self.robot.simrobot_linear_vel[0] , self.robot.simrobot_angular_vel[2])
+        print("position x = ",self.robot.Chassis.position.position.value[0][0])
+        print("position y = ",self.robot.Chassis.position.position.value[0][1])
+        print("position z = ",self.robot.Chassis.position.position.value[0][2])
+        print("\n")
+        print("orientation x = ",self.robot.Chassis.position.position.value[0][3])
+        print("orientation y = ",self.robot.Chassis.position.position.value[0][4])
+        print("orientation z = ",self.robot.Chassis.position.position.value[0][5])
+        print("orientation w = ",self.robot.Chassis.position.position.value[0][6])
+
+
+
 
 
 
@@ -111,8 +119,8 @@ class SummitxlController(Sofa.Core.Controller):
         else:
             self.x = 0.0
             self.th = 0.0
-        self.robot.linear_vel[0] =  self.x * self.speed * self.dt
-        self.robot.angular_vel[2] = self.th * self.turn * self.dt
+        self.robot.simrobot_linear_vel[0] =  self.x * self.speed * self.dt
+        self.robot.simrobot_angular_vel[2] = self.th * self.turn * self.dt
 
 
 
@@ -120,5 +128,5 @@ class SummitxlController(Sofa.Core.Controller):
         key = event['key']
         key = key.lower()
         if key in moveBindings.keys() or key in speedBindings.keys():
-            self.robot.linear_vel[0] = 0
-            self.robot.angular_vel[2] = 0
+            self.robot.simrobot_linear_vel[0]= 0
+            self.robot.simrobot_angular_vel[2] = 0

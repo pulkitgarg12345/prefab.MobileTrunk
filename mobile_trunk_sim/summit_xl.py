@@ -16,7 +16,7 @@ def Chassis():
                 *camera
     """
     self = Sofa.Core.Node("Chassis")
-    self.addObject("MechanicalObject", name="position", template="Rigid3d", position=[[-12,9.5,0,0,0,0,1]])
+    self.addObject("MechanicalObject", name="position", template="Rigid3d", position=[[0,0,0,0,0,0,1]])
 
     chain = self.addChild("WheelsMotors")
     chain.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
