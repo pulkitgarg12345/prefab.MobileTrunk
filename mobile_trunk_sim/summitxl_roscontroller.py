@@ -201,11 +201,11 @@ class SummitxlROSController(Sofa.Core.Controller):
         #print(self.robot.reel_position[1],  self.robot.sim_position[1] )
         #print(self.robot.reel_position[2],  self.robot.sim_position[2] )
         dt = event['dt']
-        self.robot.simrobot_linear_x = self.robot.reelrobot_linear_vel[0]  * dt
-        self.robot.simrobot_angular_z = self.robot.reelrobot_angular_vel[2] * dt
+        self.robot.robot_linear_x = self.robot.robot_linear_vel[0]  * dt
+        self.robot.robot_angular_z = self.robot.robot_angular_vel[2] * dt
 
 
-        self.robot.linear_acceleration[0] = self.robot.simrobot_linear_vel[0]/(dt)
+        self.robot.linear_acceleration[0] = self.robot.robot_linear_vel[0]/(dt)
 
 
 
@@ -218,7 +218,7 @@ class SummitxlROSController(Sofa.Core.Controller):
         self.robot.sim_position[1] = self.robot.Chassis.position.position.value[0][1]
         self.robot.sim_position[2] = self.robot.Chassis.position.position.value[0][2]
 
-        self.move(self.robot.simrobot_linear_vel[0], self.robot.simrobot_angular_vel[2])
+        self.move(self.robot.robot_linear_x, self.robot.robot_angular_z)
 
         if self.robot.reel_position[0] != 0:
             self.init_pose()

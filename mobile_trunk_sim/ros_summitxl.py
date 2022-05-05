@@ -28,19 +28,19 @@ def createScene(rootNode):
 
 
     scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/cmd_vel",
-                                           [robot.findData('reelrobot_linear_vel'),robot.findData('reelrobot_angular_vel')],
+                                           [robot.findData('robot_linear_vel'),robot.findData('robot_angular_vel')],
                                            Twist, vel_recv))
 
     scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/clock",robot.findData('timestamp'),
                                            Int32MultiArray, time_recv))
 
     scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/sofa_sim/imu/data",[robot.findData('sim_orientation'),
-                                                        robot.findData('simrobot_angular_vel'), robot.findData('linear_acceleration'),
+                                                        robot.findData('robot_angular_vel'), robot.findData('linear_acceleration'),
                                                         robot.findData('timestamp')],Imu, send))
 
     scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/sofa_sim/odom",[robot.findData('timestamp'),
                                                         robot.findData('sim_position'), robot.findData('sim_orientation'),
-                                                        robot.findData('simrobot_linear_vel'), robot.findData('simrobot_angular_vel')],
+                                                        robot.findData('robot_linear_vel'), robot.findData('robot_angular_vel')],
                                                         Odometry, odom_send))
 
     scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/odom",[robot.findData('timestamp'),
@@ -48,7 +48,7 @@ def createScene(rootNode):
                                                             Odometry, odom_recv))
 
     scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/sofa_sim/cmd_vel",
-                                           [robot.findData('simrobot_linear_vel'),robot.findData('simrobot_angular_vel')],
+                                           [robot.findData('robot_linear_vel'),robot.findData('robot_angular_vel')],
                                            Twist, vel_send))
     scene.Simulation.addChild(scene.Modelling)
 
