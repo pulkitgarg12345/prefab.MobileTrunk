@@ -1,9 +1,9 @@
 # coding: utf8
 #!/usr/bin/env python3
 import Sofa
-from splib3.numerics import RigidDof, Quat
+from splib3.numerics import RigidDof
 from sensor_msgs.msg import Imu
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist,Point, Pose, Quaternion, Twist, Vector3
 from nav_msgs.msg import Odometry
 
 
@@ -115,16 +115,16 @@ def odom_send(data):
     # of the robot in the simulation
     # corresponds to the  x position of the real robot
     #same for z orientation
-    msg.pose.pose.position.x = -data[1].value[2]
+    msg.pose.pose.position.x = data[1].value[2]
     msg.pose.pose.position.z = data[1].value[1]
     msg.pose.pose.position.y = data[1].value[0]
 
     #odom orientation x y z w
     msg.pose.pose.orientation.x = data[2].value[0]
-    msg.pose.pose.orientation.z = -data[2].value[1]
+    msg.pose.pose.orientation.z = data[2].value[1]
     msg.pose.pose.orientation.y = data[2].value[2]
     msg.pose.pose.orientation.w = data[2].value[3]
-
+    #print("orientation : ",data[2].value)
     #print(msg.pose.pose.position, "------>", msg.pose.pose.orientation)
     #odom linear & angular vel
     #linear vel
@@ -167,43 +167,58 @@ class SummitxlROSController(Sofa.Core.Controller):
             angles[3] -= (angle)
 
     def init_pose(self):
-        with self.robot.Chassis.position.position.writeable() as summit_pose:
-            #position x, y z
-            summit_pose[0][0] = self.robot.reel_position[0]
-            summit_pose[0][1] = self.robot.reel_position[1]
-            summit_pose[0][2] = self.robot.reel_position[2]
 
-            #orientaion x y z w
-            summit_pose[0][3] = self.robot.reel_orientation[0]
-            summit_pose[0][4] = self.robot.reel_orientation[1]
-            summit_pose[0][5] = self.robot.reel_orientation[2]
-            summit_pose[0][6] = self.robot.reel_orientation[3]
+        if self.flag:
+            print("init")
+            with self.robot.Chassis.position.position.writeable() as summit_pose:
+                #position x, y z
+                print("pos x  = ",self.robot.reel_position[0])
+                print("pos y  = ",self.robot.reel_position[1])
+                print("pos z  = ",self.robot.reel_position[2])
+
+                print("\n")
+                print("pos x  = ",summit_pose[0][0])
+                print("pos y  = ",summit_pose[0][1])
+                print("pos z  = ",summit_pose[0][2])
+
+                summit_pose[0][0] = self.robot.reel_position[0]
+                summit_pose[0][1] = self.robot.reel_position[1]
+                summit_pose[0][2] = self.robot.reel_position[2]
+
+                #orientaion x y z w
+                summit_pose[0][3] = self.robot.reel_orientation[0]
+                summit_pose[0][4] = self.robot.reel_orientation[1]
+                summit_pose[0][5] = self.robot.reel_orientation[2]
+                summit_pose[0][6] = self.robot.reel_orientation[3]
+            self.flag = False
+
 
     def onAnimateBeginEvent(self, event):
         """At each time step we move the robot by the given forward_speed and angular_speed)
            TODO: normalize the speed by the dt so it is a real speed
         """
-        if self.flag :
-            self.init_pose()
-            print("init")
-
-        self.flag = False
-
+        #print(self.robot.reel_position[0] , self.robot.sim_position[0])
+        #print(self.robot.reel_position[1],  self.robot.sim_position[1] )
+        #print(self.robot.reel_position[2],  self.robot.sim_position[2] )
         dt = event['dt']
-        self.robot.simrobot_linear_vel[0] = self.robot.reelrobot_linear_vel[0]  * dt
-        self.robot.simrobot_angular_vel[2] = self.robot.reelrobot_angular_vel[2] * dt
+        self.robot.simrobot_linear_x = self.robot.reelrobot_linear_vel[0]  * dt
+        self.robot.simrobot_angular_z = self.robot.reelrobot_angular_vel[2] * dt
+
 
         self.robot.linear_acceleration[0] = self.robot.simrobot_linear_vel[0]/(dt)
+
+
 
         self.robot.sim_orientation[0] = self.robot.Chassis.position.position.value[0][0+3]
         self.robot.sim_orientation[1] = self.robot.Chassis.position.position.value[0][1+3]
         self.robot.sim_orientation[2] = self.robot.Chassis.position.position.value[0][2+3]
         self.robot.sim_orientation[3] = self.robot.Chassis.position.position.value[0][3+3]
 
-
         self.robot.sim_position[0] = self.robot.Chassis.position.position.value[0][0]
         self.robot.sim_position[1] = self.robot.Chassis.position.position.value[0][1]
         self.robot.sim_position[2] = self.robot.Chassis.position.position.value[0][2]
 
-        #print(self.robot.Chassis.position.position.value[:2])
         self.move(self.robot.simrobot_linear_vel[0], self.robot.simrobot_angular_vel[2])
+
+        if self.robot.reel_position[0] != 0:
+            self.init_pose()
