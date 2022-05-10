@@ -135,7 +135,7 @@ class SummitxlROSController(Sofa.Core.Controller):
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.robot = kwargs["robot"]
-        self.wheel_ray = 0.25
+        self.wheel_ray = 0.10
         self.flag = True
         self.robot.robot_linear_x = 0
         self.robot.robot_angular_z  = 0
@@ -191,6 +191,26 @@ class SummitxlROSController(Sofa.Core.Controller):
 
         self.robot.robot_linear_x = self.robot.robot_linear_vel[0]  * dt
         self.robot.robot_angular_z = self.robot.robot_angular_vel[2] * dt
+
+        with self.robot.Chassis.Debug.position.position.writeable() as debug_pose:
+            debug_pose[0][0] =  self.robot.Chassis.position.position.value[0][0]
+            debug_pose[0][1] = self.robot.Chassis.position.position.value[0][1]
+            debug_pose[0][2] = self.robot.Chassis.position.position.value[0][2]
+
+            debug_pose[0][3] = self.robot.reel_orientation[0]
+            debug_pose[0][4] = self.robot.reel_orientation[1]
+            debug_pose[0][5] = self.robot.reel_orientation[2]
+            debug_pose[0][6] = self.robot.reel_orientation[3]
+
+        with self.robot.Chassis.Reel_robot.position.position.writeable() as robot_pose:
+            robot_pose[0][0] =  self.robot.reel_position[0]
+            robot_pose[0][1] = self.robot.reel_position[1]
+            robot_pose[0][2] = self.robot.reel_position[2]
+
+            robot_pose[0][3] = self.robot.reel_orientation[0]
+            robot_pose[0][4] = self.robot.reel_orientation[1]
+            robot_pose[0][5] = self.robot.reel_orientation[2]
+            robot_pose[0][6] = self.robot.reel_orientation[3]
 
         self.robot.sim_orientation[0] = self.robot.Chassis.position.position.value[0][0+3]
         self.robot.sim_orientation[1] = self.robot.Chassis.position.position.value[0][1+3]

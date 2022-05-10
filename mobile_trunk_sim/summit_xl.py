@@ -18,6 +18,21 @@ def Chassis():
     self = Sofa.Core.Node("Chassis")
     self.addObject("MechanicalObject", name="position", template="Rigid3d", position=[[0,0,0,0,0,0,1]])
 
+    #debug
+    debug = self.addChild("Debug")
+    debug.addObject("MechanicalObject", name="position", template="Rigid3d", position=self.position.position.value)
+    debug.position.showObject = True
+    debug.position.showObjectScale = 0.5
+    debug.position.drawMode = 1
+    debug.position.showColor = [0,1,0,1]
+
+    reel_robot = self.addChild("Reel_robot")
+    reel_robot.addObject("MechanicalObject", name="position", template="Rigid3d", position=self.position.position.value)
+    reel_robot.position.showObject = True
+    reel_robot.position.showObjectScale = 0.5
+    reel_robot.position.drawMode = 1
+    reel_robot.position.showColor =[10., 8., 2., 0.75]
+    #
     chain = self.addChild("WheelsMotors")
     chain.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
 
