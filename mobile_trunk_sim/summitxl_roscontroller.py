@@ -100,10 +100,6 @@ def odom_send(data):
     msg.header.stamp.nanosec = int(data[0].value[1])
 
     #odom position x y z
-    # I put a - sign so that the x position
-    # of the robot in the simulation
-    # corresponds to the  x position of the real robot
-    #same for z orientation
     msg.pose.pose.position.x = data[1].value[2]
     msg.pose.pose.position.z = data[1].value[1]
     msg.pose.pose.position.y = data[1].value[0]
@@ -113,8 +109,7 @@ def odom_send(data):
     msg.pose.pose.orientation.z = data[2].value[1]
     msg.pose.pose.orientation.y = data[2].value[2]
     msg.pose.pose.orientation.w = data[2].value[3]
-    #print("orientation : ",data[2].value)
-    #print(msg.pose.pose.position, "------>", msg.pose.pose.orientation)
+
     #odom linear & angular vel
     #linear vel
     msg.twist.twist.linear.x = data[3].value[0]
@@ -159,6 +154,10 @@ class SummitxlROSController(Sofa.Core.Controller):
             angles[3] -= (angle)
 
     def init_pose(self):
+        """
+            Allows to initialize the position of the simulation
+            robot in sofa_ using the position of the real robot
+        """
 
         if self.flag:
             print("init")
@@ -178,9 +177,9 @@ class SummitxlROSController(Sofa.Core.Controller):
 
 
     def onAnimateBeginEvent(self, event):
-        """At each time step we move the robot by the given forward_speed and angular_speed)
+        """ At each time step we move the robot by the given
+            forward_speed and angular_speed)
         """
-
         # time init
         if self.time_now is not None:
             dt = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000  - self.time_now
