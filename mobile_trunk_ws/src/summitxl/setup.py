@@ -21,8 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'summitxl_teleop_key = summitxl.summitxl_teleop_key:main',
-            'summitxl_node = summitxl.summitxl_node:main',
-            'rostime = summitxl.rostime:main'
+            'summitxl_node = summitxl.summitxl_node:main'
         ],
     },
 )

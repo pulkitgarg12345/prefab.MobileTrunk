@@ -39,6 +39,6 @@ def main(args):
 
 
 if __name__ == '__main__':
-    print(legnth(sys.argv))
+    print(len(sys.argv))
 
     main(sys.argv)
