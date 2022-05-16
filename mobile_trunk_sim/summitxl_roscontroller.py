@@ -43,7 +43,15 @@ def send(data):
     return msg
 
 def vel_send(data):
-    # 2 -> déplacement sur l'axe z
+    """ Returns the velocity of
+        the robot in the simulation
+    Args:
+        data (list): list containing the fields and values of the velocity of the
+                     robot in simulation
+
+    Returns:
+            Objet de type geometry_msgs.msg.Twist
+    """
     msg = Twist()
     msg.linear.x = data[0].value[0]
     msg.linear.y = data[0].value[1]
@@ -55,6 +63,15 @@ def vel_send(data):
     return msg
 
 def vel_recv(data, datafield):
+    """Function called by the RosReceiver. It
+        allows to recover the velocity fields of the
+        real robot
+
+    Args:
+        data (geometry_msgs.msg.Twist): Real robot velocity data
+        datafield (_type_): Data allowing to store the real robot
+                                velocity
+    """
     datafield[0].value = [data.linear.x ,data.linear.y, data.linear.z]
     datafield[1].value = [data.angular.x ,data.angular.z, data.angular.y]
 
@@ -160,7 +177,7 @@ class SummitxlROSController(Sofa.Core.Controller):
         """
 
         if self.flag:
-            print("init")
+            print("init summit_xl pose")
             with self.robot.Chassis.position.position.writeable() as summit_pose:
                 #position x, y z
 
@@ -192,33 +209,24 @@ class SummitxlROSController(Sofa.Core.Controller):
         self.robot.robot_angular_z = self.robot.robot_angular_vel[2] * dt
 
         with self.robot.Chassis.Debug.position.position.writeable() as debug_pose:
-            debug_pose[0][0] =  self.robot.Chassis.position.position.value[0][0]
-            debug_pose[0][1] = self.robot.Chassis.position.position.value[0][1]
-            debug_pose[0][2] = self.robot.Chassis.position.position.value[0][2]
+            for i in range(0, 3):
+                debug_pose[0][i] =  self.robot.Chassis.position.position.value[0][i]
 
-            debug_pose[0][3] = self.robot.reel_orientation[0]
-            debug_pose[0][4] = self.robot.reel_orientation[1]
-            debug_pose[0][5] = self.robot.reel_orientation[2]
-            debug_pose[0][6] = self.robot.reel_orientation[3]
+            for i in range(0, 4):
+                debug_pose[0][3+i] = self.robot.reel_orientation[i]
 
         with self.robot.Chassis.Reel_robot.position.position.writeable() as robot_pose:
-            robot_pose[0][0] =  self.robot.reel_position[0]
-            robot_pose[0][1] = self.robot.reel_position[1]
-            robot_pose[0][2] = self.robot.reel_position[2]
+            for i in range(0,3):
+                robot_pose[0][i] =  self.robot.reel_position[i]
 
-            robot_pose[0][3] = self.robot.reel_orientation[0]
-            robot_pose[0][4] = self.robot.reel_orientation[1]
-            robot_pose[0][5] = self.robot.reel_orientation[2]
-            robot_pose[0][6] = self.robot.reel_orientation[3]
+            for i in range(0,4):
+                robot_pose[0][3+i] = self.robot.reel_orientation[i]
 
-        self.robot.sim_orientation[0] = self.robot.Chassis.position.position.value[0][0+3]
-        self.robot.sim_orientation[1] = self.robot.Chassis.position.position.value[0][1+3]
-        self.robot.sim_orientation[2] = self.robot.Chassis.position.position.value[0][2+3]
-        self.robot.sim_orientation[3] = self.robot.Chassis.position.position.value[0][3+3]
+        for i in range(0,4):
+            self.robot.sim_orientation[i] = self.robot.Chassis.position.position.value[0][3+i]
 
-        self.robot.sim_position[0] = self.robot.Chassis.position.position.value[0][0]
-        self.robot.sim_position[1] = self.robot.Chassis.position.position.value[0][1]
-        self.robot.sim_position[2] = self.robot.Chassis.position.position.value[0][2]
+        for i in range(0,3):
+            self.robot.sim_position[i] = self.robot.Chassis.position.position.value[0][i]
 
         self.move(self.robot.robot_linear_x, self.robot.robot_angular_z)
 
