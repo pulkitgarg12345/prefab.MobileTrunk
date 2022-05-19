@@ -1,6 +1,8 @@
 from turtle import position
 import Sofa
 from stlib3.scene import Scene
+from stlib3.scene import ContactHeader
+from stlib3.physics.rigid import Floor
 from splib3.numerics import Quat
 from math import pi
 from summitxl_controller import *
@@ -15,29 +17,35 @@ def Chassis():
                 *imu
                 *camera
     """
+    totalMass = 1.0
+    volume = 1.0
+    inertiaMatrix = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
     self = Sofa.Core.Node("Chassis")
-    self.addObject("MechanicalObject", name="position", template="Rigid3d", position=[[0,0,0,0,0,0,1]])
-
+    self.addObject("MechanicalObject", name="position", template="Rigid3d", position=[[0,0.2,0,0,0,0,1]])
+    self.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+    self.addObject('UncoupledConstraintCorrection')
     #debug
-    debug = self.addChild("Debug")
-    debug.addObject("MechanicalObject", name="position", template="Rigid3d", position=self.position.position.value)
-    debug.position.showObject = True
-    debug.position.showObjectScale = 0.5
-    debug.position.drawMode = 1
-    debug.position.showColor = [0,1,0,1]
+    # debug = self.addChild("Debug")
+    # debug.addObject("MechanicalObject", name="position", template="Rigid3d", position=self.position.position.value)
+    # debug.position.showObject = True
+    # debug.position.showObjectScale = 0.5
+    # debug.position.drawMode = 1
+    # debug.position.showColor = [0,1,0,1]
 
-    reel_robot = self.addChild("Reel_robot")
-    reel_robot.addObject("MechanicalObject", name="position", template="Rigid3d", position=self.position.position.value)
-    reel_robot.position.showObject = True
-    reel_robot.position.showObjectScale = 0.5
-    reel_robot.position.drawMode = 1
-    reel_robot.position.showColor =[10., 8., 2., 0.75]
+    # reel_robot = self.addChild("Reel_robot")
+    # reel_robot.addObject("MechanicalObject", name="position", template="Rigid3d", position=self.position.position.value)
+    # reel_robot.position.showObject = True
+    # reel_robot.position.showObjectScale = 0.5
+    # reel_robot.position.drawMode = 1
+    # reel_robot.position.showColor =[10., 8., 2., 0.75]
     #
     chain = self.addChild("WheelsMotors")
     chain.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
+    chain.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     sensor =  self.addChild("FixedSensor")
     sensor.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
+    sensor.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     ## The following is needed to describe the articulated chain from the chass's position
     ## to the wheel's and the sensor's one .
@@ -72,6 +80,7 @@ def Chassis():
     wheels.addObject("MechanicalObject", name="position", template="Rigid3d",
                           position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
                           showObject=True)
+    wheels.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     wheels.addObject('ArticulatedSystemMapping',
                           input1=chain.angles.getLinkPath(),
@@ -82,6 +91,8 @@ def Chassis():
     sensors.addObject("MechanicalObject", name = "position", template="Rigid3d",
                     position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
                      showObject=True)
+    sensors.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+
     sensors.addObject('ArticulatedSystemMapping',
                         input1=sensor.angles.getLinkPath(),
                         input2=self.position.getLinkPath(),
@@ -101,6 +112,18 @@ def Chassis():
         part.addObject('OglModel', name="renderer", src='@loader', color=color)
         part.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=0)
 
+    #chassis collision model
+    # collision_model = self.addChild("CollisionModel")
+    # for name, (filepath, color) in parts.items():
+    #     chassis_collision = collision_model.addChild(name+"Collision")
+    #     chassis_collision.addObject('MeshSTLLoader', name='loader', filename=filepath, rotation=[-90,-90,0])
+    #     chassis_collision.addObject('MeshTopology', src='@loader')
+    #     chassis_collision.addObject('MechanicalObject')
+    #     chassis_collision.addObject('TriangleCollisionModel', group=0)
+    #     chassis_collision.addObject('LineCollisionModel', group=0)
+    #     chassis_collision.addObject('PointCollisionModel', group=0)
+    #     chassis_collision.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=0)
+
     ## Add VisualModel for the wheels
     visual = wheels.addChild("VisualModel")
     visual.addObject('MeshSTLLoader', name='loader', filename='meshes/wheel.stl', rotation=[0,0,90])
@@ -109,6 +132,18 @@ def Chassis():
         wheel = visual.addChild("Wheel{0}".format(i))
         wheel.addObject("OglModel", src=visual.geometry.getLinkPath(), color=[0.2,0.2,0.2,1.0])
         wheel.addObject("RigidMapping", input=self.Wheels.position.getLinkPath(), index=i+1)
+
+    #wheel collision model
+    collison_model = wheels.addChild("CollisionModel")
+    for i in range(0,4):
+        wheel_collision = collison_model.addChild("WheelCollision{0}".format(i))
+        wheel_collision.addObject('MeshSTLLoader', name='loader', filename='meshes/collision_wheel.stl', rotation=[0, 90, 0])
+        wheel_collision.addObject('MeshTopology', src='@loader')
+        wheel_collision.addObject('MechanicalObject')
+        wheel_collision.addObject('TriangleCollisionModel', group=0)
+        wheel_collision.addObject('LineCollisionModel',group=0)
+        wheel_collision.addObject('PointCollisionModel', group=0)
+        wheel_collision.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=i+1)
 
 
     ## Add VisualModel for the sensors
@@ -126,6 +161,18 @@ def Chassis():
         visual_body.addObject('MeshTopology', src='@'+name+'_loader')
         visual_body.addObject('OglModel', name=name+"_renderer", src='@'+name+'_loader', color=[0.2,0.2,0.2,1.0])
         visual_body.addObject('RigidMapping', input=self.Sensors.position.getLinkPath(),index=index)
+
+    # sensor collison model
+    # collison_model = sensors.addChild('CollisionModel')
+    # for name, (filepath, index) in sensorfilepath.items():
+    #     sensor_collision = collison_model.addChild(name+"Collision")
+    #     sensor_collision.addObject('MeshSTLLoader', name='loader', filename=filepath, rotation=[0,90,90])
+    #     sensor_collision.addObject('MeshTopology', src='@loader')
+    #     sensor_collision.addObject('MechanicalObject')
+    #     sensor_collision.addObject('TriangleCollisionModel', group=0)
+    #     sensor_collision.addObject('LineCollisionModel', group=0)
+    #     sensor_collision.addObject('PointCollisionModel', group=0)
+    #     sensor_collision.addObject('RigidMapping', input=self.Sensors.position.getLinkPath(), index=index)
     return self
 
 def SummitXL(parentNode, name="SummitXL"):
@@ -156,26 +203,25 @@ def SummitXL(parentNode, name="SummitXL"):
 
     self.addChild(Chassis())
     return self
-
-def Floor(parentNode, color=[0.5, 0.5, 0.5, 1.], rotation=[0, 0, 0], translation=[0, 0, 0], scale=1):
-    floor = parentNode.addChild('Floor')
-    floor.addObject('MeshObjLoader', name='loader', filename='mesh/square1.obj', scale=scale, rotation=rotation, translation=translation)
-    floor.addObject('OglModel', src='@loader', color=color)
-    floor.addObject('MeshTopology', src='@loader', name='topo')
-    floor.addObject('MechanicalObject')
-    floor.addObject('TriangleCollisionModel')
-    floor.addObject('LineCollisionModel')
-    floor.addObject('PointCollisionModel')
-    return floor
-
 def createScene(rootNode):
+
+    ContactHeader(rootNode, alarmDistance=0.2, contactDistance=0.05)
+
     scene = Scene(rootNode)
     scene.addMainHeader()
+    scene.VisualStyle.displayFlags = 'showCollisionModels'
+    scene.addObject('DefaultVisualManagerLoop')
     scene.dt = 0.001
     scene.gravity = [0., -9810., 0.]
 
+    scene.addObject('EulerImplicitSolver')
+    scene.addObject('SparseLDLSolver')
     SummitXL(scene.Modelling)
-    Floor(scene.Modelling, rotation=[90,0,0], translation=[-2,-0.12,-2], scale=4)
+    floor = Floor(rootNode,
+                  name="Floor",
+                  translation=[-2, -0.12, -2],
+                  uniformScale=0.1,
+                  isAStaticObject=True)
 
     #def myAnimation(target, body, factor):
     #    body.position += [[0.0,0.0,0.001,0.0,0,0,1]]
@@ -188,5 +234,6 @@ def createScene(rootNode):
     scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL))
 
     scene.Simulation.addChild(scene.Modelling)
+    #scene.Simulation.addChild('GenericConstraintCorrection')
 
     return rootNode
