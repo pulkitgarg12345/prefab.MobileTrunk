@@ -1,11 +1,14 @@
-from turtle import position
 import Sofa
+
 from stlib3.scene import Scene
 from stlib3.scene import ContactHeader
 from stlib3.physics.rigid import Floor
 from splib3.numerics import Quat
-from math import pi
+
 from summitxl_controller import *
+
+from parameters import *
+from SpringConnection import *
 
 def Chassis():
     """The summitXL chassis description.
@@ -133,17 +136,17 @@ def Chassis():
         wheel.addObject("OglModel", src=visual.geometry.getLinkPath(), color=[0.2,0.2,0.2,1.0])
         wheel.addObject("RigidMapping", input=self.Wheels.position.getLinkPath(), index=i+1)
 
-    #wheel collision model
-    collison_model = wheels.addChild("CollisionModel")
-    for i in range(0,4):
-        wheel_collision = collison_model.addChild("WheelCollision{0}".format(i))
-        wheel_collision.addObject('MeshSTLLoader', name='loader', filename='meshes/collision_wheel.stl', rotation=[0, 90, 0])
-        wheel_collision.addObject('MeshTopology', src='@loader')
-        wheel_collision.addObject('MechanicalObject')
-        wheel_collision.addObject('TriangleCollisionModel', group=0)
-        wheel_collision.addObject('LineCollisionModel',group=0)
-        wheel_collision.addObject('PointCollisionModel', group=0)
-        wheel_collision.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=i+1)
+    # #wheel collision model
+    # collison_model = wheels.addChild("CollisionModel")
+    # for i in range(0,4):
+    #     wheel_collision = collison_model.addChild("WheelCollision{0}".format(i))
+    #     wheel_collision.addObject('MeshSTLLoader', name='loader', filename='meshes/collision_wheel.stl', rotation=[0, 90, 0])
+    #     wheel_collision.addObject('MeshTopology', src='@loader')
+    #     wheel_collision.addObject('MechanicalObject')
+    #     wheel_collision.addObject('TriangleCollisionModel', group=0)
+    #     wheel_collision.addObject('LineCollisionModel',group=0)
+    #     wheel_collision.addObject('PointCollisionModel', group=0)
+    #     wheel_collision.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=i+1)
 
 
     ## Add VisualModel for the sensors
@@ -151,7 +154,7 @@ def Chassis():
     sensorfilepath = {
         "lazer" : ('meshes/hokuyo_urg_04lx.stl', 1) ,
         "gps" : ('meshes/antenna_3GO16.stl', 2),
-        "camera" : ('meshes/axis_p5514.stl',3),
+        # "camera" : ('meshes/axis_p5514.stl',3),
         "camera-RGBD" : ('meshes/orbbec_astra_embedded_s.stl', 4)
     }
 
@@ -203,19 +206,42 @@ def SummitXL(parentNode, name="SummitXL"):
 
     self.addChild(Chassis())
     return self
+
+
 def createScene(rootNode):
 
     ContactHeader(rootNode, alarmDistance=0.2, contactDistance=0.05)
 
+    #########################################
+    # Plugins, data and Solvers
+    ######################################### 
+
+    rootNode.addObject('VisualStyle', displayFlags='hideBehaviorModels showForceFields showCollisionModels showInteractionForceFields');
+
+    rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight");
+    rootNode.addObject('RequiredPlugin', name='SofaPython3')
+    rootNode.addObject('RequiredPlugin', name='BeamAdapter')
+    rootNode.addObject('RequiredPlugin', name='SoftRobots')
+    rootNode.addObject('RequiredPlugin', name='SoftRobots.Inverse')
+    rootNode.addObject('RequiredPlugin', name='EigenLinearSolvers')
+    rootNode.addObject('RequiredPlugin', name='SofaMeshCollision')
+    rootNode.addObject('RequiredPlugin', name='SofaPlugins', pluginName='SofaGeneralRigid SofaGeneralEngine SofaConstraint SofaImplicitOdeSolver SofaSparseSolver SofaDeformable SofaEngine SofaBoundaryCondition SofaRigid SofaTopologyMapping SofaOpenglVisual')
+       
+
     scene = Scene(rootNode)
     scene.addMainHeader()
-    scene.VisualStyle.displayFlags = 'showCollisionModels'
+    scene.VisualStyle.displayFlags = 'showCollisionModels showForceFields'
     scene.addObject('DefaultVisualManagerLoop')
     scene.dt = 0.001
     scene.gravity = [0., -9810., 0.]
 
     scene.addObject('EulerImplicitSolver')
-    scene.addObject('SparseLDLSolver')
+    scene.addObject('SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
+
+    #########################################
+    # create summit
+    ######################################### 
+
     SummitXL(scene.Modelling)
     floor = Floor(rootNode,
                   name="Floor",
@@ -233,6 +259,14 @@ def createScene(rootNode):
 
     scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL))
 
+    #########################################
+    # createEchelon
+    ######################################### 
+
+    echelon = scene.Modelling.SummitXL.Chassis.addChild('Echelon')
+    connection = scene.Modelling.SummitXL.Chassis.Sensors.position
+    createEchelon(echelon,connection,3,[0,0,0],[-90,-90,0])
+    
     scene.Simulation.addChild(scene.Modelling)
     #scene.Simulation.addChild('GenericConstraintCorrection')
 
