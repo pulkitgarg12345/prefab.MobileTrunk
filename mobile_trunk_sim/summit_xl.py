@@ -50,22 +50,32 @@ def Chassis():
     sensor.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
     sensor.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
+    trunk  = self.addChild("FixedTrunk")
+    trunk.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
+    trunk.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+    #[0., 0.26, 0.19],        # front_ptz_camera
+
     ## The following is needed to describe the articulated chain from the chass's position
-    ## to the wheel's and the sensor's one .
+    ## to the wheel's , the sensor's  and the trunk one .
     chain.addObject('ArticulatedHierarchyContainer')
     wheelPositions = [[0.229, 0,0.235],
                       [-0.229, 0,0.235],
                       [0.229, 0,-0.235],
                       [-0.229, 0,-0.235]]
-    sensorName=["lazer", "gps", "camera", "camera_RGBD"]
+    sensorName=["lazer", "gps", "camera_RGBD"]
     sensor.addObject('ArticulatedHierarchyContainer')
     sensorPositions = [[0., 0.28 ,0.],          # 2d lazer
                        [0,0.275,-0.22],         # gps
-                       [0., 0.26, 0.19],        # front_ptz_camera
                        [0.012, 0.172, 0.324]    # front_rgbd_camera
                        ]
 
-    for i in range(4):
+    trunk.addObject('ArticulatedHierarchyContainer')
+    tc = sensor.addChild('Trunk')
+    tc.addObject('ArticulationCenter', parentIndex=0, childIndex=1, posOnParent=[0., 0.26, 0.19])
+    t = tc.addChild("Articulation")
+    t.addObject('Articulation', translation=False, rotation=True, rotationAxis=[1, 0, 0], articulationIndex=0)
+
+    for i in range(3):
         sc = sensor.addChild(sensorName[i])
         sc.addObject('ArticulationCenter', parentIndex=0, childIndex=1+i, posOnParent=sensorPositions[i])
         s = sc.addChild("Articulation")
@@ -155,7 +165,7 @@ def Chassis():
         "lazer" : ('meshes/hokuyo_urg_04lx.stl', 1) ,
         "gps" : ('meshes/antenna_3GO16.stl', 2),
         # "camera" : ('meshes/axis_p5514.stl',3),
-        "camera-RGBD" : ('meshes/orbbec_astra_embedded_s.stl', 4)
+        "camera-RGBD" : ('meshes/orbbec_astra_embedded_s.stl', 3)
     }
 
     for name, (filepath, index) in sensorfilepath.items():
@@ -266,7 +276,7 @@ def createScene(rootNode):
     echelon = scene.Modelling.SummitXL.Chassis.addChild('Echelon')
     connection = scene.Modelling.SummitXL.Chassis.Sensors.position
     createEchelon(echelon,connection,3,[0,0,0],[-90,-90,0])
-    
+
     scene.Simulation.addChild(scene.Modelling)
     #scene.Simulation.addChild('GenericConstraintCorrection')
 
