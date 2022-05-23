@@ -1,3 +1,4 @@
+from logging import root
 import Sofa
 
 from stlib3.scene import Scene
@@ -28,50 +29,43 @@ def Chassis():
     volume = 1.0*1e9
     inertiaMatrix = [1.0*1e6, 0.0, 0.0, 0.0, 1.0*1e6, 0.0, 0.0, 0.0, 1.0*1e6]
 
-    #########################################
-    # Chassis creation
-    ######################################### 
-
+    
     self = Sofa.Core.Node("Chassis")
     self.addObject("MechanicalObject", name="position", template="Rigid3d", position=[[0,0.01*1000,0,0,0,0,1]])
     self.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
     self.addObject('UncoupledConstraintCorrection')
 
-    #########################################
-    # Chain creation
-    ######################################### 
-
     chain = self.addChild("WheelsMotors")
     chain.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
     chain.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
-    chain.addObject('ArticulatedHierarchyContainer')
 
+    sensor =  self.addChild("FixedSensor")
+    sensor.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0])
+    sensor.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+
+    trunk  = self.addChild("FixedTrunk")
+    trunk.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0])
+    trunk.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+    trunk.addObject('ArticulatedHierarchyContainer')
     ## The following is needed to describe the articulated chain from the chass's position
-    ## to the wheel's , the sensor's  and the trunk one .
+    ## to the wheel's , the sensor's  and the trunk one .
+    chain.addObject('ArticulatedHierarchyContainer')
     wheelPositions = [[0.229*1000, 0,0.235*1000],
                       [-0.229*1000, 0,0.235*1000],
                       [0.229*1000, 0,-0.235*1000],
                       [-0.229*1000, 0,-0.235*1000]]
-    for i in range(4):
-        ac = chain.addChild("MotorToWheel{0}".format(i))
-        ac.addObject('ArticulationCenter', parentIndex=0, childIndex=1+i, posOnParent=wheelPositions[i])
-        a = ac.addChild("Articulation")
-        a.addObject('Articulation', translation=False, rotation=True, rotationAxis=[1, 0, 0], articulationIndex=i)
-
-    #########################################
-    # Sensors creation
-    ######################################### 
-
-    sensor =  self.addChild("FixedSensor")
-    sensor.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
-    sensor.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
-    sensor.addObject('ArticulatedHierarchyContainer')
-
     sensorName=["lazer", "gps", "camera_RGBD"]
+    sensor.addObject('ArticulatedHierarchyContainer')
     sensorPositions = [[0., 0.28*1000 ,0.],          # 2d lazer
                        [0,0.275*1000,-0.22*1000],         # gps
                        [0.012*1000, 0.172*1000, 0.324*1000]    # front_rgbd_camera
                        ]
+
+    for i in range(1):
+        tc = sensor.addChild('Trunk')
+        tc.addObject('ArticulationCenter', parentIndex=0, childIndex=1+i, posOnParent=[0., 0.26*1000, 0.19*1000])
+        t = tc.addChild("Articulation")
+        t.addObject('Articulation', translation=False, rotation=True, rotationAxis=[1, 0, 0], articulationIndex=i)
 
     for i in range(3):
         sc = sensor.addChild(sensorName[i])
@@ -79,50 +73,14 @@ def Chassis():
         s = sc.addChild("Articulation")
         s.addObject('Articulation', translation=False, rotation=True, rotationAxis=[1, 0, 0], articulationIndex=i)
 
-    #Add sensors
-    sensors = self.addChild("Sensors")
-    sensors.addObject("MechanicalObject", name = "position", template="Rigid3d",
-                    position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
-                     showObject=True)
-    sensors.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
-
-    sensors.addObject('ArticulatedSystemMapping',
-                        input1=sensor.angles.getLinkPath(),
-                        input2=self.position.getLinkPath(),
-                        output=sensors.position.getLinkPath())
-
-    #########################################
-    # Trunk creation
-    ######################################### 
-
-    trunk  = self.addChild("FixedTrunk")
-    trunk.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
-    trunk.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
-
-    trunk.addObject('ArticulatedHierarchyContainer')
-    tc = sensor.addChild('Trunk')
-    tc.addObject('ArticulationCenter', parentIndex=0, childIndex=1, posOnParent=[0., 0.26, 0.19])
-    t = tc.addChild("Articulation")
-    t.addObject('Articulation', translation=False, rotation=True, rotationAxis=[1, 0, 0], articulationIndex=0)
-
-    #Add trunk
-    echelon = self.addChild("Echelon")
-    echelon.addObject("MechanicalObject", name = "position", template="Rigid3d",
-                    position=[[0,0,0,0,0,0,1],[0,0,0,0,0,0,1]],
-                     showObject=True)
-    echelon.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
-
-    echelon.addObject('ArticulatedSystemMapping',
-                        input1=trunk.angles.getLinkPath(),
-                        input2=self.position.getLinkPath(),
-                        output=echelon.position.getLinkPath())
-
-    #########################################
-    # wheels creation
-    ######################################### 
+    for i in range(4):
+        ac = chain.addChild("MotorToWheel{0}".format(i))
+        ac.addObject('ArticulationCenter', parentIndex=0, childIndex=1+i, posOnParent=wheelPositions[i])
+        a = ac.addChild("Articulation")
+        a.addObject('Articulation', translation=False, rotation=True, rotationAxis=[1, 0, 0], articulationIndex=i)
 
     wheels = self.addChild("Wheels")
-    # There is one extra position in this mechanical object because there the articulated chain
+    # There is one extra position in this mechanical object because there the articulated chain
     # Needs a root one (in addition to the four wheels)
     wheels.addObject("MechanicalObject", name="position", template="Rigid3d",
                           position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
@@ -133,6 +91,29 @@ def Chassis():
                           input1=chain.angles.getLinkPath(),
                           input2=self.position.getLinkPath(),
                           output=wheels.position.getLinkPath())
+    #Add sensors
+    sensors = self.addChild("Sensors")
+    sensors.addObject("MechanicalObject", name = "position", template="Rigid3d",
+                    position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
+                     showObject=True)
+    sensors.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+
+    sensors.addObject('ArticulatedSystemMapping',
+                        input1=sensor.angles.getLinkPath(),
+                        input2=self.position.getLinkPath(),
+                        output=sensors.position.getLinkPath())
+
+    #Add trunk
+    echelon = self.addChild("Echelon")
+    echelon.addObject("MechanicalObject", name = "position", template="Rigid3d",
+                    position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
+                     showObject=True,showIndices = True)
+    echelon.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+
+    echelon.addObject('ArticulatedSystemMapping',
+                        input1=trunk.angles.getLinkPath(),
+                        input2=self.position.getLinkPath(),
+                        output=echelon.position.getLinkPath())
 
     #########################################
     # collision models
@@ -175,7 +156,6 @@ def Chassis():
     #     sensor_collision.addObject('LineCollisionModel', group=0)
     #     sensor_collision.addObject('PointCollisionModel', group=0)
     #     sensor_collision.addObject('RigidMapping', input=self.Sensors.position.getLinkPath(), index=index)
-    
 
     #########################################
     # visual models
@@ -266,7 +246,7 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', name='SoftRobots.Inverse')
     rootNode.addObject('RequiredPlugin', name='EigenLinearSolvers')
     rootNode.addObject('RequiredPlugin', name='SofaMeshCollision')
-    rootNode.addObject('RequiredPlugin', name='SofaPlugins', pluginName='SofaGeneralRigid SofaGeneralEngine SofaConstraint SofaImplicitOdeSolver SofaSparseSolver SofaDeformable SofaEngine SofaBoundaryCondition SofaRigid SofaTopologyMapping SofaOpenglVisual')
+    rootNode.addObject('RequiredPlugin', name='SofaPlugins', pluginName='SofaGeneralRigid SofaGeneralEngine SofaConstraint SofaImplicitOdeSolver SofaSparseSolver SofaDeformable SofaEngine SofaBoundaryCondition SofaRigid SofaTopologyMapping SofaOpenglVisual SofaMiscCollision')
 
 
     scene = Scene(rootNode)
@@ -278,6 +258,7 @@ def createScene(rootNode):
 
     scene.addObject('EulerImplicitSolver')
     scene.addObject('SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
+    scene.addObject('GenericConstraintCorrection' , solverName='SparseLDLSolver')
 
     #########################################
     # create summit
@@ -300,12 +281,12 @@ def createScene(rootNode):
 
     scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL))
 
-    #########################################
+    ########################################
     # createEchelon
-    ######################################### 
+    ######################################## 
 
-    # arm = scene.Modelling.SummitXL.Chassis.addChild('Arm')
-    # connection = scene.Modelling.SummitXL.Chassis.Echelon.position
-    # createEchelon(arm,connection,3,[0,0,0],[-90,-90,0])
+    arm = rootNode.Modelling.SummitXL.Chassis.addChild('Arm')
+    connection = rootNode.Modelling.SummitXL.Chassis.Echelon.position
+    createEchelon(arm,connection,1,[0., 0.26*1000, 0.19*1000],[-90,-90,0])
 
     return rootNode
