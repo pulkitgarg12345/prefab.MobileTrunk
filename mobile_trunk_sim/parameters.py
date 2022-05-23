@@ -9,7 +9,7 @@ dt = 0.01
 ### type of simulation
 #####################
 
-inverse = True			# inverse model
+inverse = False			# inverse model
 base_translation = True
 rate_limiter = True     # limit the movement of the target 
 typeControl = 'force'
