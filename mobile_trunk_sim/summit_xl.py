@@ -111,6 +111,18 @@ def Chassis():
                         input2=self.position.getLinkPath(),
                         output=sensors.position.getLinkPath())
 
+    #Add trunk
+    echelon = self.addChild("Echelon")
+    echelon.addObject("MechanicalObject", name = "position", template="Rigid3d",
+                    position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
+                     showObject=True)
+    echelon.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+
+    echelon.addObject('ArticulatedSystemMapping',
+                        input1=trunk.angles.getLinkPath(),
+                        input2=self.position.getLinkPath(),
+                        output=echelon.position.getLinkPath())
+
     ## Adds VisualModel for the chassis's body
     visual = self.addChild("VisualModel")
     parts = {
@@ -147,16 +159,16 @@ def Chassis():
         wheel.addObject("RigidMapping", input=self.Wheels.position.getLinkPath(), index=i+1)
 
     # #wheel collision model
-    # collison_model = wheels.addChild("CollisionModel")
-    # for i in range(0,4):
-    #     wheel_collision = collison_model.addChild("WheelCollision{0}".format(i))
-    #     wheel_collision.addObject('MeshSTLLoader', name='loader', filename='meshes/collision_wheel.stl', rotation=[0, 90, 0])
-    #     wheel_collision.addObject('MeshTopology', src='@loader')
-    #     wheel_collision.addObject('MechanicalObject')
-    #     wheel_collision.addObject('TriangleCollisionModel', group=0)
-    #     wheel_collision.addObject('LineCollisionModel',group=0)
-    #     wheel_collision.addObject('PointCollisionModel', group=0)
-    #     wheel_collision.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=i+1)
+    collison_model = wheels.addChild("CollisionModel")
+    for i in range(0,4):
+        wheel_collision = collison_model.addChild("WheelCollision{0}".format(i))
+        wheel_collision.addObject('MeshSTLLoader', name='loader', filename='meshes/collision_wheel.stl', rotation=[0, 90, 0])
+        wheel_collision.addObject('MeshTopology', src='@loader')
+        wheel_collision.addObject('MechanicalObject')
+        wheel_collision.addObject('TriangleCollisionModel', group=0)
+        wheel_collision.addObject('LineCollisionModel',group=0)
+        wheel_collision.addObject('PointCollisionModel', group=0)
+        wheel_collision.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=i+1)
 
 
     ## Add VisualModel for the sensors
@@ -236,7 +248,7 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', name='EigenLinearSolvers')
     rootNode.addObject('RequiredPlugin', name='SofaMeshCollision')
     rootNode.addObject('RequiredPlugin', name='SofaPlugins', pluginName='SofaGeneralRigid SofaGeneralEngine SofaConstraint SofaImplicitOdeSolver SofaSparseSolver SofaDeformable SofaEngine SofaBoundaryCondition SofaRigid SofaTopologyMapping SofaOpenglVisual')
-       
+
 
     scene = Scene(rootNode)
     scene.addMainHeader()
@@ -274,10 +286,9 @@ def createScene(rootNode):
     ######################################### 
 
     echelon = scene.Modelling.SummitXL.Chassis.addChild('Echelon')
-    connection = scene.Modelling.SummitXL.Chassis.Sensors.position
+    connection = scene.Modelling.SummitXL.Chassis.Echelon.position
     createEchelon(echelon,connection,3,[0,0,0],[-90,-90,0])
 
     scene.Simulation.addChild(scene.Modelling)
-    #scene.Simulation.addChild('GenericConstraintCorrection')
 
     return rootNode
