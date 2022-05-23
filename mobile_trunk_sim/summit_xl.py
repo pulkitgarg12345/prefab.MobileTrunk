@@ -47,7 +47,7 @@ def Chassis():
     chain.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     sensor =  self.addChild("FixedSensor")
-    sensor.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
+    sensor.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0])
     sensor.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     trunk  = self.addChild("FixedTrunk")
@@ -102,7 +102,7 @@ def Chassis():
     #Add sensors
     sensors = self.addChild("Sensors")
     sensors.addObject("MechanicalObject", name = "position", template="Rigid3d",
-                    position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
+                    position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
                      showObject=True)
     sensors.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
@@ -236,7 +236,7 @@ def createScene(rootNode):
 
     #########################################
     # Plugins, data and Solvers
-    ######################################### 
+    #########################################
 
     rootNode.addObject('VisualStyle', displayFlags='hideBehaviorModels showForceFields showCollisionModels showInteractionForceFields');
 
@@ -244,8 +244,7 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', name='SofaPython3')
     rootNode.addObject('RequiredPlugin', name='BeamAdapter')
     rootNode.addObject('RequiredPlugin', name='SoftRobots')
-    rootNode.addObject('RequiredPlugin', name='SoftRobots.Inverse')
-    rootNode.addObject('RequiredPlugin', name='EigenLinearSolvers')
+    #rootNode.addObject('RequiredPlugin', name='SoftRobots.Inverse')
     rootNode.addObject('RequiredPlugin', name='SofaMeshCollision')
     rootNode.addObject('RequiredPlugin', name='SofaPlugins', pluginName='SofaGeneralRigid SofaGeneralEngine SofaConstraint SofaImplicitOdeSolver SofaSparseSolver SofaDeformable SofaEngine SofaBoundaryCondition SofaRigid SofaTopologyMapping SofaOpenglVisual')
 
@@ -262,7 +261,7 @@ def createScene(rootNode):
 
     #########################################
     # create summit
-    ######################################### 
+    #########################################
 
     SummitXL(scene.Modelling)
     floor = Floor(rootNode,
@@ -285,9 +284,9 @@ def createScene(rootNode):
     # createEchelon
     ######################################### 
 
-    echelon = scene.Modelling.SummitXL.Chassis.addChild('Echelon')
-    connection = scene.Modelling.SummitXL.Chassis.Echelon.position
-    createEchelon(echelon,connection,3,[0,0,0],[-90,-90,0])
+    # echelon = scene.Modelling.SummitXL.Chassis.addChild('Echelon')
+    # connection = scene.Modelling.SummitXL.Chassis.Echelon.position
+    # createEchelon(echelon,connection,3,[0,0,0],[-90,-90,0])
 
     scene.Simulation.addChild(scene.Modelling)
 
