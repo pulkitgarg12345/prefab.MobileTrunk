@@ -1,10 +1,8 @@
-from logging import root
 import Sofa
 
 from stlib3.scene import Scene
 from stlib3.scene import ContactHeader
 from stlib3.physics.rigid import Floor
-from splib3.numerics import Quat
 
 from summitxl_controller import *
 
@@ -29,7 +27,6 @@ def Chassis():
     volume = 1.0*1e9
     inertiaMatrix = [1.0*1e6, 0.0, 0.0, 0.0, 1.0*1e6, 0.0, 0.0, 0.0, 1.0*1e6]
 
-    
     self = Sofa.Core.Node("Chassis")
     self.addObject("MechanicalObject", name="position", template="Rigid3d", position=[[0,0.01*1000,0,0,0,0,1]])
     self.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
@@ -47,6 +44,7 @@ def Chassis():
     trunk.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0])
     trunk.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
     trunk.addObject('ArticulatedHierarchyContainer')
+
     ## The following is needed to describe the articulated chain from the chass's position
     ## to the wheel's , the sensor's  and the trunk one .
     chain.addObject('ArticulatedHierarchyContainer')
@@ -134,7 +132,7 @@ def Chassis():
 
     ## Wheels
     collison_model = wheels.addChild("CollisionModel")
-    for i in range(0,4):
+    for i in range(4):
         wheel_collision = collison_model.addChild("WheelCollision{0}".format(i))
         wheel_collision.addObject('MeshSTLLoader', name='loader', filename='meshes/collision_wheel.stl', rotation=[0, 90, 0],scale3d = [1000,1000,1000])
         wheel_collision.addObject('MeshTopology', src='@loader')
@@ -256,9 +254,9 @@ def createScene(rootNode):
     scene.dt = 0.001
     scene.gravity = [0., -9810., 0.]
 
-    scene.addObject('EulerImplicitSolver')
-    scene.addObject('SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
-    scene.addObject('GenericConstraintCorrection' , solverName='SparseLDLSolver')
+    scene.Modelling.addObject('EulerImplicitSolver')
+    solver = scene.Modelling.addObject('SparseLDLSolver',name = 'SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
+    scene.Modelling.addObject('GenericConstraintCorrection' , solverName='SparseLDLSolver')
 
     #########################################
     # create summit
@@ -287,6 +285,6 @@ def createScene(rootNode):
 
     arm = rootNode.Modelling.SummitXL.Chassis.addChild('Arm')
     connection = rootNode.Modelling.SummitXL.Chassis.Echelon.position
-    createEchelon(arm,connection,1,[0., 0.26*1000, 0.19*1000],[-90,-90,0])
+    createEchelon(arm,connection,0,[0., 0.26*1000, 0.19*1000],[-90,-90,0])
 
     return rootNode
