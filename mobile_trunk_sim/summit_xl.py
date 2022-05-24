@@ -35,7 +35,7 @@ def Chassis():
     #########################################
 
     self = Sofa.Core.Node("Chassis")
-    self.addObject("MechanicalObject", name="position", template="Rigid3d", position=[[0,0.01*1000,0,0,0,0,1]])
+    self.addObject("MechanicalObject", name="position", template="Rigid3d", position=[[0,0,0,0,0,0,1]])
     self.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     self.addObject('UncoupledConstraintCorrection')
