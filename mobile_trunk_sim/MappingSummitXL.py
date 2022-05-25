@@ -25,7 +25,6 @@ def Chassis():
 
     sensorPositions = [[0., 0.28*1000 ,0.],          # 2d lazer
                        [0,0.275*1000,-0.22*1000],         # gps
-                       [0., 0.26*1000, 0.19*1000]     #trunk
                        ]
 
     sensorName=["lazer", "gps", "trunk"]
@@ -51,7 +50,7 @@ def Chassis():
 
     #capteur
     sensor =  self.addChild("FixedSensor")
-    sensor.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0, 0])
+    sensor.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0])
     sensor.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     #########################################
@@ -62,7 +61,7 @@ def Chassis():
 
     sensor.addObject('ArticulatedHierarchyContainer')
 
-    for i in range(3):
+    for i in range(2):
         sc = sensor.addChild(sensorName[i])
         sc.addObject('ArticulationCenter', parentIndex=0, childIndex=1+i, posOnParent=sensorPositions[i])
         s = sc.addChild("Articulation")
@@ -92,12 +91,13 @@ def Chassis():
                           output=wheels.position.getLinkPath())
 
     #########################################
-    #AAdd sensors
+    #  add sensors
     #########################################
+
     sensors = self.addChild("Sensors")
     sensors.addObject("MechanicalObject", name = "position", template="Rigid3d",
-                    position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,-0.5,  0.5, -0.5,  0.5]],
-                     showObject=True,showObjectScale = 30)
+                    position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
+                     showObject=True)
     sensors.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     sensors.addObject('ArticulatedSystemMapping',
@@ -150,6 +150,7 @@ def Chassis():
     #########################################
     # collision models
     #########################################
+
     collison_model = wheels.addChild("CollisionModel")
     for i in range(4):
         wheel_collision = collison_model.addChild("WheelCollision{0}".format(i))
@@ -160,6 +161,16 @@ def Chassis():
         wheel_collision.addObject('LineCollisionModel',group=0)
         wheel_collision.addObject('PointCollisionModel', group=0)
         wheel_collision.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=i+1)
+    
+    #########################################
+    # collision models
+    #########################################
+    trunkPosition = [0., 0.26*1000, 0.19*1000,-0.5, -0.5, -0.5 , 0.5]     #trunk
+    trunk = self.addChild("Trunk")
+    trunk.addObject("MechanicalObject", name = "position", template="Rigid3d",
+                    position=trunkPosition,
+                     showObject=True,showObjectScale = 30)    
+    trunk.addObject('RigidRigidMapping',name='mapping', input=self.position.getLinkPath(), index=0)
 
     return self
 
@@ -241,12 +252,26 @@ def createScene(rootNode):
 
     scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL))
 
+   ########################################
+    # create Echelon
     ########################################
-    # createEchelon
+
+    parameters = Echelon3([6,6,8],[12,11,7.375],[100,50.0*1.33, 35.0,35],[75,50.0,35, 35.0])
+
+    echelonPoints = rootNode.Modelling.SummitXL.Chassis.addChild('EchelonPoints')
+    positionRigid = parameters.positionRigid[0:parameters.backboneEdges[0][0]]+parameters.positionRigid[parameters.backboneEdges[0][1]:]
+    echelonPoints.addObject('MechanicalObject', name='frames', template='Rigid3d',  showObject=1, showObjectScale=2, position=positionRigid)
+
+    ########################################
+    # Multimapping
     ######################################## 
 
-    arm = rootNode.Modelling.SummitXL.Chassis.addChild('Arm')
-    connection = rootNode.Modelling.SummitXL.Chassis.Sensors.position
-    createEchelon(arm,connection,3,[0., 0.26*1000, 0.19*1000],[-90,-90,0])
+    arm = rootNode.Modelling.SummitXL.Chassis.Trunk.addChild('Arm')
+    echelonPoints.addChild(arm)
+    createEchelon(arm,parameters,[0., 0.26*1000, 0.19*1000],[-90,-90,0])
+
+    arm.addObject('SubsetMultiMapping',template = 'Rigid3,Rigid3', input = [rootNode.Modelling.SummitXL.Chassis.Trunk.position.getLinkPath(),echelonPoints.frames.getLinkPath()], output =arm.frames.getLinkPath() ,indexPairs = parameters.indexPairs)
+    
+    rootNode.Modelling.SummitXL.addObject('MechanicalMatrixMapper', template='Rigid3,Rigid3',object1 = rootNode.Modelling.SummitXL.Chassis.Trunk.position.getLinkPath(), object2 = echelonPoints.frames.getLinkPath(),nodeToParse = arm.getLinkPath())
 
     return rootNode
