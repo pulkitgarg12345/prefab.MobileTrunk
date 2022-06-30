@@ -6,8 +6,8 @@ from stlib3.physics.rigid import Floor
 
 from summitxl_controller import *
 
-from parameters import *
-from createEchelon import *
+from echelon3.parameters import *
+from echelon3.createEchelon import *
 
 def Chassis():
 

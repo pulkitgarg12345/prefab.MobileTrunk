@@ -1,4 +1,4 @@
-from classEchelon import *
+from .classEchelon import *
 
 all_sections = True
 

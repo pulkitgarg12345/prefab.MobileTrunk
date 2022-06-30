@@ -1,12 +1,12 @@
 
 from email import contentmanager
-from parameters import *
-from classEchelon import *
+from .parameters import *
+from .classEchelon import *
 
 if base_translation :
-    from BaseController import *
+    from .BaseController import *
 if not inverse :
-    from CableController import *
+    from .CableController import *
 
 
 
