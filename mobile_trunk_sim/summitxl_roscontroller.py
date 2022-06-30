@@ -208,19 +208,19 @@ class SummitxlROSController(Sofa.Core.Controller):
         self.robot.robot_linear_x = self.robot.robot_linear_vel[0]  * dt
         self.robot.robot_angular_z = self.robot.robot_angular_vel[2] * dt
 
-        with self.robot.Chassis.Debug.position.position.writeable() as debug_pose:
-            for i in range(0, 3):
-                debug_pose[0][i] =  self.robot.Chassis.position.position.value[0][i]
+        #with self.robot.Chassis.Debug.position.position.writeable() as debug_pose:
+        #    for i in range(0, 3):
+        #        debug_pose[0][i] =  self.robot.Chassis.position.position.value[0][i]
 
-            for i in range(0, 4):
-                debug_pose[0][3+i] = self.robot.reel_orientation[i]
+        #    for i in range(0, 4):
+        #        debug_pose[0][3+i] = self.robot.reel_orientation[i]
 
-        with self.robot.Chassis.Reel_robot.position.position.writeable() as robot_pose:
-            for i in range(0,3):
-                robot_pose[0][i] =  self.robot.reel_position[i]
+        #with self.robot.Chassis.Reel_robot.position.position.writeable() as robot_pose:
+            #for i in range(0,3):
+                #robot_pose[0][i] =  self.robot.reel_position[i]
 
-            for i in range(0,4):
-                robot_pose[0][3+i] = self.robot.reel_orientation[i]
+            #for i in range(0,4):
+                #robot_pose[0][3+i] = self.robot.reel_orientation[i]
 
         for i in range(0,4):
             self.robot.sim_orientation[i] = self.robot.Chassis.position.position.value[0][3+i]

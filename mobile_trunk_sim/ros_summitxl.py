@@ -1,7 +1,8 @@
 from turtle import position
 import Sofa
 from stlib3.scene import Scene
-from splib3.numerics import Quat
+from stlib3.scene import ContactHeader
+from stlib3.physics.rigid import Floor
 from math import pi
 import sofaros
 from sofaros import *
@@ -15,13 +16,26 @@ rosNode = sofaros.init("SofaNode")
 
 
 def createScene(rootNode):
+    ContactHeader(rootNode, alarmDistance=0.2, contactDistance=0.05)
+
     scene = Scene(rootNode)
     scene.addMainHeader()
-    scene.dt = 0.01
+    scene.VisualStyle.displayFlags = 'showCollisionModels'
+    scene.addObject('DefaultVisualManagerLoop')
+    scene.dt = 0.001
     scene.gravity = [0., -9810., 0.]
 
+    floor = Floor(rootNode,
+                  name="Floor",
+                  translation=[-2, -0.12, -2],
+                  uniformScale=0.1,
+                  isAStaticObject=True)
+
+    scene.addObject('EulerImplicitSolver')
+    scene.addObject('SparseLDLSolver')
+
     SummitXL(scene.Modelling)
-    Floor(scene.Modelling, rotation=[90,0,0], translation=[-2,-0.12,-2], scale=4)
+
     robot=scene.Modelling.SummitXL
     scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=scene.Modelling.SummitXL))
 
