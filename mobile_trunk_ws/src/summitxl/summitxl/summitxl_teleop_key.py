@@ -100,8 +100,8 @@ def main():
             twist.linear.y = 0.
             twist.linear.z = 0.
             twist.angular.x = 0.
-            twist.angular.y = 0.
-            twist.angular.z = th * turn
+            twist.angular.y = th * turn
+            twist.angular.z = 0.
             pub.publish(twist)
 
    except Exception as e:
