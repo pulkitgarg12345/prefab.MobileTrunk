@@ -66,7 +66,7 @@ def main():
    rclpy.init()
 
    node = rclpy.create_node('teleop_twist_keyboard')
-   pub = node.create_publisher(Twist, '/summit_xl/robotnik_base_control/cmd_vel', 10)
+   pub = node.create_publisher(Twist, '/summit_xl/cmd_vel', 10)
 
    speed = 0.1
    turn = 0.1
