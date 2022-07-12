@@ -5,8 +5,17 @@
 
 The MobileTrunk's robot prefab for SoftRobots. 
 
+Index
+-----
 
-## Requirement
+  * [Requirement](#requirement)
+  * [Compile sofa](#compile-sofa)
+  * [Install Required dependencies](#install-required-dependencies)
+  * [Download and set up working space](#download-and-set-up-working-space)
+  * [Launch test](#launch-test)
+
+Requirement
+-----------
 This prefab was developed as part of the SOMOROB project. The goal is to integrate a
 deformable robotic trunk (softrobot) on a 4-wheeled mobile robot base equipped with 
 a LIDAR and to develop its digital twin equivalent. The deformable trunk is a project
@@ -14,10 +23,12 @@ a LIDAR and to develop its digital twin equivalent. The deformable trunk is a pr
 developed by the Defrost team at INRIA. The mobile base is developed by the company
 [Robotnik automation](https://robotnik.eu/)
 
-### Step1: Compile SOFA
+Compile SOFA
+-------------------
 For that follow these [instructions]() (We will install the linux one)
 
-### Step2: Install Required dependencies
+Install Required dependencies
+------------------------------------
 For that follow these [instructions]() (We will install the linux one)
 (The best way to add plugin to SOFA is explained [here]())
 
@@ -46,7 +57,8 @@ For that follow these [instructions]() (We will install the linux one)
     foo@bar:~$  git clone https://github.com/SofaDefrost/BeamAdapter
     ```
 
-### Step3: Download and set up working space
+Download and set up working space
+----------------------------------------
 
 #### Download the mobile trunk's prefab
 
@@ -82,7 +94,7 @@ Open your bashrc and add the following lines in order to setup your working spac
 
 - Faire un alias afin de pouvoir lancer Sofa faciement en faisant un runSofa
     ```console
-        runSofa="/home/fabrice/Documents/CRIStAL/sofa/build/bin/runSofa"
+        runSofa="/path to buid folder/build/bin/runSofa"
     ```
 
 - Add to the PYTHONPATH the path to *STLIB*
@@ -90,9 +102,15 @@ Open your bashrc and add the following lines in order to setup your working spac
         export PYTHONPATH=$PYTHONPATH:/path to build folder/build/lib/python3/site-packages:/path to STLIB plugin folder/STLIB/python3/src:/usr/local/lib/python3.8/dist-packages
     ```
 
-### Step4: Launch test
-To confirm all the previous steps and verify that the prefab is working properly you can launch the summit_xl.py.py SOFA scene situated in:
+Launch test
+------------------
+To confirm all the previous steps and verify that the prefab is working properly you can
+launch the summit_xl.py. SOFA scene situated in prefab.MobileTrunk/mobile_trunk_sim by doing :
 
     ```console
-        prefab.MobileTrunk/mobile_trunk_sim
+        runSofa summit_xl.py
     ```
+
+If everything went well you should see the GUI Sofa with the digital twin of
+
+![somorob](/docs/sofa.png/ "somorob launch test")
