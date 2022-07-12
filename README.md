@@ -134,8 +134,8 @@ It is possible to be able to link the digital twin to the real robot using rosbr
 
 Open your bashrc and add the following lines in order to setup your working space for ros
 
--  Crée un alias pour noetic(ros1) et foxy(ros2) afin de pouvoir sourcer ton terminal plus facilement
-    
+- Create an alias for noetic(ros1) and foxy(ros2) in order to be able to source your terminal more easily
+
     ```console
         alias foxy="source /opt/ros/foxy/setup.bash"
         alias noetic="source /opt/ros/noetic/setup.bash"
@@ -158,10 +158,10 @@ To confirm all the previous steps and verify that the prefab is working properly
     ```console
     foo@bar:~$  runSofa summit_xl
     ```
-If everything went well you should see the GUI Sofa with the digital twin of
+- If everything went well you should see the GUI Sofa with the digital twin of
 
-    
-    ![somorob](/docs/sofa.png/ "somorob launch test")
+    ![somorob](/docs/sofa.png)
+
 
 - Then with your keyboard send velocity and orientation command to the Sofa scene in order to see the robot
 move.
