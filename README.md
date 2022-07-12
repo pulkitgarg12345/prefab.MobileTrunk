@@ -15,6 +15,7 @@ Index
   * [Download and set up working space](#download-and-set-up-working-space)
   * [Install *ROS* and set up working space](#install-ros-and-set-up-working-space)
   * [Launch test](#launch-test)
+  * [License](#license)
 
 Requirement
 -----------
@@ -95,7 +96,8 @@ Open your bashrc and add the following lines in order to setup your working spac
         export SOFA_ROOT=/path to SofaPython3 plugin folder/SofaPython3
     ```
 
-- Faire un alias afin de pouvoir lancer Sofa faciement en faisant un runSofa
+- Make an alias in order to be able to launch Sofa easily by doing a runSofa
+
     ```console
         runSofa="/path to buid folder/build/bin/runSofa"
     ```
@@ -118,13 +120,15 @@ It is possible to be able to link the digital twin to the real robot using rosbr
 
     Install the [foxy](https://docs.ros.org/en/foxy/Installation.html) version for ros2.
 
+    If you are new to ros you can follow the [tutorials](https://docs.ros.org/en/foxy/Tutorials.html)
+    before continuing
+
+
     Install rosbridge
     
     ```console
     foo@bar:~$  sudo apt-get install -y ros-foxy-ros1-bridge
     ```
-    If you are new to ros you can follow the [tutorials](https://docs.ros.org/en/foxy/Tutorials.html)
-    before continuing
 
 ### Set up working space
 
@@ -143,22 +147,56 @@ Open your bashrc and add the following lines in order to setup your working spac
         export PYTHONPATH=$PYTHONPATH:/path to SoftRobot plugin folder/SoftRobots/docs/sofapython3/examples/sofaros
     ```
 
-
-    ```console
-    foo@bar:~$  runSofa summit_xl
-    ```
 Launch test
 -----------
-To confirm all the previous steps and verify that the prefab is working properly you can : 
+To confirm all the previous steps and verify that the prefab is working properly you can :
 
-1. Launch the summit_xl.py SOFA scene situated in prefab.MobileTrunk/mobile_trunk_sim by doing:
+#### Test using sofa controller
+
+-  Launch the summit_xl.py SOFA scene situated in prefab.MobileTrunk/mobile_trunk_sim by doing:
 
     ```console
     foo@bar:~$  runSofa summit_xl
     ```
 If everything went well you should see the GUI Sofa with the digital twin of
 
-![somorob](/docs/sofa.png/ "somorob launch test")
+    
+    ![somorob](/docs/sofa.png/ "somorob launch test")
 
-Then with your keyboard send velocity and orientation command to the Sofa scene in order to see the robot
+- Then with your keyboard send velocity and orientation command to the Sofa scene in order to see the robot
 move.
+
+#### Test using ros api
+
+- source your terminal using : 
+    ```console
+    foo@bar:~$  foxy
+    ```
+
+- Go to the directory where the prefab.MobleTrunk/mobile_trunk_sim folder is located and run 
+ the following command:
+
+    ```console
+    foo@bar:~$  runSofa ros_summitxl.py
+    ```
+- Open a new terminal then source it as before then execute the commands to the following command:
+
+    ```console
+        foo@bar:~$  colcon build && . install/setup.bash && foxy
+    ```
+
+-  You can now launch the keyboard controller to interact with the robot in the simulation
+
+    ```console
+        foo@bar:~$  ros2 run summitxl summitxl_teleop_key
+
+    ```
+
+- If everything went well you should see this appear in the terminal
+    
+    ![ros_teleop_key](/docs/ros_teleopkey.png/)
+
+License
+-------
+
+Creative Commons Zero v1.0 Universal see LICENSE
