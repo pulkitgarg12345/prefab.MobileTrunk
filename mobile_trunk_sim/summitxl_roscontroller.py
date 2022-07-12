@@ -152,6 +152,7 @@ class SummitxlROSController(Sofa.Core.Controller):
         self.robot.robot_linear_x = 0
         self.robot.robot_angular_z  = 0
         self.time_now = None
+        self.time_s = None
 
     def move(self, fwd, angle):
         """Move the robot using the forward speed and angular speed)"""
@@ -197,13 +198,28 @@ class SummitxlROSController(Sofa.Core.Controller):
         """ At each time step we move the robot by the given
             forward_speed and angular_speed)
         """
-        # time init
+
+        self.time_s = time.time()
         if self.time_now is not None:
-            dt = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000  - self.time_now
-            self.time_now = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000
+            dt = self.time_s - self.time_now
+            self.time_now = time.time()
         else:
-            dt=0
-            self.time_now = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000
+            dt = 0
+            self.time_now = time.time()
+
+        robot_time = self.time_s
+        with self.robot.timestamp.writeable() as t:
+            t[0] = int(robot_time)
+            t[1] = 0
+        print("dt = ", dt, " ||| self.time = ", self.robot.timestamp[0])
+
+        # time init
+        #if self.time_now is not None:
+            #dt = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000  - self.time_now
+            #self.time_now = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000
+        #else:
+            #dt=0
+            #self.time_now = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000
 
         self.robot.robot_linear_x = self.robot.robot_linear_vel[0]  * dt
         self.robot.robot_angular_z = self.robot.robot_angular_vel[2] * dt
