@@ -16,7 +16,6 @@ Index
   * [Install *ROS* and set up working space](#install-ros-and-set-up-working-space)
   * [Launch test](#launch-test)
 
-
 Requirement
 -----------
 This prefab was developed as part of the SOMOROB project. The goal is to integrate a
@@ -27,7 +26,8 @@ developed by the Defrost team at INRIA. The mobile base is developed by the comp
 [Robotnik automation](https://robotnik.eu/)
 
 Compile *SOFA*
--------------------
+--------------
+
 For that follow these [instructions]() (We will install the linux one)
 
 Install Required dependencies
@@ -61,7 +61,7 @@ For that follow these [instructions]() (We will install the linux one)
     ```
 
 Download and set up working space
-----------------------------------
+---------------------------------
 
 ### Download the mobile trunk's prefab
 
@@ -161,7 +161,4 @@ If everything went well you should see the GUI Sofa with the digital twin of
 ![somorob](/docs/sofa.png/ "somorob launch test")
 
 Then with your keyboard send velocity and orientation command to the Sofa scene in order to see the robot
-move. 
-
-
-
+move.
