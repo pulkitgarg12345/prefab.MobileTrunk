@@ -15,4 +15,17 @@ developed by the Defrost team at INRIA. The mobile base is developed by the comp
 [Robotnik automation](https://robotnik.eu/)
 
 ### Step1: Compile SOFA
-For that follow these instructions (here is for linux but instruction exist for Mac & Windows also)
+For that follow these [instructions]() (We will install the linux one)
+
+### Step2: Install Required dependencies
+For that follow these [instructions]() (We will install the linux one)
+(The best way to add plugin to SOFA is explained [here]())
+
+- STLIB
+    git clone https://github.com/SofaDefrost/STLIB.git
+
+- SoftRobots
+    git clone https://github.com/SofaDefrost/SoftRobots.git
+
+- SofaPython3
+    git clone https://github.com/sofa-framework/SofaPython3
