@@ -22,10 +22,10 @@ For that follow these [instructions]() (We will install the linux one)
 (The best way to add plugin to SOFA is explained [here]())
 
 - STLIB
-    git clone https://github.com/SofaDefrost/STLIB.git
+    `git clone https://github.com/SofaDefrost/STLIB.git`
 
 - SoftRobots
-    git clone https://github.com/SofaDefrost/SoftRobots.git
+    `git clone https://github.com/SofaDefrost/SoftRobots.git`
 
 - SofaPython3
-    git clone https://github.com/sofa-framework/SofaPython3
+    `git clone https://github.com/sofa-framework/SofaPython3`
