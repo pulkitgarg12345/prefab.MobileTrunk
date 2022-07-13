@@ -15,6 +15,7 @@ Index
   * [Download and set up working space](#download-and-set-up-working-space)
   * [Install *ROS* and set up working space](#install-ros-and-set-up-working-space)
   * [Launch test](#launch-test)
+  * [Connecting the digital twin to the physical robot](#connecting-the-digital-twin-to-the-physical-robot)
   * [License](#license)
 
 Requirement
@@ -195,6 +196,11 @@ move.
 - If everything went well you should see this appear in the terminal
     
     ![ros_teleop_key](/docs/ros_teleopkey.png/)
+
+
+Connecting the digital twin to the physical robot
+-------------------------------------------------
+
 
 License
 -------
