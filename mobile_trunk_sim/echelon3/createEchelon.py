@@ -69,13 +69,26 @@ def createEchelon(echelon,base,index,translation,rotation):
     for c in range(len(parameters.constraintIndices)):
         cable = constraintPoints.addObject('CableConstraint', name ='Section'+str(c//3+1)+'Cable'+str(c%3+1), indices=parameters.constraintIndices[c], hasPullPoint=0, valueType=typeControl, value=0)        
 
+    
+
+    ##########################################
+    # Visual model
+    ##########################################
+    visual = framesNode.addChild("VisualModel")
+    visual.addObject('MeshSTLLoader', name='loader', filename='meshes/trunk.stl',scale3d = [1000,1000,1000], rotation=[-90,-90,-90],
+                                     translation=[0, 0, -100])
+    visual.addObject('MeshTopology', src='@loader')
+    visual.addObject('OglModel', name="renderer", src='@loader', color=[0.2,0.2,0.2,1.0])
+    visual.addObject('RigidMapping', input=frames.getLinkPath(),index=index)
+
     ##########################################
     # Colision model
     ##########################################
 
     collison_model = framesNode.addChild("CollisionModel")
     echelon_collision = collison_model.addChild("EchelonCollision")
-    #echelon_collision.addObject('EdgeSetTopologyContainer', src='@loader')
+    echelon_collision.addObject('MeshSTLLoader', name='loader', filename='meshes/trunk.stl', scale3d=[1000, 1000, 1000])
+    echelon_collision.addObject('MeshTopology', src='@loader')
     #echelon_collision.addObject('MechanicalObject')
     #echelon_collision.addObject('TriangleCollisionModel', group=0)
     #echelon_collision.addObject('LineCollisionModel',group=0)
