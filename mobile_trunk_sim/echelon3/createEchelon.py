@@ -69,4 +69,15 @@ def createEchelon(echelon,base,index,translation,rotation):
     for c in range(len(parameters.constraintIndices)):
         cable = constraintPoints.addObject('CableConstraint', name ='Section'+str(c//3+1)+'Cable'+str(c%3+1), indices=parameters.constraintIndices[c], hasPullPoint=0, valueType=typeControl, value=0)        
 
+    ##########################################
+    # Colision model
+    ##########################################
+
+    collison_model = framesNode.addChild("CollisionModel")
+    echelon_collision = collison_model.addChild("EchelonCollision")
+    #echelon_collision.addObject('EdgeSetTopologyContainer', src='@loader')
+    #echelon_collision.addObject('MechanicalObject')
+    #echelon_collision.addObject('TriangleCollisionModel', group=0)
+    #echelon_collision.addObject('LineCollisionModel',group=0)
+    #echelon_collision.addObject('PointCollisionModel', group=0)
     return parameters
