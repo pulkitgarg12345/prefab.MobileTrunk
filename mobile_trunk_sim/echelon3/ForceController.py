@@ -10,11 +10,11 @@ class ForceController(Sofa.Core.Controller):
         name : the name of the component 
     """
 
-    def __init__(self, mechanicalObject : Sofa.Core.Node, dt : float, name : str = "CableController"):
+    def __init__(self, cables : list, dt : float, name : str = "CableController"):
         Sofa.Core.Controller.__init__(self, name = name)
                 
-        self.Cables = mechanicalObject     
-        self.forceMax = 49050000 # max 6kg
+        self.cables = cables     
+        self.forceMax = 1e20 # max 6kg
         self.forceMin = 0
         self.dt = dt
 
@@ -25,43 +25,37 @@ class ForceController(Sofa.Core.Controller):
     #action when key press
     def onKeypressedEvent(self, c):
         key = c['key']        
-        ##### Section 1 ######
-        
-        # Cable 1 
+
+        ##### cables number ######
         if (key == "1"):
-            force = self.Cables.Section1Cable1.value.value + 981000 # F = g.mm.s-2 ==> 100g : 100*9810 =  g.mm.s-2
+            self.index = 0
+        elif (key == "2"):
+            self.index = 1
+        elif (key == "3"):
+            self.index = 2
+        elif (key == "4"): 
+            self.index = 3
+        elif (key == "5"):
+            self.index = 4
+        elif (key == "6"):
+            self.index = 5
+        elif (key == "7"): 
+            self.index = 6
+        elif (key == "8"):
+            self.index = 7
+        elif (key == "9"):
+            self.index = 8
+
+        ##### add or substract ######
+        if key == '+':
+            force = self.cables[self.index].value.value+981000*self.dt # F = g.mm.s-2 ==> 100g : 100*9810 =  g.mm.s-2
             if force[0] <= self.forceMax :
-                self.Cables.Section1Cable1.value.value = [force*self.dt]
-            print("force Section 1 Cable 1 : "+str(force[0]*10**-6.0))
+                self.cables[self.index].value.value = [force]
+            print(f'Cables {self.index} force = {force[0]*1e-6}')
 
-        if (key == "4"):
-            force = self.Cables.Section1Cable1.value.value - 981000 # F = g.mm.s-2 ==> 500g : 500*9810 = 4.905*10^6 g.mm.s-2
-            if force[0] >= self.forceMin :
-                self.Cables.Section1Cable1.value.value = [force * self.dt]
-            print("force Section 1 Cable 1 : "+str(force[0]))
-
-        # Cable 2 
-        if (key == "2"):
-            force = self.Cables.Section1Cable2.value.value + 981000 # F = g.mm.s-2 ==> 500g : 500*9810 = 4.905*10^6 g.mm.s-2
-            if force[0] <= self.forceMax :
-                self.Cables.Section1Cable2.value.value = [force * self.dt]
-            print("force Section 1 Cable 2 : "+str(force[0]))
-
-        if (key == "5"):
-            force = self.Cables.Section1Cable2.value.value - 981000 # F = g.mm.s-2 ==> 500g : 500*9810 = 4.905*10^6 g.mm.s-2
-            if force[0] >= self.forceMin :
-                self.Cables.Section1Cable2.value.value = [force * self.dt]
-            print("force Section 1 Cable 2 : "+str(force[0]))
-
-        # cable 3
-        if (key == "3"):
-            force = self.Cables.Section1Cable3.value.value + 981000 # F = g.mm.s-2 ==> 500g : 500*9810 = 4.905*10^6 g.mm.s-2
-            if force[0] <= self.forceMax :
-                self.Cables.Section1Cable3.value.value = [force * self.dt]
-            print("force Section 1 Cable 3 : "+str(force[0]))
-
-        if (key == "6"): 
-            force = self.Cables.Section1Cable3.value.value - 981000 # F = g.mm.s-2 ==> 500g : 500*9810 = 4.905*10^6 g.mm.s-2
-            if force[0] >= self.forceMin :
-                self.Cables.Section1Cable3.value.value = [force * self.dt]
-            print("force Section 1 Cable 3 : "+str(force[0]))
+        elif key == '-':
+            force = self.cables[self.index].value.value-981000*self.dt # F = g.mm.s-2 ==> 100g : 100*9810 =  g.mm.s-2
+            if force[0] >= -self.forceMin :
+                self.cables[self.index].value.value = [force]
+            print(f'Cables {self.index} force = {force[0]*1e-6}')
+    
