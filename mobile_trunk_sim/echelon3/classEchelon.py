@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from math import sin,cos,pi
 import numpy as np
 
+
 @dataclass
 class Numerical:
     """

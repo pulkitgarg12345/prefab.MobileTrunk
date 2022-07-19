@@ -90,10 +90,6 @@ class SummitxlController(Sofa.Core.Controller):
         self.move(self.robot.simrobot_linear_vel[0] , self.robot.simrobot_angular_vel[2])
 
 
-
-
-
-
     def onKeypressedEvent(self, event):
         key = event['key']
         key = key.lower()
@@ -111,8 +107,8 @@ class SummitxlController(Sofa.Core.Controller):
         else:
             self.x = 0.0
             self.th = 0.0
-        self.robot.simrobot_linear_vel[0] =  self.x * self.speed * self.dt*1000
-        self.robot.simrobot_angular_vel[2] = self.th * self.turn * self.dt
+        self.robot.simrobot_linear_vel[0] =  self.x * self.speed * self.dt*1000 # A corriger
+        self.robot.simrobot_angular_vel[2] = self.th * self.turn * self.dt*1.2
 
 
 

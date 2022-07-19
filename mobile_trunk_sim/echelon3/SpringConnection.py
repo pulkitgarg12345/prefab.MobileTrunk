@@ -10,16 +10,7 @@ if not inverse :
 
 
 def createEchelon(echelon,base,index,translation,rotation):
-    """
-    Creates topology and cables for echelon3 arm
-    Parameters :
-        echelon : Sofa child on which we add everything
-        base : mechanical object on which we attach the arm
-        index : index of the mechanical point we attach the arm
-        translation : from 0,0,0 where we creat the arm
-        rotation : from 0,0,0 where we creat the arm
-    """
-    
+
     parameters = Echelon3([6,6,8],[12,11,7.375],[100,50.0*1.33, 35.0,35],[75,50.0,35, 35.0])
 
     position =  echelon.addObject('TransformEngine',name="transform" ,template="Vec3d" ,translation=translation ,rotation=rotation ,input_position=parameters.position)
@@ -35,8 +26,12 @@ def createEchelon(echelon,base,index,translation,rotation):
 
     framesNode = echelon.addChild('framesNode')
 
+    framesNode.addObject('EulerImplicitSolver', rayleighStiffness=parameters.numerical.rayleighStiffness, rayleighMass=parameters.numerical.rayleighMass, vdamping=parameters.numerical.vdamping) 
+    # framesNode.addObject('EigenSimplicialLDLT',  name='ldl', template='CompressedRowSparseMatrixMat3x3d');
+    framesNode.addObject('SparseLDLSolver',  name='ldl', template='CompressedRowSparseMatrixMat3x3d');
+    framesNode.addObject('GenericConstraintCorrection' , solverName='ldl')
     framesNode.addObject('PointSetTopologyContainer', position=position.output_position);
-    frames = framesNode.addObject('MechanicalObject', name='frames', template='Rigid3d',  showObject=1, showObjectScale=2, position=positionRigid.output_position)
+    frames = framesNode.addObject('MechanicalObject', name='frames', template='Rigid3d',  showObject=1, showObjectScale=0.01, position=positionRigid.output_position)
 
     topoTubeNode=framesNode.addChild('topoTube')
     topoTubeNode.addObject('EdgeSetTopologyContainer', edges=parameters.backboneEdges, name='edgeContainer')
@@ -68,5 +63,6 @@ def createEchelon(echelon,base,index,translation,rotation):
 
     for c in range(len(parameters.constraintIndices)):
         cable = constraintPoints.addObject('CableConstraint', name ='Section'+str(c//3+1)+'Cable'+str(c%3+1), indices=parameters.constraintIndices[c], hasPullPoint=0, valueType=typeControl, value=0)        
+
 
     return parameters
