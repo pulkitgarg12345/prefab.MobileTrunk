@@ -25,10 +25,11 @@ def Chassis():
 
     sensorPositions = [[0., 0.28*1000 ,0.],          # 2d lazer
                        [0,0.275*1000,-0.22*1000],         # gps
-                       [0., 0.26*1000, 0.19*1000]     #trunk
                        ]
 
-    sensorName=["lazer", "gps", "trunk"]
+    sensorName=["lazer", "gps"]
+
+    trunkPosition = [0., 0.26*1000, 0.32*1000,-0.5, -0.5, -0.5 , 0.5 ]
 
     #########################################
     #Add chassis mechanical Object
@@ -51,7 +52,7 @@ def Chassis():
 
     #capteur
     sensor =  self.addChild("FixedSensor")
-    sensor.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0, 0])
+    sensor.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0])
     sensor.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     #########################################
@@ -62,7 +63,7 @@ def Chassis():
 
     sensor.addObject('ArticulatedHierarchyContainer')
 
-    for i in range(3):
+    for i in range(2):
         sc = sensor.addChild(sensorName[i])
         sc.addObject('ArticulationCenter', parentIndex=0, childIndex=1+i, posOnParent=sensorPositions[i])
         s = sc.addChild("Articulation")
@@ -92,11 +93,12 @@ def Chassis():
                           output=wheels.position.getLinkPath())
 
     #########################################
-    #AAdd sensors
+    #  add sensors
     #########################################
+
     sensors = self.addChild("Sensors")
     sensors.addObject("MechanicalObject", name = "position", template="Rigid3d",
-                    position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
+                    position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
                      showObject=True)
     sensors.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
@@ -150,6 +152,7 @@ def Chassis():
     #########################################
     # collision models
     #########################################
+
     collison_model = wheels.addChild("CollisionModel")
     for i in range(4):
         wheel_collision = collison_model.addChild("WheelCollision{0}".format(i))
@@ -161,7 +164,18 @@ def Chassis():
         wheel_collision.addObject('PointCollisionModel', group=0)
         wheel_collision.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=i+1)
 
+    #########################################
+    # add Trunk
+    #########################################
+
+    trunk = self.addChild("Trunk")
+    trunk.addObject("MechanicalObject", name = "position", template="Rigid3d",
+                    position=trunkPosition,
+                     showObject=True,showObjectScale = 30)    
+    trunk.addObject('RigidRigidMapping',name='mapping', input=self.position.getLinkPath(), index=0)
+
     return self
+
 
 def SummitXL(parentNode, name="SummitXL"):
     self = parentNode.addChild(name)
@@ -211,12 +225,12 @@ def createScene(rootNode):
 
     scene = Scene(rootNode)
     scene.addMainHeader()
-    scene.VisualStyle.displayFlags = 'showCollisionModels showForceFields'
+    scene.VisualStyle.displayFlags = 'hideBehaviorModels showForceFields showCollisionModels showInteractionForceFields'
     scene.addObject('DefaultVisualManagerLoop')
     scene.dt = 0.001
     scene.gravity = [0., -9810., 0.]
 
-    scene.Modelling.addObject('EulerImplicitSolver')
+    scene.Modelling.addObject('EulerImplicitSolver',rayleighStiffness=0.01, rayleighMass=0, vdamping=0.1)
     solver = scene.Modelling.addObject('SparseLDLSolver',name = 'SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
     scene.Modelling.addObject('GenericConstraintCorrection' , solverName='SparseLDLSolver')
 
@@ -246,7 +260,11 @@ def createScene(rootNode):
     ######################################## 
 
     arm = rootNode.Modelling.SummitXL.Chassis.addChild('Arm')
-    connection = rootNode.Modelling.SummitXL.Chassis.Sensors.position
-    createEchelon(arm,connection,3,[0., 0.26*1000, 0.19*1000],[-90,-90,0])
+    connection = rootNode.Modelling.SummitXL.Chassis.Trunk.position
+    parameters, cables = createEchelon(arm,connection,0,[0., 0.26*1000, 0.32*1000],[-90,-90,0])
 
+    if typeControl == 'displacement':
+        arm.addObject(CableController(cables, name = 'Cablecontroller'))
+    elif typeControl == 'force' :
+        arm.addObject(ForceController(cables,dt,name = 'ForceController'))
     return rootNode
