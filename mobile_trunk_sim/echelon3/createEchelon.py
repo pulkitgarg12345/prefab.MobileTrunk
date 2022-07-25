@@ -73,19 +73,25 @@ def createEchelon(echelon,base,index,translation,rotation):
     # ##########################################
     trunk = framesNode.addChild("Trunk")
 
-    trunk.addObject("MechanicalObject", name="position", template="Rigid3d",
-                          position=positionRigid.output_position, showObject=True)
+    trunk.addObject("MechanicalObject", name="position", template="Vec3d",
+                          position=position.output_position, showObject=True)
     trunk.addObject('UniformMass', totalMass=0.032)
+
+    # trunk.addObject('TetrahedronHyperelasticityFEMForceField',
+    #                       name="linearElasticBehavior",
+    #                       youngModulus=250,
+    #                       poissonRatio=0.45)
 
     ###########################################
     # # Visual model for colision
     # ##########################################
     visual = trunk.addChild("VisualModel")
-    visual.addObject('MeshSTLLoader', name='loader', filename='meshes/trunk.stl',scale3d = [1000,1000,1000], rotation=[-90,-90,-90],
-                                     translation=[0, 0, -100])
+    visual.addObject('MeshSTLLoader', name='loader', filename='meshes/model_colision.stl',scale3d = [1000,1000,1000], rotation=[90,90,180],
+                                     translation=[0., 0.26*1000, 0.65*1000])
+                        
     visual.addObject('MeshTopology', src='@loader')
     visual.addObject('OglModel', name="renderer", src='@loader', color=[0.2,0.2,0.2,1.0])
-    visual.addObject('RigidMapping', input=frames.getLinkPath(),index=index)
+    visual.addObject('SkinningMapping' , template="Rigid3d,Vec3d", input=frames.getLinkPath())
 
     # ##########################################
     # # Colision model
@@ -94,7 +100,9 @@ def createEchelon(echelon,base,index,translation,rotation):
     collison_model = trunk.addChild("CollisionModel")
     collison_model.addObject('MeshSTLLoader', name='loader', filename='meshes/trunk.stl', scale3d=[1000, 1000, 1000])
     collison_model.addObject('MeshTopology', src='@loader')
-    #collison_model.addObject('MechanicalObject')
+    collison_model.addObject('TriangleSetTopologyContainer', src='@loader', name='container')
+
+    #collison_model.addObject('MechanicalObject', src = '@loader')
     # #echelon_collision.addObject('TriangleCollisionModel', group=0)
     # #echelon_collision.addObject('LineCollisionModel',group=0)
     # #echelon_collision.addObject('PointCollisionModel', group=0)
