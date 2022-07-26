@@ -209,7 +209,7 @@ def SummitXL(parentNode, name="SummitXL"):
 
 def createScene(rootNode):
 
-    ContactHeader(rootNode, alarmDistance=0.2*1000, contactDistance=0.005*1000)
+    #ContactHeader(rootNode, alarmDistance=0.2*1000, contactDistance=0.005*1000)
 
     #########################################
     # Plugins, data and Solvers
@@ -223,21 +223,25 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', name='SofaPlugins', pluginName='SofaGeneralRigid SofaGeneralEngine SofaConstraint SofaImplicitOdeSolver SofaSparseSolver SofaDeformable SofaEngine SofaBoundaryCondition SofaRigid SofaTopologyMapping SofaOpenglVisual SofaMiscCollision')
 
 
-    scene = Scene(rootNode)
+    scene = Scene(rootNode, iterative=False)
     scene.addMainHeader()
+    scene.addContact(alarmDistance=0.2*1000, contactDistance=0.005*1000)
     scene.VisualStyle.displayFlags = 'hideBehaviorModels showForceFields showCollisionModels showInteractionForceFields'
     scene.addObject('DefaultVisualManagerLoop')
     scene.dt = 0.001
     scene.gravity = [0., -9810., 0.]
 
-    scene.Modelling.addObject('EulerImplicitSolver',rayleighStiffness=0.01, rayleighMass=0, vdamping=0.1)
-    solver = scene.Modelling.addObject('SparseLDLSolver',name = 'SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
-    scene.Modelling.addObject('GenericConstraintCorrection' , solverName='SparseLDLSolver')
+    #scene.Modelling.addObject('EulerImplicitSolver',rayleighStiffness=0.01, rayleighMass=0, vdamping=0.1)
+    #solver = scene.Modelling.addObject('SparseLDLSolver',name = 'SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
+    scene.Simulation.addObject('GenericConstraintCorrection' , solverName='LinearSolver', ODESolverName='GenericConstraintSolver')
 
+    scene.Simulation.TimeIntegrationSchema.vdamping.value = 0.1
+    scene.Simulation.TimeIntegrationSchema.rayleighStiffness = 0.01
+    
     #########################################
     # create summit
     #########################################
-
+    scene.Simulation.addChild(scene.Modelling)
     SummitXL(scene.Modelling)
     floor = Floor(rootNode,
                   name="Floor",
