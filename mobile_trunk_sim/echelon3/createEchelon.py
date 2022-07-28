@@ -103,7 +103,7 @@ def createEchelon(echelon,base,index,translation,rotation):
     collison_model.addObject('MeshTopology', src='@loader')
     collison_model.addObject('MechanicalObject', src = '@loader')
     collison_model.addObject('TriangleCollisionModel', group=0)
-    collison_model.addObject('LineCollisionModel',group=0)
+    collison_model.addObject('LineCollisionModel',group=1)
     collison_model.addObject('PointCollisionModel', group=0)
     collison_model.addObject('SkinningMapping' , template="Rigid3d,Vec3d", input=frames.getLinkPath())
 

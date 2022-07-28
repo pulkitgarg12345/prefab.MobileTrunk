@@ -14,9 +14,9 @@ def Chassis():
     #########################################
     # parameters
     #########################################
-    totalMass = 1.0
-    volume = 1.0*1e9
-    inertiaMatrix = [1.0*1e6, 0.0, 0.0, 0.0, 1.0*1e6, 0.0, 0.0, 0.0, 1.0*1e6]
+    # totalMass = 1.0
+    # volume = 1.0*1e9
+    # inertiaMatrix = [1.0*1e6, 0.0, 0.0, 0.0, 1.0*1e6, 0.0, 0.0, 0.0, 1.0*1e6]
 
     wheelPositions = [[0.229*1000, 0,0.235*1000],
                       [-0.229*1000, 0,0.235*1000],
@@ -37,9 +37,9 @@ def Chassis():
 
     self = Sofa.Core.Node("Chassis")
     self.addObject("MechanicalObject", name="position", template="Rigid3d", position=[[0,0,0,0,0,0,1]])
-    self.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+    # self.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
-    self.addObject('UncoupledConstraintCorrection')
+    #self.addObject('UncoupledConstraintCorrection')
 
     #########################################
     #creation of the articulated chain of wheels, sensors
@@ -48,12 +48,12 @@ def Chassis():
     #wheels
     chain = self.addChild("WheelsMotors")
     chain.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0,0,0])
-    chain.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+    # chain.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     #capteur
     sensor =  self.addChild("FixedSensor")
     sensor.addObject('MechanicalObject', name="angles", template="Vec1d", position=[0,0,0])
-    sensor.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+    # sensor.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     #########################################
     #description of the articulated chain from the chassis'position to the wheels and the sensors
@@ -85,7 +85,7 @@ def Chassis():
     wheels.addObject("MechanicalObject", name="position", template="Rigid3d",
                           position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
                           showObject=True)
-    wheels.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+    # wheels.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     wheels.addObject('ArticulatedSystemMapping',
                           input1=chain.angles.getLinkPath(),
@@ -100,7 +100,7 @@ def Chassis():
     sensors.addObject("MechanicalObject", name = "position", template="Rigid3d",
                     position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
                      showObject=True)
-    sensors.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
+    # sensors.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     sensors.addObject('ArticulatedSystemMapping',
                         input1=sensor.angles.getLinkPath(),
@@ -153,16 +153,16 @@ def Chassis():
     # collision models
     #########################################
 
-    collison_model = wheels.addChild("CollisionModel")
-    for i in range(4):
-        wheel_collision = collison_model.addChild("WheelCollision{0}".format(i))
-        wheel_collision.addObject('MeshSTLLoader', name='loader', filename='meshes/collision_wheel.stl', rotation=[0, 90, 0],scale3d = [1000,1000,1000])
-        wheel_collision.addObject('MeshTopology', src='@loader')
-        wheel_collision.addObject('MechanicalObject')
-        wheel_collision.addObject('TriangleCollisionModel', group=0)
-        wheel_collision.addObject('LineCollisionModel',group=0)
-        wheel_collision.addObject('PointCollisionModel', group=0)
-        wheel_collision.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=i+1)
+    # collison_model = wheels.addChild("CollisionModel")
+    # for i in range(4):
+    #     wheel_collision = collison_model.addChild("WheelCollision{0}".format(i))
+    #     wheel_collision.addObject('MeshSTLLoader', name='loader', filename='meshes/collision_wheel.stl', rotation=[0, 90, 0],scale3d = [1000,1000,1000])
+    #     wheel_collision.addObject('MeshTopology', src='@loader')
+    #     wheel_collision.addObject('MechanicalObject')
+    #     wheel_collision.addObject('TriangleCollisionModel', group=0)
+    #     wheel_collision.addObject('LineCollisionModel',group=0)
+    #     wheel_collision.addObject('PointCollisionModel', group=0)
+    #     wheel_collision.addObject('RigidMapping', input=self.Wheels.position.getLinkPath(), index=i+1)
 
     #########################################
     # add Trunk
@@ -222,7 +222,6 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', name='SofaMeshCollision')
     rootNode.addObject('RequiredPlugin', name='SofaPlugins', pluginName='SofaGeneralRigid SofaGeneralEngine SofaConstraint SofaImplicitOdeSolver SofaSparseSolver SofaDeformable SofaEngine SofaBoundaryCondition SofaRigid SofaTopologyMapping SofaOpenglVisual SofaMiscCollision')
 
-
     scene = Scene(rootNode, iterative=False)
     scene.addMainHeader()
     scene.addContact(alarmDistance=0.2*1000, contactDistance=0.005*1000)
@@ -231,17 +230,18 @@ def createScene(rootNode):
     scene.dt = 0.001
     scene.gravity = [0., -9810., 0.]
 
+
     #scene.Modelling.addObject('EulerImplicitSolver',rayleighStiffness=0.01, rayleighMass=0, vdamping=0.1)
     #solver = scene.Modelling.addObject('SparseLDLSolver',name = 'SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
-    scene.Simulation.addObject('GenericConstraintCorrection' , solverName='LinearSolver', ODESolverName='GenericConstraintSolver')
 
     scene.Simulation.TimeIntegrationSchema.vdamping.value = 0.1
     scene.Simulation.TimeIntegrationSchema.rayleighStiffness = 0.01
-    
+    scene.Simulation.addObject('GenericConstraintCorrection' , solverName='LinearSolver', ODESolverName='GenericConstraintSolver')
+
     #########################################
     # create summit
     #########################################
-    scene.Simulation.addChild(scene.Modelling)
+    #scene.Simulation.addChild(scene.Modelling)
     SummitXL(scene.Modelling)
     floor = Floor(rootNode,
                   name="Floor",
@@ -263,7 +263,9 @@ def createScene(rootNode):
     # createEchelon
     ######################################## 
 
-    arm = rootNode.Modelling.SummitXL.Chassis.addChild('Arm')
+    scene.Modelling.SummitXL.Chassis.addChild('Arm')
+
+    arm = scene.Simulation.addChild(scene.Modelling.SummitXL.Chassis.Arm)
     connection = rootNode.Modelling.SummitXL.Chassis.Trunk.position
     parameters, cables = createEchelon(arm,connection,0,[0., 0.26*1000, 0.32*1000],[-90,-90,0])
 
