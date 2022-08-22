@@ -27,6 +27,10 @@ a LIDAR and to develop its digital twin equivalent. The deformable trunk is a pr
 developed by the Defrost team at INRIA. The mobile base is developed by the company
 [Robotnik automation](https://robotnik.eu/)
 
+Software version
+---------------
+- Python 3
+
 Compile *SOFA*
 --------------
 
@@ -207,28 +211,6 @@ move.
 - ctl + i : To select the cable i (from 1 to 9) you want to actuate
 - ctl + plus : if you want to pull the cable
 - ctl + minus : if you want to release the cable
-
-### Software version
-
-The softwares are use with the following version :
-
-- Sofa V21.12
-- Python 3
-
-The following Sofa plugins are required. version V21.12 is needed.
-
-- SofaPython3
-- BeamAdapter
-- SoftRobots
-
-The following python module are required :
-
-- time
-- threading
-- math
-- numpy
-- dataclasses
-- sys
 
 ### Links
 
