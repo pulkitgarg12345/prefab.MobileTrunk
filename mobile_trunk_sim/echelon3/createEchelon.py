@@ -50,7 +50,7 @@ def createEchelon(echelon,base,index,translation,rotation):
     # Spring to connect the arm to a point
     ######################################### 
     
-    framesNode.addObject('RestShapeSpringsForceField', points=parameters.backboneEdges[0][0], external_points = index,external_rest_shape =base.getLinkPath() ,stiffness=1e10 , angularStiffness=1e14)
+    framesNode.addObject('RestShapeSpringsForceField', points=parameters.backboneEdges[0][0], external_points = index,external_rest_shape =base.getLinkPath() ,stiffness=1e15 , angularStiffness=1e20)
 
     #########################################
     # Cables
