@@ -96,7 +96,7 @@ def main():
                if (key == '\x03'):
                   break
             twist = Twist()
-            twist.linear.x = x * speed
+            twist.linear.x = x * speed * 1000
             twist.linear.y = 0.
             twist.linear.z = 0.
             twist.angular.x = 0.

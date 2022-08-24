@@ -30,9 +30,10 @@ def createScene(rootNode):
     rootNode.addObject('RequiredPlugin', name='SofaMeshCollision')
     rootNode.addObject('RequiredPlugin', name='SofaPlugins', pluginName='SofaGeneralRigid SofaGeneralEngine SofaConstraint SofaImplicitOdeSolver SofaSparseSolver SofaDeformable SofaEngine SofaBoundaryCondition SofaRigid SofaTopologyMapping SofaOpenglVisual SofaMiscCollision')
 
+    scale = 1000
     scene = Scene(rootNode, iterative=False)
     scene.addMainHeader()
-    scene.addContact(alarmDistance=0.2*1000, contactDistance=0.005*1000)
+    scene.addContact(alarmDistance=0.2*scale, contactDistance=0.005*scale)
     scene.VisualStyle.displayFlags = 'showCollisionModels showForceFields'
     scene.addObject('DefaultVisualManagerLoop')
     scene.dt = 0.001
@@ -49,8 +50,8 @@ def createScene(rootNode):
     SummitXL(scene.Modelling, 1000)
     floor = Floor(rootNode,
                   name="Floor",
-                  translation=[-2*1000, -0.12*1000, -2*1000],
-                  uniformScale=0.3*1000,
+                  translation=[-2*scale, -0.12*scale, -2*scale],
+                  uniformScale=0.3*scale,
                   isAStaticObject=True)
 
     robot=scene.Modelling.SummitXL
@@ -91,7 +92,7 @@ def createScene(rootNode):
 
     trunk = scene.Modelling.SummitXL.Chassis.addChild("Trunk")
     trunk.addObject("MechanicalObject", name = "position", template="Rigid3d",
-                    position=[0., 0.26*1000, 0.32*1000,-0.5, -0.5, -0.5 , 0.5 ],
+                    position=[0., 0.26*scale, 0.32*scale,-0.5, -0.5, -0.5 , 0.5 ],
                      showObject=True,showObjectScale = 30)    
     trunk.addObject('RigidRigidMapping',name='mapping', input=scene.Modelling.SummitXL.Chassis.position.getLinkPath(),
                                                 index=0)
@@ -102,6 +103,6 @@ def createScene(rootNode):
     
     connection = rootNode.Modelling.SummitXL.Chassis.Trunk.position
     
-    parameters, cables = createEchelon(arm,connection,0,[0., 0.26*1000, 0.32*1000],[-90,-90,0])
+    parameters, cables = createEchelon(arm,connection,0,[0., 0.26*scale, 0.32*scale],[-90,-90,0])
 
     return rootNode
