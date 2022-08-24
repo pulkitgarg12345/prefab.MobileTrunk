@@ -3,7 +3,7 @@
 import Sofa
 from splib3.numerics import RigidDof
 from sensor_msgs.msg import Imu
-from geometry_msgs.msg import Twist,Point, Pose, Quaternion, Twist, Vector3
+from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 import time
 from math import *
@@ -225,7 +225,6 @@ class SummitxlROSController(Sofa.Core.Controller):
         #self.robot.timestamp[1] = 0 
         self.robot.robot_linear_x = self.robot.robot_linear_vel[0]  * dt
         self.robot.robot_angular_z = self.robot.robot_angular_vel[2] * dt
-        
         
         for i in range(0,4):
             self.robot.sim_orientation[i] = self.robot.Chassis.position.position.value[0][3+i]

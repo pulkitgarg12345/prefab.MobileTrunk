@@ -32,7 +32,6 @@ Software version
 The softwares are use with the following version :
 - Python 3
 
-
 The following Sofa plugins are required. version V21.12 is needed.
 
 - SofaPython3
