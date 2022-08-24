@@ -29,7 +29,24 @@ developed by the Defrost team at INRIA. The mobile base is developed by the comp
 
 Software version
 ---------------
+The softwares are use with the following version :
 - Python 3
+
+
+The following Sofa plugins are required. version V21.12 is needed.
+
+- SofaPython3
+- BeamAdapter
+- SoftRobots
+
+The following python module are required :
+
+- time
+- threading
+- math
+- numpy
+- dataclasses
+- sys
 
 Compile *SOFA*
 --------------
@@ -59,7 +76,6 @@ For that follow these [instructions]() (We will install the linux one)
     foo@bar:~$  git clone https://github.com/sofa-framework/SofaPython3
     ```
     
-
 - BeamAdapter
 
     ```console
