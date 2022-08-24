@@ -52,6 +52,7 @@ class SummitxlController(Sofa.Core.Controller):
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.robot = kwargs["robot"]
+        self.scale=kwargs["scale"]
         self.wheel_ray = 0.0015
         self.dt = 0
 
@@ -107,7 +108,7 @@ class SummitxlController(Sofa.Core.Controller):
         else:
             self.x = 0.0
             self.th = 0.0
-        self.robot.simrobot_linear_vel[0] =  self.x * self.speed * self.dt*1000 # A corriger
+        self.robot.simrobot_linear_vel[0] =  self.x * self.speed * self.dt*self.scale# A corriger
         self.robot.simrobot_angular_vel[2] = self.th * self.turn * self.dt
 
 
