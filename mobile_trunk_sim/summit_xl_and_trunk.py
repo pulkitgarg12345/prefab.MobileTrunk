@@ -5,17 +5,7 @@ from summitxl_controller import *
 from summit_xl import SummitXL
 from echelon3.parameters import *
 from echelon3.createEchelon import *
-
-
-def Floor(parentNode, name,  translation, color=[0.5, 0.5, 0.5, 1.]):
-
-    floor = parentNode.addChild(name)
-    floor.addObject('MeshSTLLoader', name='loader', filename='meshes/Assembly.stl', 
-                                    rotation=[-90, 0, 90],scale=2000, translation=translation )
-    floor.addObject('MeshTopology', src='@loader')
-    floor.addObject('OglModel', name="renderer", src='@loader', color=color)
-    floor.addObject('MechanicalObject')
-
+from floor import Floor
 
 def createScene(rootNode):
 
@@ -82,7 +72,7 @@ def createScene(rootNode):
     AttachedArm.addObject('RigidRigidMapping',name='mapping', input=scene.Modelling.SummitXL.Chassis.position.getLinkPath(),
                                                 index=0)
 
-    trunk = scene.Modelling.SummitXL.Chassis.addChild('Trunk')
+    trunk = AttachedArm.addChild('Trunk')
     base_position = rootNode.Modelling.SummitXL.Chassis.AttachedArm.position
     parameters, cables = createEchelon(trunk,base_position,0,[0., 0.26*1000, 0.32*1000],[-90,-90,0])
 
