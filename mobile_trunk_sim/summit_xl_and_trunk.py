@@ -1,10 +1,20 @@
 import Sofa
 from stlib3.scene import Scene
-from stlib3.physics.rigid import Floor
+from stlib3.physics.rigid import Cube
 from summitxl_controller import *
 from summit_xl import SummitXL
 from echelon3.parameters import *
 from echelon3.createEchelon import *
+
+
+def Floor(parentNode, name,  translation, color=[0.5, 0.5, 0.5, 1.]):
+
+    floor = parentNode.addChild(name)
+    floor.addObject('MeshSTLLoader', name='loader', filename='meshes/Assembly.stl', 
+                                    rotation=[-90, 0, 90],scale=2000, translation=translation )
+    floor.addObject('MeshTopology', src='@loader')
+    floor.addObject('OglModel', name="renderer", src='@loader', color=color)
+    floor.addObject('MechanicalObject')
 
 
 def createScene(rootNode):
@@ -22,7 +32,7 @@ def createScene(rootNode):
 
     scene = Scene(rootNode, iterative=False)
     scene.addMainHeader()
-    scene.addContact(alarmDistance=0.2*1000, contactDistance=0.005*1000)
+    scene.addContact(alarmDistance=0.1*1000, contactDistance=0.0005*1000)
     scene.VisualStyle.displayFlags = 'hideBehaviorModels showForceFields showCollisionModels showInteractionForceFields'
     scene.addObject('DefaultVisualManagerLoop')
     scene.dt = 0.001
@@ -44,9 +54,12 @@ def createScene(rootNode):
     SummitXL(scene.Modelling, scale)
     floor = Floor(rootNode,
                   name="Floor",
-                  translation=[-2*1000, -0.12*1000, -2*1000],
-                  uniformScale=0.1*1000,
-                  isAStaticObject=True)
+                  translation=[5*scale, -3.5*scale, -2*scale])
+
+
+    Cube(rootNode,
+         translation=[-2*scale, -0.12*scale, -2*scale],
+         uniformScale=0.4*1000)
 
     #def myAnimation(target, body, factor):
     #    body.position += [[0.0,0.0,0.001,0.0,0,0,1]]
@@ -62,21 +75,22 @@ def createScene(rootNode):
     # createEchelon
     ######################################## 
 
-    trunk = scene.Modelling.SummitXL.Chassis.addChild("Trunk")
-    trunk.addObject("MechanicalObject", name = "position", template="Rigid3d",
+    AttachedArm= scene.Modelling.SummitXL.Chassis.addChild("AttachedArm")
+    AttachedArm.addObject("MechanicalObject", name = "position", template="Rigid3d",
                     position=[0., 0.26*1000, 0.32*1000,-0.5, -0.5, -0.5 , 0.5 ],
                      showObject=True,showObjectScale = 30)    
-    trunk.addObject('RigidRigidMapping',name='mapping', input=scene.Modelling.SummitXL.Chassis.position.getLinkPath(),
+    AttachedArm.addObject('RigidRigidMapping',name='mapping', input=scene.Modelling.SummitXL.Chassis.position.getLinkPath(),
                                                 index=0)
 
-    scene.Modelling.SummitXL.Chassis.addChild('Arm')
-
-    arm = scene.Simulation.addChild(scene.Modelling.SummitXL.Chassis.Arm)
-    connection = rootNode.Modelling.SummitXL.Chassis.Trunk.position
-    parameters, cables = createEchelon(arm,connection,0,[0., 0.26*1000, 0.32*1000],[-90,-90,0])
+    trunk = scene.Modelling.SummitXL.Chassis.addChild('Trunk')
+    base_position = rootNode.Modelling.SummitXL.Chassis.AttachedArm.position
+    parameters, cables = createEchelon(trunk,base_position,0,[0., 0.26*1000, 0.32*1000],[-90,-90,0])
 
     if typeControl == 'displacement':
-        arm.addObject(CableController(cables, name = 'Cablecontroller'))
+        trunk.addObject(CableController(cables, name = 'Cablecontroller'))
     elif typeControl == 'force' :
-        arm.addObject(ForceController(cables,dt,name = 'ForceController'))
+        trunk.addObject(ForceController(cables,dt,name = 'ForceController'))
+    
+    scene.Simulation.addChild(trunk)
+
     return rootNode
