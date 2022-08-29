@@ -1,6 +1,7 @@
 from summit_xl import SummitXL
 from echelon3.parameters import *
 from echelon3.createEchelon import *
+from addCamera import addCamera
 
 def mobileTrunk(modellingNode, simulationNode, scale):
 
@@ -31,16 +32,9 @@ def mobileTrunk(modellingNode, simulationNode, scale):
         trunk.addObject(ForceController(cables,dt,name = 'ForceController'))
     
     ##########################################
-    # Create Camera
+    # add Camera
     ##########################################
-    camera = modellingNode.addChild('Camera')
-    camera.addObject('MechanicalObject', template='Rigid3d', position=[1.13687e-13*scale, 260*scale, 1078.45*scale, -0.5, -0.5, -0.5, 0.5],
-                         showObject=False, showObjectScale=10)
-
-    modellingNode.addObject('OglViewport', screenSize=[750, 450], name='Camera', swapMainView=True, zNear=5,
-                                      zFar=-10, fovy=55,
-                                      cameraRigid=camera.MechanicalObject.position.getLinkPath(), useFBO=False)
-    
+    addCamera(AttachedArm)
     return trunk
 
 

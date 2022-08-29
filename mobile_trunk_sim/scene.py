@@ -4,6 +4,7 @@ from stlib3.physics.rigid import Cube
 from summitxl_controller import *
 from floor import Floor
 from mobile_trunk import mobileTrunk
+from addCamera import addCamera
 
 def createScene(rootNode):
 
@@ -47,8 +48,14 @@ def createScene(rootNode):
     # add Cube
     ##########################################
     Cube(rootNode,
-         translation=[-2*scale, -0.12*scale, -2*scale],
-         uniformScale=0.4*1000)
+         translation=[-1*scale, 10, -2*scale],
+         uniformScale=0.5*1000)
+
+    ##########################################
+    # add camera
+    ##########################################
+    #addCamera(rootNode)
+
 
     #def myAnimation(target, body, factor):
     #    body.position += [[0.0,0.0,0.001,0.0,0,0,1]]
