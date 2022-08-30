@@ -34,7 +34,7 @@ def mobileTrunk(modellingNode, simulationNode, scale):
     ##########################################
     # add Camera
     ##########################################
-    addCamera(AttachedArm)
+    addCamera(AttachedArm, scale)
     return trunk
 
 
