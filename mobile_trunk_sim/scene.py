@@ -51,10 +51,7 @@ def createScene(rootNode):
          translation=[-1*scale, 10, -2*scale],
          uniformScale=0.5*1000)
 
-    ##########################################
-    # add camera
-    ##########################################
-    #addCamera(rootNode)
+
 
 
     #def myAnimation(target, body, factor):
