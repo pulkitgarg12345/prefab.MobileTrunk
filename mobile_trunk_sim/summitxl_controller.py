@@ -98,8 +98,8 @@ class SummitxlController(Sofa.Core.Controller):
             self.x = moveBindings[key][0]
             self.th = moveBindings[key][3]
         elif  key in speedBindings.keys():
-            self.speed = self.speed + speedBindings[key][0]
-            self.turn = self.speed + speedBindings[key][1]
+            self.speed = self.speed * speedBindings[key][0]
+            self.turn = self.speed * speedBindings[key][1]
 
             print(vels(self.speed, self.turn))
             if (self.status == 14):
