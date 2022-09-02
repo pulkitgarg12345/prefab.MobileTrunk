@@ -215,12 +215,12 @@ class SummitxlROSController(Sofa.Core.Controller):
         #    dt=0
         #    self.time_now = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000
         
-        print("dt = ", dt)
+        #print("dt = ", dt)
         robot_time = self.time_s
         with self.robot.timestamp.writeable() as t:
             t[0] = int(robot_time)
             t[1] = 0
-        print("self.time = ", self.robot.timestamp[0])
+        #print("self.time = ", self.robot.timestamp[0])
 
         #self.robot.timestamp[1] = 0 
         self.robot.robot_linear_x = self.robot.robot_linear_vel[0]  * dt
