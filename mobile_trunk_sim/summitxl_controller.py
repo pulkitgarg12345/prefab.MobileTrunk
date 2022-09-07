@@ -57,8 +57,8 @@ class SummitxlController(Sofa.Core.Controller):
         self.dt = 0
 
         self.status = 0.
-        self.speed = 0.1
-        self.turn = 0.1
+        self.speed = 2.
+        self.turn = 2.
         self.x = 0.0
         self.y = 0.0
         self.z = 0.0

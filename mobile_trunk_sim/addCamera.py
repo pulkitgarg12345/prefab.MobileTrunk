@@ -6,6 +6,6 @@ def addCamera(rootNode, scale):
 
     camera.addObject('RigidRigidMapping', name="mapping", input = rootNode.Trunk.framesNode.frames.getLinkPath() ,index=100)
 
-    rootNode.getRoot().addObject('OglViewport', screenSize=[750, 450], name='Camera', swapMainView=True, zNear=5,
+    rootNode.getRoot().addObject('OglViewport', screenSize=[320, 200], name='Camera', zNear=5,
                                       zFar=-10, fovy=55,
                                       cameraRigid=camera.MechanicalObject.position.getLinkPath(), useFBO=False)

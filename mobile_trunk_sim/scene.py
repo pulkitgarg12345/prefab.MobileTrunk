@@ -12,7 +12,6 @@ def createScene(rootNode):
     # Plugins, data and Solvers
     ######################################### 
 
-    rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight");
     rootNode.addObject('RequiredPlugin', name='SofaPython3')
     rootNode.addObject('RequiredPlugin', name='BeamAdapter')
     rootNode.addObject('RequiredPlugin', name='SoftRobots')
@@ -24,8 +23,9 @@ def createScene(rootNode):
     scene.addContact(alarmDistance=0.1*1000, contactDistance=0.0005*1000)
     scene.VisualStyle.displayFlags = 'hideBehaviorModels showForceFields showCollisionModels showInteractionForceFields'
     scene.addObject('DefaultVisualManagerLoop')
-    scene.dt = 0.001
+    scene.dt = 0.01
     scene.gravity = [0., -9810., 0.]
+    scene.Settings.removeObject(scene.Settings.OglSceneFrame)
 
     scene.Simulation.TimeIntegrationSchema.vdamping.value = 0.1
     scene.Simulation.TimeIntegrationSchema.rayleighStiffness = 0.01
@@ -47,9 +47,9 @@ def createScene(rootNode):
     ##########################################
     # add Cube
     ##########################################
-    Cube(rootNode,
-         translation=[-1*scale, 10, -2*scale],
-         uniformScale=0.5*1000)
+#     Cube(rootNode,
+#          translation=[-1*scale, 10, -2*scale],
+#          uniformScale=0.5*1000)
 
 
 

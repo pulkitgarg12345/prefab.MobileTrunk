@@ -85,26 +85,26 @@ def createEchelon(echelon,base,index,translation,rotation):
     ###########################################
     # # Visual model for colision
     # ##########################################
-    visual = trunk.addChild("VisualModel")
-    visual.addObject('MeshSTLLoader', name='loader', filename='meshes/model_colision.stl',scale3d = [1000,1000,1000], rotation=[90,90,180],
-                                     translation=[0., 0.26*1000, 0.65*1000])
+    # visual = trunk.addChild("VisualModel")
+    # visual.addObject('MeshSTLLoader', name='loader', filename='meshes/model_colision.stl',scale3d = [1000,1000,1000], rotation=[90,90,180],
+    #                                  translation=[0., 0.26*1000, 0.65*1000])
                         
-    visual.addObject('MeshTopology', src='@loader')
-    visual.addObject('OglModel', name="renderer", src='@loader', color=[0.2,0.2,0.2,1.0])
-    visual.addObject('SkinningMapping' , template="Rigid3d,Vec3d", input=frames.getLinkPath())
+    # visual.addObject('MeshTopology', src='@loader')
+    # visual.addObject('OglModel', name="renderer", src='@loader', color=[0.2,0.2,0.2,1.0])
+    # visual.addObject('SkinningMapping' , template="Rigid3d,Vec3d", input=frames.getLinkPath())
 
     # ##########################################
     # # Colision model
     # ##########################################
 
-    collison_model = trunk.addChild("CollisionModel")
-    collison_model.addObject('MeshSTLLoader', name='loader1', filename='meshes/model_colision.stl', scale3d=[1000, 1000, 1000],rotation=[90,90,180],
-                                             translation=[0., 0.26*1000, 0.65*1000])
-    collison_model.addObject('MeshTopology', src='@loader1')
-    collison_model.addObject('MechanicalObject', src = '@loader1')
-    collison_model.addObject('TriangleCollisionModel', group=0)
-    collison_model.addObject('LineCollisionModel',group=0)
-    collison_model.addObject('PointCollisionModel', group=0)
-    collison_model.addObject('SkinningMapping' , template="Rigid3d,Vec3d", input=frames.getLinkPath())
+    # collison_model = trunk.addChild("CollisionModel")
+    # collison_model.addObject('MeshSTLLoader', name='loader1', filename='meshes/model_colision.stl', scale3d=[1000, 1000, 1000],rotation=[90,90,180],
+    #                                          translation=[0., 0.26*1000, 0.65*1000])
+    # collison_model.addObject('MeshTopology', src='@loader1')
+    # collison_model.addObject('MechanicalObject', src = '@loader1')
+    # collison_model.addObject('TriangleCollisionModel', group=0)
+    # collison_model.addObject('LineCollisionModel',group=0)
+    # collison_model.addObject('PointCollisionModel', group=0)
+    # collison_model.addObject('SkinningMapping' , template="Rigid3d,Vec3d", input=frames.getLinkPath())
 
     return parameters,cables
