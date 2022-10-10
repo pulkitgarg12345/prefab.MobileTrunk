@@ -40,6 +40,8 @@ def createScene(rootNode):
     ##########################################
     # add Floor
     ##########################################
+    #Room(rootNode, translation=[-2*scale, 2.7*scale, -2*scale])
+
     floor = Floor(rootNode,
                   name="Floor",
                   translation=[5*scale, -3.5*scale, -2*scale])
