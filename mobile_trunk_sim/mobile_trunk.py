@@ -3,12 +3,12 @@ from echelon3.parameters import *
 from echelon3.createEchelon import *
 from addCamera import addCamera
 
-def mobileTrunk(modellingNode, simulationNode, scale):
+def mobileTrunk(modellingNode):
 
     #########################################
     # create summit
     #########################################
-    self = SummitXL(modellingNode, scale)
+    self = SummitXL(modellingNode)
 
     ########################################
     # createEchelon
@@ -19,7 +19,7 @@ def mobileTrunk(modellingNode, simulationNode, scale):
     AttachedArm.addObject("MechanicalObject", name = "position", template="Rigid3d",
                     position=[0., 0.26*1000, 0.32*1000,-0.5, -0.5, -0.5 , 0.5 ],
                      showObject=True,showObjectScale = 30)    
-    AttachedArm.addObject('RigidRigidMapping',name='mapping', input=self.Chassis.position.getLinkPath(),
+    AttachedArm.addObject('RigidRigidMapping',name='mapping', input=self.Chassis.Base.position.getLinkPath(),
                                                 index=0)
 
     trunk = AttachedArm.addChild('Trunk')
@@ -34,7 +34,7 @@ def mobileTrunk(modellingNode, simulationNode, scale):
     ##########################################
     # add Camera
     ##########################################
-    addCamera(AttachedArm, scale)
-    return trunk
+    addCamera(AttachedArm)
+    return trunk, self
 
 

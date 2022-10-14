@@ -235,8 +235,6 @@ def createScene(rootNode):
     scene.dt = 0.01
     scene.gravity = [0., -9810., 0.]
 
-    #scene.Modelling.addObject('EulerImplicitSolver',rayleighStiffness=0.01, rayleighMass=0, vdamping=0.1)
-    #solver = scene.Modelling.addObject('SparseLDLSolver',name = 'SparseLDLSolver',template="CompressedRowSparseMatrixMat3x3d")
     scene.Simulation.addObject('GenericConstraintCorrection', solverName='LinearSolver', ODESolverName='GenericConstraintSolver')
 
     scene.Simulation.TimeIntegrationSchema.vdamping.value = 0.1
