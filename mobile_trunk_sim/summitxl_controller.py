@@ -93,12 +93,12 @@ class SummitxlController(Sofa.Core.Controller):
     def onKeypressedEvent(self, event):
         key = event['key']
         key = key.lower()
+
         if key in moveBindings.keys():
             self.x = moveBindings[key][0]
             self.th = moveBindings[key][3]
             self.robot.simrobot_linear_vel[0] = self.x * self.speed * self.dt
             self.robot.simrobot_angular_vel[2] = self.th * self.turn * self.dt
-
         elif  key in speedBindings.keys():
             self.speed = self.speed + speedBindings[key][0]
             self.turn = self.turn  + speedBindings[key][1]
@@ -124,4 +124,3 @@ class SummitxlController(Sofa.Core.Controller):
         if key in moveBindings.keys() or key in speedBindings.keys():
             self.robot.simrobot_linear_vel[0]= 0
             self.robot.simrobot_angular_vel[2] = 0
-        print("angular speed", self.robot.simrobot_angular_vel[2], "| ", "linear speed", self.robot.simrobot_linear_vel[0])

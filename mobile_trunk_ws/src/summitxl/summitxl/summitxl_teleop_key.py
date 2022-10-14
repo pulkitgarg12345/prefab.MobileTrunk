@@ -25,7 +25,7 @@ CTRL-C to quit
 """
 moveBindings = {
     'i': (1, 0, 0, 0),
-    'o': (1, 0, 0, -1),
+    'p': (1, 0, 0, -1),
     'j': (0, 0, 0, 1),
     'l': (0, 0, 0, -1),
     'u': (1, 0, 0, 1),
@@ -35,12 +35,12 @@ moveBindings = {
    }
 
 speedBindings = {
-    'q': (1.1, 1.1),
-    'z': (.9, .9),
-    'w': (1.1, 1),
-    'x': (.9, 1),
-    'e': (1, 1.1),
-    'c': (1, .9),
+    'q': (0.01, 0.01),
+    'z': (-0.01, -0.01),
+    'w': (0.01, 0.),
+    'x': (-0.01, 0.),
+    'e': (0., 0.01),
+    'c': (0., -0.01),
    }
 
 def getKey(settings):
@@ -68,8 +68,8 @@ def main():
    node = rclpy.create_node('teleop_twist_keyboard')
    pub = node.create_publisher(Twist, '/summit_xl/cmd_vel', 10)
 
-   speed = 0.1
-   turn = 0.1
+   speed = 0.01
+   turn = 1.
    x = 0.0
    th = 0.0
    status = 0.
@@ -83,9 +83,12 @@ def main():
                x = moveBindings[key][0]
                th = moveBindings[key][3]
             elif key in speedBindings.keys():
-               speed = speed * speedBindings[key][0]
-               turn = turn * speedBindings[key][1]
+               speed = speed + speedBindings[key][0]
+               turn = turn + speedBindings[key][1]
 
+               if speed > 0.09:
+                  speed = 0.09
+            
                print(vels(speed, turn))
                if (status == 14):
                   print(msg)
@@ -96,7 +99,7 @@ def main():
                if (key == '\x03'):
                   break
             twist = Twist()
-            twist.linear.x = x * speed * 1000
+            twist.linear.x = x * speed
             twist.linear.y = 0.
             twist.linear.z = 0.
             twist.angular.x = 0.

@@ -1,18 +1,14 @@
 import Sofa
 from stlib3.scene import Scene
+from summitxl_roscontroller import *
+from stlib3.physics.rigid import Floor
+from mobile_trunk import mobileTrunk
 import sofaros
 from sofaros import *
-from stlib3.physics.rigid import Floor
-from summit_xl import SummitXL
-from echelon3.parameters import *
-from echelon3.createEchelon import *
 
 #from geometry_msgs.msg import Twist
 #from sensor_msgs.msg import Imu
-from summitxl_roscontroller import *
 #from nav_msgs.msg import Odometry
-
-
 
 rosNode = sofaros.init("SofaNode")
 
@@ -22,39 +18,42 @@ def createScene(rootNode):
     #########################################
     # Plugins, data and Solvers
     ######################################### 
-
-    rootNode.addObject('OglSceneFrame', style="Arrows", alignment="TopRight");
     rootNode.addObject('RequiredPlugin', name='SofaPython3')
     rootNode.addObject('RequiredPlugin', name='BeamAdapter')
     rootNode.addObject('RequiredPlugin', name='SoftRobots')
     rootNode.addObject('RequiredPlugin', name='SofaMeshCollision')
     rootNode.addObject('RequiredPlugin', name='SofaPlugins', pluginName='SofaGeneralRigid SofaGeneralEngine SofaConstraint SofaImplicitOdeSolver SofaSparseSolver SofaDeformable SofaEngine SofaBoundaryCondition SofaRigid SofaTopologyMapping SofaOpenglVisual SofaMiscCollision')
 
-    scale = 1000
+
     scene = Scene(rootNode, iterative=False)
     scene.addMainHeader()
-    scene.addContact(alarmDistance=0.2*scale, contactDistance=0.005*scale)
-    scene.VisualStyle.displayFlags = 'showCollisionModels showForceFields'
+    scene.addContact(alarmDistance=0.2*1000, contactDistance=0.0005*1000, frictionCoef=0.8)
+    scene.VisualStyle.displayFlags = 'hideBehaviorModels showForceFields showCollisionModels showInteractionForceFields'
     scene.addObject('DefaultVisualManagerLoop')
-    scene.dt = 0.001
+    scene.dt = 0.01
     scene.gravity = [0., -9810., 0.]
+    scene.Settings.removeObject(scene.Settings.OglSceneFrame)
 
+    scene.Simulation.addObject('GenericConstraintCorrection', solverName='LinearSolver', ODESolverName='GenericConstraintSolver')
+
+    #scene.Simulation.addObject('GenericConstraintCorrection', linearSolver='@LinearSolver', ODESolver='@GenericConstraintSolver')
     scene.Simulation.TimeIntegrationSchema.vdamping.value = 0.1
     scene.Simulation.TimeIntegrationSchema.rayleighStiffness = 0.01
-    scene.Simulation.addObject('GenericConstraintCorrection' , solverName='LinearSolver', ODESolverName='GenericConstraintSolver')
     
     #########################################
-    # create summit
+    # add robot
     #########################################
-
-    SummitXL(scene.Modelling, 1000)
+    self, trunk= mobileTrunk(scene.Modelling)
+    scene.Simulation.addChild(trunk)
+    scene.Simulation.addChild(self)
     floor = Floor(rootNode,
                   name="Floor",
-                  translation=[-2*scale, -0.12*scale, -2*scale],
-                  uniformScale=0.3*scale,
+                  translation=[-2*1000, -0.12*1000, -2*1000],
+                  uniformScale=0.1*1000,
                   isAStaticObject=True)
 
     robot=scene.Modelling.SummitXL
+
     scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=scene.Modelling.SummitXL))
 
     scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/cmd_vel",
@@ -85,24 +84,5 @@ def createScene(rootNode):
     scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/summit_xl/robotnik_base_control/cmd_vel",
                                            [robot.findData('robot_linear_vel'),robot.findData('robot_angular_vel')],
                                            Twist, vel_send))
-
-    ########################################
-    # createEchelon
-    ######################################## 
-
-    trunk = scene.Modelling.SummitXL.Chassis.addChild("Trunk")
-    trunk.addObject("MechanicalObject", name = "position", template="Rigid3d",
-                    position=[0., 0.26*scale, 0.32*scale,-0.5, -0.5, -0.5 , 0.5 ],
-                     showObject=True,showObjectScale = 30)    
-    trunk.addObject('RigidRigidMapping',name='mapping', input=scene.Modelling.SummitXL.Chassis.position.getLinkPath(),
-                                                index=0)
-
-    scene.Modelling.SummitXL.Chassis.addChild('Arm')
-
-    arm = scene.Simulation.addChild(scene.Modelling.SummitXL.Chassis.Arm)
-    
-    connection = rootNode.Modelling.SummitXL.Chassis.Trunk.position
-    
-    parameters, cables = createEchelon(arm,connection,0,[0., 0.26*scale, 0.32*scale],[-90,-90,0])
 
     return rootNode

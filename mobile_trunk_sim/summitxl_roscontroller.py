@@ -147,18 +147,18 @@ class SummitxlROSController(Sofa.Core.Controller):
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.robot = kwargs["robot"]
-        self.wheel_ray = 0.10
+        self.wheel_ray = 0.0015
         self.flag = True
-        self.robot.robot_linear_x = 0
-        self.robot.robot_angular_z  = 0
+        self.robot.robot_linear_x = 0.
+        self.robot.robot_angular_z  = 0.
         self.time_now = None
         self.time_s = None
 
     def move(self, fwd, angle):
         """Move the robot using the forward speed and angular speed)"""
-        robot = RigidDof(self.robot.Chassis.position)
-        robot.translate(robot.forward * fwd)
-        robot.rotateAround([0, 1, 0], angle)
+        robot = RigidDof(self.robot.Chassis.Base.position)
+        #robot.translate(robot.forward * fwd)
+        #robot.rotateAround([0, 1, 0], angle)
         with self.robot.Chassis.WheelsMotors.angles.position.writeable() as angles:
             #Make the wheel turn according to forward speed
             # TODO: All the value are random, need to be really calculated
@@ -179,7 +179,7 @@ class SummitxlROSController(Sofa.Core.Controller):
 
         if self.flag:
             print("init summit_xl pose")
-            with self.robot.Chassis.position.position.writeable() as summit_pose:
+            with self.robot.Chassis.Base.position.position.writeable() as summit_pose:
                 #position x, y z
 
                 summit_pose[0][0] = self.robot.reel_position[0]
@@ -198,16 +198,6 @@ class SummitxlROSController(Sofa.Core.Controller):
         """ At each time step we move the robot by the given
             forward_speed and angular_speed)
         """
-        # time init
-        self.time_s = time.time()
-        if self.time_now is not None:
-            dt = self.time_s - self.time_now
-            self.time_now = time.time()
-        
-        else:
-            dt = 0
-            self.time_now = time.time()
-
         #if self.time_now is not None:
         #    dt = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000  - self.time_now
         #    self.time_now = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000
@@ -215,20 +205,32 @@ class SummitxlROSController(Sofa.Core.Controller):
         #    dt=0
         #    self.time_now = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000
         
-        robot_time = self.time_s
-        with self.robot.timestamp.writeable() as t:
-            t[0] = int(robot_time)
-            t[1] = 0
+        # time init
+        # self.time_s = time.time()
+        # if self.time_now is not None:
+        #     dt = self.time_s - self.time_now
+        #     self.time_now = time.time()
+        
+        # else:
+        #     dt = 0
+        #     self.time_now = time.time()
+        
+        # robot_time = self.time_s
+        # with self.robot.timestamp.writeable() as t:
+        #     t[0] = int(robot_time)
+        #     t[1] = 0
+        dt = event['dt']
 
         #self.robot.timestamp[1] = 0 
         self.robot.robot_linear_x = self.robot.robot_linear_vel[0]  * dt
         self.robot.robot_angular_z = self.robot.robot_angular_vel[2] * dt
+        print("dt=",dt, "   vitesse lineaire=", self.robot.robot_linear_x , "  vitesse angulaire=",self.robot.robot_angular_z )
         
         for i in range(0,4):
-            self.robot.sim_orientation[i] = self.robot.Chassis.position.position.value[0][3+i]
+            self.robot.sim_orientation[i] = self.robot.Chassis.Base.position.position.value[0][3+i]
 
         for i in range(0,3):
-            self.robot.sim_position[i] = self.robot.Chassis.position.position.value[0][i]
+            self.robot.sim_position[i] = self.robot.Chassis.Base.position.position.value[0][i]
 
         self.move(self.robot.robot_linear_x, self.robot.robot_angular_z)
 
