@@ -100,7 +100,6 @@ def main():
                turn = 0
             pub.publish(twist)
 
-            print("x = ",x, " th=", th)
             print(vels(speed, turn))
             if (status == 14):
                print(msg)
