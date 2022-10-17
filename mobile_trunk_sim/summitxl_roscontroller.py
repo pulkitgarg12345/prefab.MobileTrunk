@@ -213,7 +213,7 @@ class SummitxlROSController(Sofa.Core.Controller):
             else:
                 dt = 0
                 self.time_now = time.time()
-        print(dt)
+        #print(dt)
         #print( "lnear vel = ",self.robot.robot_linear_vel[0]/1000 ," angular vel = ", self.robot.robot_angular_vel[2]/10, " dt = ", dt)
 
         if not self.robotToSim:
@@ -242,7 +242,7 @@ class SummitxlROSController(Sofa.Core.Controller):
         for i in range(0,3):
             self.robot.sim_position[i] = self.robot.Chassis.Base.position.position.value[0][i]
 
-        self.move(self.robot.robot_linear_x/1000, self.robot.robot_angular_z)
+        self.move(self.robot.robot_linear_x/10, self.robot.robot_angular_z*10)
 
         # Wait to start receiving data from ROS to initialize the position
         # of the robot in the simulation with the position of the real robot
