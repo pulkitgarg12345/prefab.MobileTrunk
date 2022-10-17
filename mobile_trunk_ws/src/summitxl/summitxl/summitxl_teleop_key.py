@@ -24,23 +24,23 @@ e/c : increase/decrease only angular speed by 10%
 CTRL-C to quit
 """
 moveBindings = {
-    'i': (1, 0, 0, 0),
-    'p': (1, 0, 0, -1),
-    'j': (0, 0, 0, 1),
-    'l': (0, 0, 0, -1),
-    'u': (1, 0, 0, 1),
-    ',': (-1, 0, 0, 0),
-    '.': (-1, 0, 0, 1),
-    'm': (-1, 0, 0, -1)
+    'i': (1,  0),
+    'p': (-1, -1),
+    'j': (0,  1),
+    'l': (0, -1),
+    'u': (1, 1),
+    ',': (-1, 0),
+    '.': (-1, 1),
+    'm': (-1,-1)
    }
 
 speedBindings = {
     'q': (0.01, 0.01),
     'z': (-0.01, -0.01),
-    'w': (0.01, 0.),
-    'x': (-0.01, 0.),
-    'e': (0., 0.01),
-    'c': (0., -0.01),
+    'w': (0.01, 0),
+    'x': (-0.01, 0),
+    'e': (0, 0.01),
+    'c': (0, -0.01),
    }
 
 def getKey(settings):
@@ -69,44 +69,56 @@ def main():
    pub = node.create_publisher(Twist, '/summit_xl/cmd_vel', 10)
 
    speed = 0.01
-   turn = 1.
+   turn = 2.
    x = 0.0
    th = 0.0
    status = 0.
+   twist = Twist()
 
    try:
       print(msg)
       print(vels(speed, turn))
       while True:
-            key = getKey(settings)
-            if key in moveBindings.keys():
-               x = moveBindings[key][0]
-               th = moveBindings[key][3]
-            elif key in speedBindings.keys():
-               speed = speed + speedBindings[key][0]
-               turn = turn + speedBindings[key][1]
-
-               if speed > 0.09:
-                  speed = 0.09
-            
-               print(vels(speed, turn))
-               if (status == 14):
-                  print(msg)
-               status = (status + 1) % 15
-            else:
-               x = 0.0
-               th = 0.0
-               if (key == '\x03'):
-                  break
-            twist = Twist()
+         key = getKey(settings)
+         if key in moveBindings.keys():
+            x = moveBindings[key][0]
+            th = moveBindings[key][1]
             twist.linear.x = x * speed
-            twist.linear.y = 0.
-            twist.linear.z = 0.
-            twist.angular.x = 0.
             twist.angular.y = th * turn
-            twist.angular.z = 0.
+
             pub.publish(twist)
 
+         elif key in speedBindings.keys():
+            speed = speed + speedBindings[key][0]
+            turn = turn + speedBindings[key][1]
+
+            if speed > 0.09:
+               speed = 0.09
+            elif speed < 0:
+               speed = 0.
+            elif turn < 0:
+               turn = 0
+            pub.publish(twist)
+
+            print("x = ",x, " th=", th)
+            print(vels(speed, turn))
+            if (status == 14):
+               print(msg)
+            status = (status + 1) % 15
+         else:
+            x = 0.0
+            th = 0.0
+            if (key == '\x03'):
+               break
+         twist.linear.y = 0.
+         twist.linear.z = 0.
+         twist.angular.x = 0.
+         twist.linear.x = 0.
+         twist.angular.y = 0.
+         twist.angular.z = 0.
+         pub.publish(twist)
+
+         
    except Exception as e:
       print(e)
 

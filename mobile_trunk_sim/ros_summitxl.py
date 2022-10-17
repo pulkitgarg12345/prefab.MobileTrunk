@@ -1,4 +1,5 @@
 import Sofa
+import sys
 from stlib3.scene import Scene
 from summitxl_roscontroller import *
 from stlib3.physics.rigid import Floor
@@ -15,6 +16,8 @@ rosNode = sofaros.init("SofaNode")
 
 def createScene(rootNode):
 
+    print("PYTHON: ", sys.argv)
+
     #########################################
     # Plugins, data and Solvers
     ######################################### 
@@ -27,7 +30,7 @@ def createScene(rootNode):
 
     scene = Scene(rootNode, iterative=False)
     scene.addMainHeader()
-    scene.addContact(alarmDistance=0.2*1000, contactDistance=0.0005*1000, frictionCoef=0.8)
+    scene.addContact(alarmDistance=0.2*1000, contactDistance=0.005*1000, frictionCoef=1)
     scene.VisualStyle.displayFlags = 'hideBehaviorModels showForceFields showCollisionModels showInteractionForceFields'
     scene.addObject('DefaultVisualManagerLoop')
     scene.dt = 0.01
@@ -54,7 +57,7 @@ def createScene(rootNode):
 
     robot=scene.Modelling.SummitXL
 
-    scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=scene.Modelling.SummitXL))
+    scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=robot))
 
     scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/cmd_vel",
                                                            [robot.findData('robot_linear_vel'),

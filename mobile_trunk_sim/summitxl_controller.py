@@ -67,10 +67,6 @@ class SummitxlController(Sofa.Core.Controller):
 
     def move(self, fwd, angle):
         """Move the robot using the forward speed and angular speed)"""
-        robot = RigidDof(self.robot.Chassis.Base.position)
-        # robot.translate(robot.forward * fwd)
-        # robot.rotateAround([0, 1, 0], angle)
-
         with self.robot.Chassis.WheelsMotors.angles.rest_position.writeable() as angles:
             #Make the wheel turn according to forward speed
             # TODO: All the value are random, need to be really calculated

@@ -156,10 +156,7 @@ class SummitxlROSController(Sofa.Core.Controller):
 
     def move(self, fwd, angle):
         """Move the robot using the forward speed and angular speed)"""
-        robot = RigidDof(self.robot.Chassis.Base.position)
-        #robot.translate(robot.forward * fwd)
-        #robot.rotateAround([0, 1, 0], angle)
-        with self.robot.Chassis.WheelsMotors.angles.position.writeable() as angles:
+        with self.robot.Chassis.WheelsMotors.angles.rest_position.writeable() as angles:
             #Make the wheel turn according to forward speed
             # TODO: All the value are random, need to be really calculated
             angles += (fwd/self.wheel_ray)
@@ -224,8 +221,7 @@ class SummitxlROSController(Sofa.Core.Controller):
         #self.robot.timestamp[1] = 0 
         self.robot.robot_linear_x = self.robot.robot_linear_vel[0]  * dt
         self.robot.robot_angular_z = self.robot.robot_angular_vel[2] * dt
-        print("dt=",dt, "   vitesse lineaire=", self.robot.robot_linear_x , "  vitesse angulaire=",self.robot.robot_angular_z )
-        
+
         for i in range(0,4):
             self.robot.sim_orientation[i] = self.robot.Chassis.Base.position.position.value[0][3+i]
 
