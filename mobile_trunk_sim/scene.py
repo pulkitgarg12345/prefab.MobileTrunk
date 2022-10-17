@@ -82,10 +82,11 @@ def createScene(rootNode):
 
     if sys.argv[1] == "KeyboardController":
         scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL))
-    elif sys.argv[1] == "RosController":
+
+    elif sys.argv[1] == "SimToRobot":
             rosNode = sofaros.init("SofaNode")
             robot=scene.Modelling.SummitXL
-            scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=robot))
+            scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=robot, robotToSim=False))
             scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/cmd_vel",
                                                            [robot.findData('robot_linear_vel'),
                                                             robot.findData('robot_angular_vel')],
@@ -101,5 +102,25 @@ def createScene(rootNode):
             scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/summit_xl/robotnik_base_control/cmd_vel",
                                            [robot.findData('robot_linear_vel'),robot.findData('robot_angular_vel')],
                                            Twist, vel_send))
-    
+            # scene.Modelling.SummitXL.addObject(
+            # sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/odom", [robot.findData('timestamp'),
+            #                                                                   robot.findData('reel_position'),
+            #                                                                   robot.findData('reel_orientation')],
+            #                Odometry, odom_recv))
+
+    elif sys.argv[1] == "RobotToSim":
+        rosNode = sofaros.init("SofaNode")
+        robot=scene.Modelling.SummitXL
+        scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=robot, robotToSim=True))
+        scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/cmd_vel",
+                                                           [robot.findData('robot_linear_vel'),
+                                                            robot.findData('robot_angular_vel')],
+                                                           Twist, vel_recv))
+        scene.Modelling.SummitXL.addObject(
+            sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/odom", [robot.findData('timestamp'),
+                                                                              robot.findData('reel_position'),
+                                                                              robot.findData('reel_orientation')],
+                           Odometry, odom_recv))
+
+
     return rootNode
