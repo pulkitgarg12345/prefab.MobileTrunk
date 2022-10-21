@@ -30,7 +30,7 @@ def createScene(rootNode):
 
     scene = Scene(rootNode, iterative=False)
     scene.addMainHeader()
-    scene.addContact(alarmDistance=0.2*1000, contactDistance=0.0005*1000, frictionCoef=0.8)
+    scene.addContact(alarmDistance=0.1*1000, contactDistance=0.005*1000, frictionCoef=10)
     scene.VisualStyle.displayFlags = 'hideBehaviorModels showForceFields showCollisionModels showInteractionForceFields'
     scene.addObject('DefaultVisualManagerLoop')
     scene.dt = 0.01
@@ -54,7 +54,7 @@ def createScene(rootNode):
     floor = Floor(rootNode,
                   name="Floor",
                   translation=[-2*1000, -0.12*1000, -2*1000],
-                  uniformScale=0.1*1000,
+                  uniformScale=0.8*1000,
                   isAStaticObject=True)
     ##########################################
     # add Floor
@@ -87,10 +87,7 @@ def createScene(rootNode):
             rosNode = sofaros.init("SofaNode")
             robot=scene.Modelling.SummitXL
             scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=robot, robotToSim=False))
-            scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/cmd_vel",
-                                                           [robot.findData('robot_linear_vel'),
-                                                            robot.findData('robot_angular_vel')],
-                                                           Twist, vel_recv))
+
             scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/summit_xl/robotnik_base_control/odom",
                                                                                     [robot.findData('timestamp'), 
                                                                                     robot.findData('sim_position'), 
@@ -112,15 +109,20 @@ def createScene(rootNode):
         rosNode = sofaros.init("SofaNode")
         robot=scene.Modelling.SummitXL
         scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=robot, robotToSim=True))
-        scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/cmd_vel",
-                                                           [robot.findData('robot_linear_vel'),
-                                                            robot.findData('robot_angular_vel')],
-                                                           Twist, vel_recv))
-        scene.Modelling.SummitXL.addObject(
-            sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/odom", [robot.findData('timestamp'),
+        scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/odom",
+                                                                             [robot.findData('timestamp'),
                                                                               robot.findData('reel_position'),
-                                                                              robot.findData('reel_orientation')],
-                           Odometry, odom_recv))
+                                                                              robot.findData('reel_orientation'),
+                                                                              robot.findData('robot_linear_vel'),
+                                                                              robot.findData('robot_angular_vel')],
+                                                                                Odometry, odom_recv))
+        
+        scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/digital_twin/odom", [robot.findData('sim_position'),
+                                                              robot.findData('sim_orientation')],Odometry, 
+                                                              position_and_orientation_send))
+        scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/digital_twin/cmd_vel",
+                                           [robot.findData('robot_linear_vel'),robot.findData('robot_angular_vel')],
+                                           Twist, vel_send))
 
 
     return rootNode

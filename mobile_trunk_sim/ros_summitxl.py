@@ -70,19 +70,21 @@ def createScene(rootNode):
     #                                                      robot.findData('linear_acceleration'),
     #                                                      robot.findData('timestamp')], Imu, send))
 
-    scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/summit_xl/robotnik_base_control/odom",
-                                                                                    [robot.findData('timestamp'), 
-                                                                                    robot.findData('sim_position'), 
-                                                                                    robot.findData('sim_orientation'),
-                                                                                    robot.findData('robot_linear_vel'), 
-                                                                                    robot.findData('robot_angular_vel')], 
-                                                                                    Odometry, odom_send))
+    # scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/summit_xl/robotnik_base_control/odom",
+    #                                                                                 [robot.findData('timestamp'), 
+    #                                                                                 robot.findData('sim_position'), 
+    #                                                                                 robot.findData('sim_orientation'),
+    #                                                                                 robot.findData('robot_linear_vel'), 
+    #                                                                                 robot.findData('robot_angular_vel')], 
+    #                                                                                 Odometry, odom_send))
 
-    #scene.Modelling.SummitXL.addObject(
-    #    sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/odom", [robot.findData('timestamp'),
-    #                                                                           robot.findData('reel_position'),
-    #                                                                           robot.findData('reel_orientation')],
-    #                        Odometry, odom_recv))
+    scene.Modelling.SummitXL.addObject(
+       sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/odom", [robot.findData('timestamp'),
+                                                                              robot.findData('reel_position'),
+                                                                              robot.findData('reel_orientation'),
+                                                                              robot.findData('robot_linear_vel'),
+                                                                              robot.fincData('robot_angular_vel')],
+                           Odometry, odom_recv))
 
     scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/summit_xl/robotnik_base_control/cmd_vel",
                                            [robot.findData('robot_linear_vel'),robot.findData('robot_angular_vel')],
