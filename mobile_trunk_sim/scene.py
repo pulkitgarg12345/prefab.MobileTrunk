@@ -30,7 +30,7 @@ def createScene(rootNode):
 
     scene = Scene(rootNode, iterative=False)
     scene.addMainHeader()
-    scene.addContact(alarmDistance=0.1*1000, contactDistance=0.005*1000, frictionCoef=10)
+    scene.addContact(alarmDistance=0.1*1000, contactDistance=0.05*1000, frictionCoef=8)
     scene.VisualStyle.displayFlags = 'hideBehaviorModels showForceFields showCollisionModels showInteractionForceFields'
     scene.addObject('DefaultVisualManagerLoop')
     scene.dt = 0.01
@@ -53,10 +53,17 @@ def createScene(rootNode):
 
     floor = Floor(rootNode,
                   name="Floor",
-                  translation=[-2*1000, -0.12*1000, -2*1000],
-                  uniformScale=0.8*1000,
+                  translation=[-2*1000, -0.1*1000, 2*1000],
+                  uniformScale=0.1*1000,
                   isAStaticObject=True)
-    ##########################################
+    
+    regle = rootNode.addChild("Regle")
+    regle.addObject('MeshSTLLoader', name='loader', filename='meshes/reglette.stl', 
+                                   rotation=[-90,-90,0], scale=1000, translation=[-1*1000, 0.1*1000, -2.4*1000])
+    regle.addObject('MeshTopology', src='@loader')
+    regle.addObject('OglModel', name="renderer", src='@loader', color="blue")
+    regle.addObject('MechanicalObject')
+    # ##########################################
     # add Floor
     ##########################################
     #Room(rootNode, translation=[-2*scale, 2.7*scale, -2*scale])

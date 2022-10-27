@@ -110,9 +110,6 @@ class SummitxlController(Sofa.Core.Controller):
             self.x = 0.0
             self.th = 0.0
 
-        print("angular speed", self.robot.simrobot_angular_vel[2], "| ", "linear speed", self.robot.simrobot_linear_vel[0])
-
-
 
     def onKeyreleasedEvent(self, event):
         key = event['key']

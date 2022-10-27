@@ -87,7 +87,7 @@ def Chassis():
 
     wheels.addObject("MechanicalObject", name="position", template="Rigid3d",
                           position=[[0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], [0,0,0,0,0,0,1]],
-                          showObject=True)
+                          showObject=True, showObjectScale=200)
     wheels.addObject('UniformMass', name="vertexMass", vertexMass=[totalMass, volume, inertiaMatrix[:]])
 
     wheels.addObject('ArticulatedSystemMapping',

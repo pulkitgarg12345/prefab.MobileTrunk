@@ -1,5 +1,7 @@
 # coding: utf8
 #!/usr/bin/env python3
+import numpy as np
+from turtle import distance
 import Sofa
 from splib3.numerics import RigidDof
 from sensor_msgs.msg import Imu
@@ -116,6 +118,7 @@ def position_and_orientation_send(data):
     msg.pose.pose.orientation.z = data[1].value[1]
     msg.pose.pose.orientation.y = data[1].value[2]
     msg.pose.pose.orientation.w = data[1].value[3]
+    #print(msg.pose.pose.position)
     return msg
     
 def odom_send(data):
@@ -164,28 +167,48 @@ class SummitxlROSController(Sofa.Core.Controller):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.robot = kwargs["robot"]
         self.robotToSim = kwargs["robotToSim"]
-        self.wheel_ray = 0.0022
+        self.wheel_ray = 0.113 # rayan de la roue
         self.flag = True
         self.robot.robot_linear_x = 0.
         self.robot.robot_angular_z  = 0.
         self.time_now = None
-        self.time_s = None
+        #self.time_s = None
+        self.time_s = time.time()
+        self.lz = 0.229 #distance entre le centre d'une des roues et le centre du chassis sur l'axe des z
+        self.lx = 0.2355 #distance entre le centre d'une des roues et le centre du chassis sur l'axe des x
+        self.positon_inital=[self.robot.Chassis.Base.position.position.value[0][0],
+                            self.robot.Chassis.Base.position.position.value[0][1],
+                            self.robot.Chassis.Base.position.position.value[0][2]]
+        self.positon_final = 0
+        self.deplacement_ctrl = 0
+        self.temps = 0
+        print("position initial = ", self.positon_inital)
+        self.dt = 0
 
-    def move(self, fwd, angle):
-        #print( "lnear vel = ",fwd," angular vel = ", angle)
 
-        """Move the robot using the forward speed and angular speed)"""
+    def move(self, wy, vz, dt):
+        """
+        The robot moves along the z axis and rotates on the y axis.
+        Move method allow the robot to move using the robot angular
+        and linear  speed"""
+
+        H = np.array([[1, -1, -(self.lx+ self.lz)],
+                      [1, 1, (self.lx + self.lz)],
+                      [1, 1, -(self.lx + self.lz)],
+                      [1, -1, (self.lx + self.lz)]])/self.wheel_ray
+        twist = np.array([vz, 0, wy]) # vx = 0
+        twist.shape = (3, 1)
+        w = np.dot(H, twist) #calculate the angular speed of each wheel
+        w = w.flatten().tolist()
+
         with self.robot.Chassis.WheelsMotors.angles.rest_position.writeable() as angles:
-            #Make the wheel turn according to forward speed
-            # TODO: All the value are random, need to be really calculated
-            angles += (fwd/self.wheel_ray)
+            #Make the wheel turn according to their angular speed
 
-            #Make the wheel turn in reverse mode according to turning speed
-            # TODO: the value are random, need to be really calculated
-            angles[0] += (angle)
-            angles[2] += (angle)
-            angles[1] -= (angle)
-            angles[3] -= (angle)
+            angles[0] += w[0] * dt
+            angles[2] += w[2] * dt
+            angles[1] += w[1] * dt
+            angles[3] += w[3] * dt
+            print( "-----------> angles = " ,angles) 
 
     def init_pose(self):
         """
@@ -218,9 +241,7 @@ class SummitxlROSController(Sofa.Core.Controller):
             if self.time_now is not None:
                dt = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000  - self.time_now
                self.time_now = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000
-               #print(self.time_now, float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000 )
             else:
-                #print("Vrai")
                 dt=0
                 self.time_now = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000
             # self.time_s = time.time()
@@ -247,9 +268,26 @@ class SummitxlROSController(Sofa.Core.Controller):
                 t[0] = int(robot_time)
                 t[1] = 0
 
-        #dt = event['dt']
-        #self.robot.timestamp[1] = 0 
-        print("self.robot.robot_linear_x =", self.robot.robot_linear_x, '| self.robot.robot_angular_z = ',self.robot.robot_angular_z )
+        dt = event['dt']
+        #########################
+        #test
+        vitesse_lineaire = -0.5 #(m/s)
+        vitesse_angulaire = -pi/20#(rad/s)
+        
+        self.temps  += dt
+        print("dt = ", self.temps)
+        if  self.temps >= 10:
+            vitesse_lineaire = 0
+            vitesse_angulaire =0
+            self.positon_final =[self.robot.Chassis.Base.position.position.value[0][0],
+                                self.robot.Chassis.Base.position.position.value[0][1],
+                                self.robot.Chassis.Base.position.position.value[0][2]] 
+            print("position final= ", self.positon_final)
+        deplacement =vitesse_lineaire * dt
+        self.deplacement_ctrl +=deplacement
+        print('self.deplacement_ctrl =',self.deplacement_ctrl)
+        angle = vitesse_angulaire *dt
+        #########################
         self.robot.robot_linear_x = self.robot.robot_linear_vel[0]  * dt
         self.robot.robot_angular_z = self.robot.robot_angular_vel[2] * dt
 
@@ -258,9 +296,10 @@ class SummitxlROSController(Sofa.Core.Controller):
 
         for i in range(0,3):
             self.robot.sim_position[i] = self.robot.Chassis.Base.position.position.value[0][i]
-
+        
+        self.flag = False
         if not self.flag:
-            self.move(self.robot.robot_linear_x/1000, self.robot.robot_angular_z)
+            self.move(0, vitesse_lineaire, dt)
 
         # Wait to start receiving data from ROS to initialize the position
         # of the robot in the simulation with the position of the real robot
