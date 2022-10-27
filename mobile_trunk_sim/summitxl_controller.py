@@ -5,7 +5,7 @@ from splib3.constants import Key
 from stlib3.scene import Scene
 from math import *
 from wheels_angles_compute import twistToWheelsAngularSpeed, move
-
+from functional_test import test
 
 msg = """
 This node takes keypresses from the keyboard and publishes them
@@ -45,6 +45,7 @@ speedBindings = {
     'c': (0, -0.1),
    }
 
+
 def vels(speed, turn):
        return 'currently:\tspeed %s\tturn %s ' % (speed, turn)
 class SummitxlController(Sofa.Core.Controller):
@@ -54,6 +55,10 @@ class SummitxlController(Sofa.Core.Controller):
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.robot = kwargs["robot"]
+        # self.test_angular_speed = kwargs["angular_speed"]
+        # self.test_linear_speed = kwargs["linear_speed"]
+        # self.test_duration = kwargs["duration"]
+        self.test_flag = kwargs["test"]
         self.dt = 0
         self.status = 0.
         self.speed = 1
@@ -64,16 +69,38 @@ class SummitxlController(Sofa.Core.Controller):
         self.th = 0.0
         self.robot.simrobot_angular_vel = [0., 0., 0.]
         self.robot.simrobot_linear_vel = [0., 0., 0.]
+        self.elapsed_time = 0
+        self.deplacement_ctrl = 0
 
     def onAnimateBeginEvent(self, event):
         """At each time step we move the robot by the given forward_speed and angular_speed)
-           TODO: normalize the speed by the dt so it is a real speed
         """
+        
         self.dt = event['dt']
-        wheels_angular_speed = twistToWheelsAngularSpeed(self.robot.simrobot_angular_vel[2],
-                                                         self.robot.simrobot_linear_vel[0])
-        move(self.robot.Chassis.WheelsMotors.angles.rest_position,
-              wheels_angular_speed, self.dt)
+        if not self.test_flag:
+            wheels_angular_speed = twistToWheelsAngularSpeed(self.robot.simrobot_angular_vel[2],
+                                                            self.robot.simrobot_linear_vel[0])
+            move(self.robot.Chassis.WheelsMotors.angles.rest_position,
+                wheels_angular_speed, self.dt)
+
+        elif self.test_flag:
+                print("dt = ", self.elapsed_time)
+                self.elapsed_time +=self.dt
+                self.elapsed_time += self.dt
+                deplacement = self.test_linear_speed * self.dt
+                self.deplacement_ctrl +=deplacement
+
+                if self.elapsed_time >= self.test_duration:
+                    self.test_linear_speed = 0
+                    self.test_angular_speed = 0
+                    final_pos =[self.robot.Chassis.Base.position.position.value[0][0],
+                                self.robot.Chassis.Base.position.position.value[0][1],
+                                self.robot.Chassis.Base.position.position.value[0][2]]
+                    print("final position = ", final_pos, "traveled distance = ", self.deplacement_ctrl)
+                
+                else : 
+                    wheels_angular_speed = twistToWheelsAngularSpeed(self.test_angular_speed, self.test_linear_speed)
+                    move(self.robot.Chassis.WheelsMotors.angles.rest_position, wheels_angular_speed, self.dt)
 
 
     def onKeypressedEvent(self, event):

@@ -1,7 +1,6 @@
 import Sofa
 import sys
 from stlib3.scene import Scene
-from stlib3.physics.rigid import Cube
 from summitxl_controller import *
 from summitxl_roscontroller import *
 from stlib3.physics.rigid import Floor
@@ -88,7 +87,7 @@ def createScene(rootNode):
     #        "target": scene.Modelling.SummitXL.Chassis.WheelsMotors.angles}, duration=2, mode="loop")
 
     if sys.argv[1] == "KeyboardController":
-        scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL))
+        scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL, test=False))
 
     elif sys.argv[1] == "SimToRobot":
             rosNode = sofaros.init("SofaNode")
