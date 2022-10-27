@@ -4,6 +4,8 @@ from splib3.animation import animate
 from splib3.constants import Key
 from stlib3.scene import Scene
 from math import *
+from wheels_angles_compute import twistToWheelsAngularSpeed, move
+
 
 msg = """
 This node takes keypresses from the keyboard and publishes them
@@ -35,12 +37,12 @@ moveBindings = {
    }
 
 speedBindings = {
-    'q': (0.01, 0.01),
-    'z': (-0.01, -0.01),
-    'w': (0.01, 0),
-    'x': (-0.01, 0),
-    'e': (0, 0.01),
-    'c': (0, -0.01),
+    'q': (0.1, 0.1),
+    'z': (-0.1, -0.1),
+    'w': (0.1, 0),
+    'x': (-0.1, 0),
+    'e': (0, 0.1),
+    'c': (0, -0.1),
    }
 
 def vels(speed, turn):
@@ -52,11 +54,9 @@ class SummitxlController(Sofa.Core.Controller):
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.robot = kwargs["robot"]
-        self.wheel_ray = 0.0015
         self.dt = 0
-
         self.status = 0.
-        self.speed = 0.01
+        self.speed = 1
         self.turn = 2
         self.x = 0.0
         self.y = 0.0
@@ -65,25 +65,16 @@ class SummitxlController(Sofa.Core.Controller):
         self.robot.simrobot_angular_vel = [0., 0., 0.]
         self.robot.simrobot_linear_vel = [0., 0., 0.]
 
-    def move(self, fwd, angle):
-        """Move the robot using the forward speed and angular speed)"""
-        with self.robot.Chassis.WheelsMotors.angles.rest_position.writeable() as angles:
-            #Make the wheel turn according to forward speed
-            # TODO: All the value are random, need to be really calculated
-            angles += (fwd/self.wheel_ray)
-            #Make the wheel turn in reverse mode according to turning speed
-            # TODO: the value are random, need to be really calculated
-            angles[0] += (angle)
-            angles[2] += (angle)
-            angles[1] -= (angle)
-            angles[3] -= (angle)
-
     def onAnimateBeginEvent(self, event):
         """At each time step we move the robot by the given forward_speed and angular_speed)
            TODO: normalize the speed by the dt so it is a real speed
         """
         self.dt = event['dt']
-        self.move(self.robot.simrobot_linear_vel[0] , self.robot.simrobot_angular_vel[2])
+        #print("vitesse angulaire = ", self.robot.simrobot_angular_vel[2], "vitesse linéaire = ", self.robot.simrobot_linear_vel[0])
+        wheels_angular_speed = twistToWheelsAngularSpeed(self.robot.simrobot_angular_vel[2],
+                                                         self.robot.simrobot_linear_vel[0])
+        move(self.robot.Chassis.WheelsMotors.angles.rest_position,
+              wheels_angular_speed, self.dt)
 
 
     def onKeypressedEvent(self, event):
@@ -93,16 +84,12 @@ class SummitxlController(Sofa.Core.Controller):
         if key in moveBindings.keys():
             self.x = moveBindings[key][0]
             self.th = moveBindings[key][3]
-            self.robot.simrobot_linear_vel[0] = self.x * self.speed * self.dt
-            self.robot.simrobot_angular_vel[2] = self.th * self.turn * self.dt
+            self.robot.simrobot_linear_vel[0] = self.x * self.speed
+            self.robot.simrobot_angular_vel[2] = self.th * self.turn
         elif  key in speedBindings.keys():
             self.speed = self.speed + speedBindings[key][0]
             self.turn = self.turn  + speedBindings[key][1]
 
-            if self.speed > 0.09:
-                self.speed = 0.09
-
-            print(vels(self.speed, self.turn))
             if (self.status == 14):
                 print(msg)
             self.status = (self.status + 1) % 15
