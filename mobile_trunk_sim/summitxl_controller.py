@@ -70,7 +70,6 @@ class SummitxlController(Sofa.Core.Controller):
            TODO: normalize the speed by the dt so it is a real speed
         """
         self.dt = event['dt']
-        #print("vitesse angulaire = ", self.robot.simrobot_angular_vel[2], "vitesse linéaire = ", self.robot.simrobot_linear_vel[0])
         wheels_angular_speed = twistToWheelsAngularSpeed(self.robot.simrobot_angular_vel[2],
                                                          self.robot.simrobot_linear_vel[0])
         move(self.robot.Chassis.WheelsMotors.angles.rest_position,
