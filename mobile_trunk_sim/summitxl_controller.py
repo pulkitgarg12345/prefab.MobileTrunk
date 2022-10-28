@@ -6,6 +6,14 @@ from stlib3.scene import Scene
 from math import *
 from wheels_angles_compute import twistToWheelsAngularSpeed, move
 from functional_test import test
+import matplotlib.pyplot as plt
+
+
+time_data = []
+pos_data = []
+reel_pos_data = []
+angle_data = []
+reel_angle_data = []
 
 msg = """
 This node takes keypresses from the keyboard and publishes them
@@ -45,7 +53,6 @@ speedBindings = {
     'c': (0, -0.1),
    }
 
-
 def vels(speed, turn):
        return 'currently:\tspeed %s\tturn %s ' % (speed, turn)
 class SummitxlController(Sofa.Core.Controller):
@@ -55,10 +62,11 @@ class SummitxlController(Sofa.Core.Controller):
     def __init__(self, *args, **kwargs):
         Sofa.Core.Controller.__init__(self, *args, **kwargs)
         self.robot = kwargs["robot"]
-        # self.test_angular_speed = kwargs["angular_speed"]
-        # self.test_linear_speed = kwargs["linear_speed"]
-        # self.test_duration = kwargs["duration"]
         self.test_flag = kwargs["test"]
+        if self.test_flag :
+            self.test_angular_speed = kwargs["angular_speed"]
+            self.test_linear_speed = kwargs["linear_speed"]
+            self.test_duration = kwargs["duration"]
         self.dt = 0
         self.status = 0.
         self.speed = 1
@@ -71,6 +79,10 @@ class SummitxlController(Sofa.Core.Controller):
         self.robot.simrobot_linear_vel = [0., 0., 0.]
         self.elapsed_time = 0
         self.deplacement_ctrl = 0
+        self.angle_ctrl = 0
+        self.start  = False
+        self.robot_angle_rotation = [0,0,0,0]
+
 
     def onAnimateBeginEvent(self, event):
         """At each time step we move the robot by the given forward_speed and angular_speed)
@@ -83,30 +95,43 @@ class SummitxlController(Sofa.Core.Controller):
             move(self.robot.Chassis.WheelsMotors.angles.rest_position,
                 wheels_angular_speed, self.dt)
 
-        elif self.test_flag:
-                print("dt = ", self.elapsed_time)
-                self.elapsed_time +=self.dt
-                self.elapsed_time += self.dt
-                deplacement = self.test_linear_speed * self.dt
-                self.deplacement_ctrl +=deplacement
+        elif self.test_flag and self.start:
 
-                if self.elapsed_time >= self.test_duration:
-                    self.test_linear_speed = 0
-                    self.test_angular_speed = 0
-                    final_pos =[self.robot.Chassis.Base.position.position.value[0][0],
-                                self.robot.Chassis.Base.position.position.value[0][1],
-                                self.robot.Chassis.Base.position.position.value[0][2]]
-                    print("final position = ", final_pos, "traveled distance = ", self.deplacement_ctrl)
-                
-                else : 
-                    wheels_angular_speed = twistToWheelsAngularSpeed(self.test_angular_speed, self.test_linear_speed)
-                    move(self.robot.Chassis.WheelsMotors.angles.rest_position, wheels_angular_speed, self.dt)
+            self.elapsed_time +=self.dt
+            self.angle_ctrl +=self.test_angular_speed * self.dt
+            self.deplacement_ctrl +=self.test_linear_speed * self.dt
 
+            time_data.append(self.elapsed_time)
+            pos_data.append(self.deplacement_ctrl)
+            reel_pos_data.append(self.robot.Chassis.Base.position.position.value[0][2]/1000)
+            angle_data.append(self.angle_ctrl)
+
+            q = Quat(self.robot.Chassis.Base.position.position.value[0][3],
+                                                            self.robot.Chassis.Base.position.position.value[0][4],
+                                                            self.robot.Chassis.Base.position.position.value[0][5],
+                                                            self.robot.Chassis.Base.position.position.value[0][6])
+            self.robot_angle_rotation = q.getEulerAngles()
+            print("y rotation = ",self.robot_angle_rotation, "angle_ctrl = ", self.angle_ctrl)
+            reel_angle_data.append(self.robot_angle_rotation[1])
+
+    
+            if self.elapsed_time >= self.test_duration:
+                self.test_linear_speed = 0
+                self.test_angular_speed = 0
+                final_pos =[self.robot.Chassis.Base.position.position.value[0][0],
+                            self.robot.Chassis.Base.position.position.value[0][1],
+                            self.robot.Chassis.Base.position.position.value[0][2]]
+                self.start = False
+            
+            self.wheels_angular_speed = twistToWheelsAngularSpeed(self.test_angular_speed, self.test_linear_speed)
+            move(self.robot.Chassis.WheelsMotors.angles.rest_position, self.wheels_angular_speed, self.dt)
+            self.plot()
 
     def onKeypressedEvent(self, event):
         key = event['key']
         key = key.lower()
-
+        if Key.space:
+            self.start = True
         if key in moveBindings.keys():
             self.x = moveBindings[key][0]
             self.th = moveBindings[key][3]
@@ -130,3 +155,21 @@ class SummitxlController(Sofa.Core.Controller):
         if key in moveBindings.keys() or key in speedBindings.keys():
             self.robot.simrobot_linear_vel[0]= 0
             self.robot.simrobot_angular_vel[2] = 0
+    
+    def plot(self):
+        if not self.start:
+            print('-------------------')
+            plt.plot(time_data, reel_angle_data, label="reel_angle_data = f(time_data)")
+            plt.plot(time_data, angle_data , label="angle_data = f(time_data)")
+            # plt.plot(time_data, reel_pos_data , label="reel_pos_data = f(time_data)")
+            # plt.plot(time_data, pos_data , label="pos_data= f(time_data)")
+            plt.xlabel('x - axis')
+            # naming the y axis
+            plt.ylabel('y - axis')
+            
+            # giving a title to my graph
+            plt.title('angle = pi')
+            
+            plt.legend()
+            plt.show()
+

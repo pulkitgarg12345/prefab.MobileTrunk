@@ -229,37 +229,16 @@ class SummitxlROSController(Sofa.Core.Controller):
             with self.robot.timestamp.writeable() as t:
                 t[0] = int(robot_time)
                 t[1] = 0
-
-        dt = event['dt']
-        ########################
-        ##test
-        vitesse_lineaire = -0.5 #(m/s)
-        vitesse_angulaire = -pi#(rad/s)
-        
-        self.temps  += dt
-        #print("dt = ", self.temps)
-        if  self.temps >= 10:
-            vitesse_lineaire = 0
-            vitesse_angulaire =0
-            self.positon_final =[self.robot.Chassis.Base.position.position.value[0][0],
-                                self.robot.Chassis.Base.position.position.value[0][1],
-                                self.robot.Chassis.Base.position.position.value[0][2]] 
-            print("position final= ", self.positon_final)
-        deplacement =vitesse_lineaire * dt
-        self.deplacement_ctrl +=deplacement
-        #print('self.deplacement_ctrl =',self.deplacement_ctrl)
-        #########################
-
+     
         for i in range(0,4):
             self.robot.sim_orientation[i] = self.robot.Chassis.Base.position.position.value[0][3+i]
 
         for i in range(0,3):
             self.robot.sim_position[i] = self.robot.Chassis.Base.position.position.value[0][i]
         
-        self.flag = False
         if not self.flag:
-            wheels_angular_speed = twistToWheelsAngularSpeed(0,
-                                                             vitesse_lineaire)
+            wheels_angular_speed = twistToWheelsAngularSpeed(self.robot.robot_angular_vel[2],
+                                                             self.robot.robot_linear_vel[0])
             move(self.robot.Chassis.WheelsMotors.angles.rest_position, wheels_angular_speed, dt)
 
         # Wait to start receiving data from ROS to initialize the position
