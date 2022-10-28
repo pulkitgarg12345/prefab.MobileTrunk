@@ -55,28 +55,6 @@ def createScene(rootNode):
                   translation=[-2*1000, -0.1*1000, 2*1000],
                   uniformScale=0.1*1000,
                   isAStaticObject=True)
-    
-    regle = rootNode.addChild("Regle")
-    regle.addObject('MeshSTLLoader', name='loader', filename='meshes/reglette.stl', 
-                                   rotation=[-90,-90,0], scale=1000, translation=[-1*1000, 0.1*1000, -2.4*1000])
-    regle.addObject('MeshTopology', src='@loader')
-    regle.addObject('OglModel', name="renderer", src='@loader', color="blue")
-    regle.addObject('MechanicalObject')
-    # ##########################################
-    # add Floor
-    ##########################################
-    #Room(rootNode, translation=[-2*scale, 2.7*scale, -2*scale])
-
-    # floor = Floor(rootNode,
-    #               name="Floor",
-    #               translation=[5*scale, -3.5*scale, -2*scale])
-
-    ##########################################
-    # add Cube
-    ##########################################
-#     Cube(rootNode,
-#          translation=[-1*scale, 10, -2*scale],
-#          uniformScale=0.5*1000)
 
     #def myAnimation(target, body, factor):
     #    body.position += [[0.0,0.0,0.001,0.0,0,0,1]]
