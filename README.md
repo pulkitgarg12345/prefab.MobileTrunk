@@ -1,5 +1,5 @@
 # prefab.MobileTrunk
-[![SoftRobots](https://img.shields.io/badge/SoftRobots-on_github-firebrick.svg)](https://github.com/SofaDefrost) 
+[![SoftRobots](https://img.shields.io/badge/info-on_website-purple.svg)](https://project.inria.fr/softrobot/) 
 [![SOFA](https://img.shields.io/badge/SOFA-on_github-blue.svg)](https://github.com/sofa-framework)
 [![Ronotnik Automation](https://img.shields.io/badge/RonotnikAutomation-on_github-green.svg)](https://github.com/RobotnikAutomation)
 [![Ros](https://img.shields.io/badge/Ros-on_readthedocs-chocolate.svg)](https://docs.ros.org/en/foxy/index.html)
