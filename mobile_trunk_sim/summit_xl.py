@@ -259,7 +259,7 @@ def createScene(rootNode):
     #        "body" : scene.Modelling.SummitXL.Chassis.position,
     #        "target": scene.Modelling.SummitXL.Chassis.WheelsMotors.angles}, duration=2, mode="loop")
 
-    scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL))
+    scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL, test=False))
 
     ########################################
     # createEchelon
