@@ -135,20 +135,17 @@ It is possible to be able to link the digital twin to the real robot using rosbr
 
 ### Install ros2 and ros1
 
-    Install the [noetic](http://wiki.ros.org/noetic/Installation/Ubuntu) version for ros1 in order to
-    be able to use rosbridge
+Install the [noetic](http://wiki.ros.org/noetic/Installation/Ubuntu) version for ros1 in order to be able to use rosbridge
 
-    Install the [foxy](https://docs.ros.org/en/foxy/Installation.html) version for ros2.
+Install the [foxy](https://docs.ros.org/en/foxy/Installation.html) version for ros2.
 
-    If you are new to ros you can follow the [tutorials](https://docs.ros.org/en/foxy/Tutorials.html)
-    before continuing
+If you are new to ros you can follow the [tutorials](https://docs.ros.org/en/foxy/Tutorials.html) before continuing
 
-
-    Install rosbridge
+Install rosbridge
     
-    ```console
+```console
     foo@bar:~$  sudo apt-get install -y ros-foxy-ros1-bridge
-    ```
+```
 
 ### Set up working space
 
@@ -173,18 +170,18 @@ To confirm all the previous steps and verify that the prefab is working properly
 
 #### Test using sofa controller
 
--  Launch the summit_xl.py SOFA scene situated in prefab.MobileTrunk/mobile_trunk_sim by doing:
-
-    ```console
-    foo@bar:~$  runSofa summit_xl
-    ```
+-  Launch the scene.py SOFA scene situated in prefab.MobileTrunk/mobile_trunk_sim by doing:
+ ```console
+    foo@bar:~$  runSofa scene.py --argv KeyboardController
+```
 - If everything went well you should see the GUI Sofa with the digital twin of
 
-    ![somorob](/docs/sofa.png)
+    ![somorob](/docs/somorob.png)
 
 
 - Then with your keyboard send velocity and orientation command to the Sofa scene in order to see the robot
 move.
+ 
 
 #### Test using ros api
 
@@ -197,7 +194,7 @@ move.
  the following command:
 
     ```console
-    foo@bar:~$  runSofa ros_summitxl.py
+    foo@bar:~$  runSofa scene.py --argv  SimToRobot
     ```
 - Open a new terminal then source it as before then execute the commands to the following command:
 
