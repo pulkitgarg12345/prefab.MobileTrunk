@@ -173,11 +173,11 @@ def Chassis():
     # add Trunk
     #########################################
 
-    trunk = base.addChild("Trunk")
-    trunk.addObject("MechanicalObject", name = "position", template="Rigid3d",
-                    position=trunkPosition,
-                     showObject=True,showObjectScale = 30)
-    trunk.addObject('RigidRigidMapping',name='mapping', input=base.position.getLinkPath(), index=0)
+    # trunk = base.addChild("Trunk")
+    # trunk.addObject("MechanicalObject", name = "position", template="Rigid3d",
+    #                 position=trunkPosition,
+    #                  showObject=True,showObjectScale = 30)
+    # trunk.addObject('RigidRigidMapping',name='mapping', input=base.position.getLinkPath(), index=0)
 
     return self
 
@@ -265,12 +265,12 @@ def createScene(rootNode):
     # createEchelon
     ######################################## 
 
-    arm = rootNode.Modelling.SummitXL.Chassis.addChild('Arm')
-    connection = rootNode.Modelling.SummitXL.Chassis.Base.Trunk.position
-    parameters, cables = createEchelon(arm,connection,0,[0., 0.26*1000, 0.32*1000],[-90,-90,0])
+    # arm = rootNode.Modelling.SummitXL.Chassis.addChild('Arm')
+    # connection = rootNode.Modelling.SummitXL.Chassis.Base.Trunk.position
+    # parameters, cables = createEchelon(arm,connection,0,[0., 0.26*1000, 0.32*1000],[-90,-90,0])
 
-    if typeControl == 'displacement':
-        arm.addObject(CableController(cables, name= 'Cablecontroller'))
-    elif typeControl == 'force':
-        arm.addObject(ForceController(cables, dt, name = 'ForceController'))
+    # if typeControl == 'displacement':
+    #     arm.addObject(CableController(cables, name= 'Cablecontroller'))
+    # elif typeControl == 'force':
+    #     arm.addObject(ForceController(cables, dt, name = 'ForceController'))
     return rootNode
