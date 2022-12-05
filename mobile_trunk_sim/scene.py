@@ -53,7 +53,7 @@ def createScene(rootNode):
     floor = Floor(rootNode,
                   name="Floor",
                   translation=[-2*1000, -0.1*1000, 2*1000],
-                  uniformScale=0.6*1000,
+                  uniformScale=0.1*1000,
                   isAStaticObject=True)
 
     #def myAnimation(target, body, factor):
