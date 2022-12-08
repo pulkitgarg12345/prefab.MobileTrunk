@@ -28,7 +28,6 @@ def move(WheelsMotors_angles_rest_position, wheels_angular_speed, dt):
     """
     with WheelsMotors_angles_rest_position.writeable() as angles:
         #Make the wheel turn according to their angular speed
-        print(angles)
         angles[0] += wheels_angular_speed[0] * dt
         angles[2] += wheels_angular_speed[2] * dt
         angles[1] += wheels_angular_speed[1] * dt

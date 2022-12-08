@@ -11,10 +11,7 @@ import sofaros
 from sofaros import *
 
 
-
 def createScene(rootNode):
-
-    print("PYTHON: ", sys.argv)
 
     #########################################
     # Plugins, data and Solvers
@@ -53,7 +50,7 @@ def createScene(rootNode):
     floor = Floor(rootNode,
                   name="Floor",
                   translation=[-2*1000, -0.1*1000, 2*1000],
-                  uniformScale=0.1*1000,
+                  uniformScale=0.5*1000,
                   isAStaticObject=True)
 
     #def myAnimation(target, body, factor):
@@ -63,7 +60,6 @@ def createScene(rootNode):
     #animate(myAnimation, {
     #        "body" : scene.Modelling.SummitXL.Chassis.position,
     #        "target": scene.Modelling.SummitXL.Chassis.WheelsMotors.angles}, duration=2, mode="loop")
-
     if sys.argv[1] == "KeyboardController":
         scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL, test=False))
 
@@ -92,7 +88,7 @@ def createScene(rootNode):
     elif sys.argv[1] == "RobotToSim":
         rosNode = sofaros.init("SofaNode")
         robot=scene.Modelling.SummitXL
-        scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=robot, robotToSim=True))
+        scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=robot, robotToSim=True, test=False))
         scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/odom",
                                                                              [robot.findData('timestamp'),
                                                                               robot.findData('reel_position'),
