@@ -172,20 +172,18 @@ class SummitxlROSController(Sofa.Core.Controller):
         self.robot = kwargs["robot"]
         self.robotToSim = kwargs["robotToSim"]
         self.flag = True
-        # self.robot.robot_linear_x = 0.
-        # self.robot.robot_angular_z  = 0.
         self.time_now = None
-        #self.time_s = None
         self.time_s = time.time()
-        self.positon_inital=[self.robot.Chassis.Base.position.position.value[0][0],
-                            self.robot.Chassis.Base.position.position.value[0][1],
-                            self.robot.Chassis.Base.position.position.value[0][2]]
-        self.dt = 0
+        # self.positon_inital=[self.robot.Chassis.Base.position.position.value[0][0],
+        #                     self.robot.Chassis.Base.position.position.value[0][1],
+        #                     self.robot.Chassis.Base.position.position.value[0][2]]
+        self.t = 0
         self.sofa_time = 0
         self.robot_time = 0
-        self.timeToSpeed =  {}
-        self.angular_speed = 0
-        self.linear_speed = 0
+        self.wheels_angular_speed = None
+        self.item = [0, 0, 0]
+        # self.angular_speed = 0
+        # self.linear_speed = 0
 
     def init_pose(self):
         """
@@ -207,6 +205,10 @@ class SummitxlROSController(Sofa.Core.Controller):
                 summit_pose[0][4] = self.robot.reel_orientation[1]
                 summit_pose[0][5] = self.robot.reel_orientation[2]
                 summit_pose[0][6] = self.robot.reel_orientation[3]
+
+                self.t = 0
+                self.sofa_time = 0
+                self.robot_time = 0
             self.flag = False
             print("init summit_xl pose")
 
@@ -215,25 +217,16 @@ class SummitxlROSController(Sofa.Core.Controller):
         """ At each time step we move the robot by the given
             forward_speed and angular_speed)
         """
+        dt = event['dt']
         if self.robotToSim:
-            if self.time_now is not None:
-                t = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000  - self.time_now
+            if self.time_now is not None and not self.flag:
+                self.t = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000  - self.time_now
+                self.robot_time +=self.t
                 self.time_now = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000
-               #######################"
-                if t > 100:
-                    t = 0
-                else:
-                    dt = event['dt']
-                    self.sofa_time +=dt
-                    self.robot_time +=t
-                    # print("self.robot_time = ", self.robot_time, "----->", self.robot.robot_angular_vel[2], self.robot.robot_linear_vel[0],
-                    #                         "||||","self.sofa_time = ", self.sofa_time )
-                    #print(round(self.sofa_time, 2), round(self.robot_time,2))
-                    #print(self.sofa_time, " ---------", t)
-                    q.put([self.robot_time, self.robot.robot_angular_vel[2], self.robot.robot_linear_vel[0], t])
-                    self.timeToSpeed.update({round(self.robot_time, 2):(t, self.robot.robot_angular_vel[2], self.robot.robot_linear_vel[0])})    
+                self.sofa_time +=dt
+                q.put([self.robot_time, self.robot.robot_angular_vel[2], self.robot.robot_linear_vel[0]])
             else:
-                t=0
+                self.t=0
                 self.time_now = float(self.robot.timestamp.value[0])+float(self.robot.timestamp.value[1])/1000000000
 
         if not self.robotToSim:
@@ -248,24 +241,27 @@ class SummitxlROSController(Sofa.Core.Controller):
             with self.robot.timestamp.writeable() as t:
                 t[0] = int(robot_time)
                 t[1] = 0
-     
-        for i in range(0,4):
-            self.robot.sim_orientation[i] = self.robot.Chassis.Base.position.position.value[0][3+i]
 
-        for i in range(0,3):
-            self.robot.sim_position[i] = self.robot.Chassis.Base.position.position.value[0][i]
 
-    
         if not self.flag and not q.empty():
             if q.queue[0][0] - self.sofa_time <= 0.001:
-                item = q.get()
-                if self.sofa_time <= item[0] :
-                    print(item[0]-self.sofa_time, '     ', self.sofa_time, '   ', item[0] )
-                    self.angular_speed = item[1]
-                    self.linear_speed = item[2]
-                    wheels_angular_speed = twistToWheelsAngularSpeed(self.angular_speed,
-                                                                self.linear_speed)
-                    move(self.robot.Chassis.WheelsMotors.angles.rest_position, wheels_angular_speed, item[3])
+                # print("==== d queue ======")
+                # print(q.queue[0][0], "   ", self.sofa_time, "  " ,q.queue[0][0] - self.sofa_time)
+                # print("self.robot.robot_angular_vel[2] = ", q.queue[0][1], "self.robot.robot_linear_vel[0]= ", q.queue[0][2], " delta = ",
+                #                                                           q.queue[0][0]-self.item[0])
+                self.item = q.get()
+                self.wheels_angular_speed = twistToWheelsAngularSpeed(self.item[1],
+                                                            self.item[2])
+        if(self.wheels_angular_speed is not None):
+            # print(" move  : ", self.wheels_angular_speed , " dt = ", dt)
+            move(self.robot.Chassis.WheelsMotors.angles.rest_position, self.wheels_angular_speed, dt)
+            
+            for i in range(0,4):
+                self.robot.sim_orientation[i] = self.robot.Chassis.Base.position.position.value[0][3+i]
+
+            for i in range(0,3):
+                self.robot.sim_position[i] = self.robot.Chassis.Base.position.position.value[0][i]
+
         # Wait to start receiving data from ROS to initialize the position
         # of the robot in the simulation with the position of the real robot
         if self.robot.reel_position[0] != 0:
