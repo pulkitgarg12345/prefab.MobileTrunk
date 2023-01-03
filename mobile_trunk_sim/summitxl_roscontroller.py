@@ -3,11 +3,10 @@
 import numpy as np
 from turtle import distance
 import Sofa
-from splib3.numerics import RigidDof
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Twist
+from wheels_angles_compute import twistToWheelsAngularSpeed, move, updateOdometry
 from nav_msgs.msg import Odometry
-from wheels_angles_compute import twistToWheelsAngularSpeed, move
 import time
 from math import *
 import queue
@@ -255,7 +254,7 @@ class SummitxlROSController(Sofa.Core.Controller):
         if(self.wheels_angular_speed is not None):
             # print(" move  : ", self.wheels_angular_speed , " dt = ", dt)
             move(self.robot.Chassis.WheelsMotors.angles.rest_position, self.wheels_angular_speed, dt)
-            
+
             for i in range(0,4):
                 self.robot.sim_orientation[i] = self.robot.Chassis.Base.position.position.value[0][3+i]
 
