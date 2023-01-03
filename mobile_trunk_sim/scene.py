@@ -66,7 +66,7 @@ def createScene(rootNode):
     elif sys.argv[1] == "SimToRobot":
             rosNode = sofaros.init("SofaNode")
             robot=scene.Modelling.SummitXL
-            scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=robot, robotToSim=False))
+            scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=robot, robotToSim=False, test=False))
 
             scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/summit_xl/robotnik_base_control/odom",
                                                                                     [robot.findData('timestamp'), 
