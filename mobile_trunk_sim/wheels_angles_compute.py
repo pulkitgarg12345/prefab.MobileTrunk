@@ -25,8 +25,7 @@ def twistToWheelsAngularSpeed(wy, vz):
     blw3 =  (vz - lab * wy) / (wheel_diameter_ / 2.0) # roue arriere gauche
     brw4 = (vz + lab * wy) / (wheel_diameter_ / 2.0)  #roue arrière droite
 
-    #wheels_angular_speed = [flw1 , frw2 , blw3, brw4]
-    wheels_angular_speed = [frw2 , flw1 , brw4, blw3]
+    wheels_angular_speed = [flw1 , frw2 , blw3, brw4]
     
     wheels_angular_speed = setJointVelocityReferenceBetweenLimits(wheels_angular_speed)
 

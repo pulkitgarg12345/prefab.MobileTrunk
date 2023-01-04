@@ -240,6 +240,10 @@ class SummitxlROSController(Sofa.Core.Controller):
             with self.robot.timestamp.writeable() as t:
                 t[0] = int(robot_time)
                 t[1] = 0
+            self.wheels_angular_speed = twistToWheelsAngularSpeed(self.robot.robot_angular_vel[2],
+                                                            self.robot.robot_linear_vel[0])
+            move(self.robot.Chassis.WheelsMotors.angles.rest_position, self.wheels_angular_speed, dt)
+
 
 
         if not self.flag and not q.empty():

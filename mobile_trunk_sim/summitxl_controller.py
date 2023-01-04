@@ -81,7 +81,9 @@ class SummitxlController(Sofa.Core.Controller):
         self.deplacement_ctrl = 0
         self.angle_ctrl = 0
         self.start  = False
+        self.w = 0
         self.robot_angle_rotation = [0,0,0,0]
+        self.epsilon = 0
 
 
     def onAnimateBeginEvent(self, event):
@@ -98,7 +100,8 @@ class SummitxlController(Sofa.Core.Controller):
         elif self.test_flag and self.start:
 
             self.elapsed_time +=self.dt
-            self.angle_ctrl +=self.test_angular_speed * self.dt
+            #0.65793165467
+            self.angle_ctrl +=0.628319 * self.dt
             self.deplacement_ctrl +=self.test_linear_speed * self.dt
 
             time_data.append(self.elapsed_time)
@@ -112,9 +115,7 @@ class SummitxlController(Sofa.Core.Controller):
                                                             self.robot.Chassis.Base.position.position.value[0][6])
             self.robot_angle_rotation = q.getEulerAngles()
             print("y rotation = ",self.robot_angle_rotation, "angle_ctrl = ", self.angle_ctrl)
-            reel_angle_data.append(self.robot_angle_rotation[1])
 
-    
             if self.elapsed_time >= self.test_duration:
                 self.test_linear_speed = 0
                 self.test_angular_speed = 0
@@ -124,7 +125,12 @@ class SummitxlController(Sofa.Core.Controller):
                 self.start = False
             
             self.wheels_angular_speed = twistToWheelsAngularSpeed(self.test_angular_speed, self.test_linear_speed)
-            move(self.robot.Chassis.WheelsMotors.angles.rest_position, self.wheels_angular_speed, self.dt)
+            wheels_rotation_value = move(self.robot.Chassis.WheelsMotors.angles.rest_position, self.wheels_angular_speed, self.dt)
+            self.w+= wheels_rotation_value[1][0]
+            print("-------->", wheels_rotation_value[1][0])
+            reel_angle_data.append(wheels_rotation_value[1][0])
+            # reel_angle_data.append(self.robot_angle_rotation[1])
+
             self.plot()
 
     def onKeypressedEvent(self, event):
@@ -159,8 +165,9 @@ class SummitxlController(Sofa.Core.Controller):
     def plot(self):
         if not self.start:
             print('-------------------')
-            plt.plot(time_data, reel_angle_data, label="reel_angle_data = f(time_data)")
-            plt.plot(time_data, angle_data , label="angle_data = f(time_data)")
+            print( 'Erreur = ',abs(reel_angle_data[-1] - angle_data[-1]))
+            plt.plot(time_data, reel_angle_data, "k.", label="angle de rotation d'une roue  donnée par sofa= f(time_data)")
+            plt.plot(time_data, angle_data ,"r," ,label="angle de rotation d'une roue calculé = f(time_data)")
             # plt.plot(time_data, reel_pos_data , label="reel_pos_data = f(time_data)")
             # plt.plot(time_data, pos_data , label="pos_data= f(time_data)")
             plt.xlabel('x - axis')
@@ -168,7 +175,7 @@ class SummitxlController(Sofa.Core.Controller):
             plt.ylabel('y - axis')
             
             # giving a title to my graph
-            plt.title('angle = pi')
+            # plt.title()
             
             plt.legend()
             plt.show()

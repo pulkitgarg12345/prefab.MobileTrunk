@@ -3,6 +3,7 @@
 import sys
 import rclpy
 from geometry_msgs.msg import Twist
+import time
 import termios
 import tty
 
@@ -23,98 +24,110 @@ e/c : increase/decrease only angular speed by 10%
 
 CTRL-C to quit
 """
-moveBindings = {
-    'i': (1,  0),
-    'p': (-1, -1),
-    'j': (0,  1),
-    'l': (0, -1),
-    'u': (1, 1),
-    ',': (-1, 0),
-    '.': (-1, 1),
-    'm': (-1,-1)
-   }
+# moveBindings = {
+#     'i': (1,  0),
+#     'p': (-1, -1),
+#     'j': (0,  1),
+#     'l': (0, -1),
+#     'u': (1, 1),
+#     ',': (-1, 0),
+#     '.': (-1, 1),
+#     'm': (-1,-1)
+#    }
 
-speedBindings = {
-    'q': (0.01, 0.01),
-    'z': (-0.01, -0.01),
-    'w': (0.01, 0),
-    'x': (-0.01, 0),
-    'e': (0, 0.01),
-    'c': (0, -0.01),
-   }
+# speedBindings = {
+#     'q': (0.01, 0.01),
+#     'z': (-0.01, -0.01),
+#     'w': (0.01, 0),
+#     'x': (-0.01, 0),
+#     'e': (0, 0.01),
+#     'c': (0, -0.01),
+#    }
 
-def getKey(settings):
+# def getKey(settings):
 
-   tty.setraw(sys.stdin.fileno())
-   # sys.stdin.read() returns a string on Linux
-   key = sys.stdin.read(1)
-   termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
-   return key
+#    tty.setraw(sys.stdin.fileno())
+#    # sys.stdin.read() returns a string on Linux
+#    key = sys.stdin.read(1)
+#    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+#    return key
 
-def saveTerminalSettings():
-   return termios.tcgetattr(sys.stdin)
+# def saveTerminalSettings():
+#    return termios.tcgetattr(sys.stdin)
 
-def restoreTerminalSettings(old_settings):
-   termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+# def restoreTerminalSettings(old_settings):
+#    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 
-def vels(speed, turn):
-   return 'currently:\tspeed %s\tturn %s ' % (speed, turn)
+# def vels(speed, turn):
+#    return 'currently:\tspeed %s\tturn %s ' % (speed, turn)
 
 def main():
-   settings = saveTerminalSettings()
+   # settings = saveTerminalSettings()
 
+   time_s = time.time()
+   time_now = None
+  
+   if time_now is None:
+         dt = 0
+         time_now = time.time()
    rclpy.init()
 
    node = rclpy.create_node('teleop_twist_keyboard')
-   pub = node.create_publisher(Twist, '/summit_xl/cmd_vel', 10)
+   pub = node.create_publisher(Twist, '/summit_xl/robotnik_base_control/cmd_vel', 100)
 
-   speed = 0.01
-   turn = 2.
-   x = 0.0
-   th = 0.0
-   status = 0.
+   # speed = 0.01
+   # turn = 2.
+   # x = 0.0
+   # th = 0.0
+   # status = 0.
    twist = Twist()
 
    try:
-      print(msg)
-      print(vels(speed, turn))
-      while True:
-         key = getKey(settings)
-         if key in moveBindings.keys():
-            x = moveBindings[key][0]
-            th = moveBindings[key][1]
-            twist.linear.x = x * speed
-            twist.angular.y = th * turn
+      # print(msg)
+      # print(vels(speed, turn))
+      while True and dt < 10:
+         if time_now is not None:
+            dt = time_now - time_s
+            time_now = time.time()
+            print("-----", dt)
+         # key = getKey(settings)
+         # if key in moveBindings.keys():
+         #    x = moveBindings[key][0]
+         #    th = moveBindings[key][1]
+         #    twist.linear.x = x * speed
+         #    twist.angular.y = th * turn
 
-            pub.publish(twist)
+         #    pub.publish(twist)
 
-         elif key in speedBindings.keys():
-            speed = speed + speedBindings[key][0]
-            turn = turn + speedBindings[key][1]
+         # elif key in speedBindings.keys():
+         #    # speed = speed + speedBindings[key][0]
+         #    # turn = turn + speedBindings[key][1]
+         #    speed = 0
+         #    turn = 0.202
 
-            if speed > 0.09:
-               speed = 0.09
-            elif speed < 0:
-               speed = 0.
-            elif turn < 0:
-               turn = 0
-            pub.publish(twist)
+            # if speed > 0.09:
+            #    speed = 0.09
+            # elif speed < 0:
+            #    speed = 0.
+            # elif turn < 0:
+            #    turn = 0
+         #    pub.publish(twist)
 
-            print(vels(speed, turn))
-            if (status == 14):
-               print(msg)
-            status = (status + 1) % 15
-         else:
-            x = 0.0
-            th = 0.0
-            if (key == '\x03'):
-               break
+         #    print(vels(speed, turn))
+         #    if (status == 14):
+         #       print(msg)
+         #    status = (status + 1) % 15
+         # else:
+         #    x = 0.0
+         #    th = 0.0
+         #    if (key == '\x03'):
+         #       break
          twist.linear.y = 0.
          twist.linear.z = 0.
          twist.angular.x = 0.
          twist.linear.x = 0.
          twist.angular.y = 0.
-         twist.angular.z = 0.
+         twist.angular.z = 0.131653171763
          pub.publish(twist)
 
          
@@ -128,9 +141,10 @@ def main():
       twist.angular.x = 0.
       twist.angular.y = 0.
       twist.angular.z = 0.
+
       pub.publish(twist)
 
-      restoreTerminalSettings(settings)
+      # restoreTerminalSettings(settings)
 
 
 if __name__ == '__main__':
