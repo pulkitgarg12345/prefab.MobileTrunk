@@ -113,9 +113,9 @@ def odom_recv(data, datafield):
 def position_and_orientation_send(data):
     msg = Odometry()
     #odom position x y z
-    msg.pose.pose.position.x = data[0].value[0]/1000
-    msg.pose.pose.position.z = data[0].value[2]/1000
-    msg.pose.pose.position.y = data[0].value[1]/1000
+    msg.pose.pose.position.x = data[0].value[2]/1000
+    msg.pose.pose.position.z = data[0].value[1]/1000
+    msg.pose.pose.position.y = data[0].value[0]/1000
 
     #odom orientation x y z w
     msg.pose.pose.orientation.x = data[1].value[0]

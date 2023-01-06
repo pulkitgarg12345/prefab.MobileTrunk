@@ -55,6 +55,7 @@ speedBindings = {
 
 def vels(speed, turn):
        return 'currently:\tspeed %s\tturn %s ' % (speed, turn)
+
 class SummitxlController(Sofa.Core.Controller):
     """A Simple keyboard controller for the SummitXL
        Key UP, DOWN, LEFT, RIGHT to move
@@ -127,7 +128,7 @@ class SummitxlController(Sofa.Core.Controller):
             self.wheels_angular_speed = twistToWheelsAngularSpeed(self.test_angular_speed, self.test_linear_speed)
             wheels_rotation_value = move(self.robot.Chassis.WheelsMotors.angles.rest_position, self.wheels_angular_speed, self.dt)
             self.w+= wheels_rotation_value[1][0]
-            print("-------->", wheels_rotation_value[1][0])
+            #print("-------->", wheels_rotation_value[1][0])
             reel_angle_data.append(wheels_rotation_value[1][0])
             # reel_angle_data.append(self.robot_angle_rotation[1])
 
@@ -165,11 +166,11 @@ class SummitxlController(Sofa.Core.Controller):
     def plot(self):
         if not self.start:
             print('-------------------')
-            print( 'Erreur = ',abs(reel_angle_data[-1] - angle_data[-1]))
-            plt.plot(time_data, reel_angle_data, "k.", label="angle de rotation d'une roue  donnée par sofa= f(time_data)")
-            plt.plot(time_data, angle_data ,"r," ,label="angle de rotation d'une roue calculé = f(time_data)")
-            # plt.plot(time_data, reel_pos_data , label="reel_pos_data = f(time_data)")
-            # plt.plot(time_data, pos_data , label="pos_data= f(time_data)")
+            print( 'Erreur = ',abs(reel_pos_data[-1] - pos_data[-1]))
+            # plt.plot(time_data, reel_angle_data, "k.", label="angle de rotation d'une roue  donnée par sofa= f(time_data)")
+            # plt.plot(time_data, angle_data ,"r," ,label="angle de rotation d'une roue calculé = f(time_data)")
+            plt.plot(time_data, reel_pos_data , label="reel_pos_data = f(time_data)")
+            plt.plot(time_data, pos_data , label="pos_data= f(time_data)")
             plt.xlabel('x - axis')
             # naming the y axis
             plt.ylabel('y - axis')

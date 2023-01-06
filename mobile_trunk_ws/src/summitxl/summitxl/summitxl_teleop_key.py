@@ -6,6 +6,7 @@ from geometry_msgs.msg import Twist
 import time
 import termios
 import tty
+import math
 
 msg = """
 This node takes keypresses from the keyboard and publishes them
@@ -85,7 +86,7 @@ def main():
    try:
       # print(msg)
       # print(vels(speed, turn))
-      while True and dt < 10:
+      while True and dt < 5:
          if time_now is not None:
             dt = time_now - time_s
             time_now = time.time()
@@ -127,7 +128,7 @@ def main():
          twist.angular.x = 0.
          twist.linear.x = 0.
          twist.angular.y = 0.
-         twist.angular.z = 0.131653171763
+         twist.angular.z = (4*math.pi)/5
          pub.publish(twist)
 
          
