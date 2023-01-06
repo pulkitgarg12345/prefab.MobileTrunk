@@ -50,12 +50,10 @@ The following python module are required :
 Compile *SOFA*
 --------------
 
-For that follow these [instructions]() (We will install the linux one)
-
 Install Required dependencies
 ------------------------------------
-For that follow these [instructions]() (We will install the linux one)
-(The best way to add plugin to SOFA is explained [here]())
+For that follow these [instructions](https://www.sofa-framework.org/community/doc/getting-started/build/linux/) (We will install the linux one)
+(The best way to add plugin to SOFA is explained [here](https://www.sofa-framework.org/community/doc/getting-started/video-tutorials/how-to-compile-a-plugin/))
 
 - STLIB
 
@@ -194,7 +192,7 @@ move.
  the following command:
 
     ```console
-    foo@bar:~$  runSofa scene.py --argv  SimToRobot
+    foo@bar:~$  runSofa scene.py --argv  RobotToSim
     ```
 - Open a new terminal then source it as before then execute the commands to the following command:
 
