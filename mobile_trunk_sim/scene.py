@@ -98,5 +98,8 @@ def createScene(rootNode):
         scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/digital_twin/odom", [robot.findData('sim_position'),
                                                               robot.findData('sim_orientation')],Odometry, 
                                                               position_and_orientation_send))
+        
+        scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/digital_twin/joint_states", robot.findData('joints_states_vel'),
+                                                            sensor_msgs.msg.JointState, jointstate_pub))
 
     return rootNode

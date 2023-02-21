@@ -200,13 +200,18 @@ def SummitXL(parentNode, name="SummitXL"):
                  type="Vec3d", help="Summit_xl imu", group="Summitxl_cmd_vel")
 
     self.addData(name="timestamp",value=[0, 0], type="vector<int>", help="Summit_xl imu",
-                 group="Summitxl_cmd_vel")
+                 group="Summit_xl_cmd_vel")
 
     self.addData(name="sim_position",  value=[0.0, 0.0, 0.0],type="Vec3d",
                  help="Summit_xl odom", group="Summitxl_cmd_vel")
 
     self.addData(name="reel_position",  value=[0.0, 0.0, 0.0],type="Vec3d",
                  help="Summit_xl odom", group="Summitxl_cmd_vel")
+    
+    self.addData(name="joints_states_vel",value=[0, 0, 0, 0], type="Vec4d", help="Summit_xl joint_states",
+                 group="Summit_xl_cmd_vel")
+
+
 
     self.addChild(Chassis())
     return self

@@ -7,6 +7,7 @@ from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Twist
 from wheels_angles_compute import twistToWheelsAngularSpeed, move, updateOdometry
 from nav_msgs.msg import Odometry
+import sensor_msgs.msg
 import time
 from math import *
 import queue
@@ -124,7 +125,17 @@ def position_and_orientation_send(data):
     msg.pose.pose.orientation.w = data[1].value[3]
     #print(msg.pose.pose.position)
     return msg
-    
+def jointstate_pub(data):
+
+    joint_state= sensor_msgs.msg.JointState() 
+    joint_state.name = ["digital_twin_back_left_wheel_joint", "digital_twin_front_left_wheel_joint",
+                        "digital_twin_back_right_wheel_joint", "digital_twin_front_right_wheel_joint"]
+    joint_state.effort = [0., 0., 0., 0.]
+    joint_state.position = [0., 0., 0., 0.]
+
+    joint_state.velocity = [data.value[0], data.value[1], data.value[2], data.value[3]]
+
+    return joint_state
 def odom_send(data):
     """ Returns the odometry of
         the robot in the simulation
@@ -261,6 +272,7 @@ class SummitxlROSController(Sofa.Core.Controller):
 
             for i in range(0,4):
                 self.robot.sim_orientation[i] = self.robot.Chassis.Base.position.position.value[0][3+i]
+                self.robot.joints_states_vel[i] = self.wheels_angular_speed[i]
 
             for i in range(0,3):
                 self.robot.sim_position[i] = self.robot.Chassis.Base.position.position.value[0][i]
