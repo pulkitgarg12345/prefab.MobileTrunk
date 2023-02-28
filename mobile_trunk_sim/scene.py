@@ -99,7 +99,10 @@ def createScene(rootNode):
                                                               robot.findData('sim_orientation')],Odometry, 
                                                               position_and_orientation_send))
         
-        scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/digital_twin/joint_states", robot.findData('joints_states_vel'),
-                                                            sensor_msgs.msg.JointState, jointstate_pub))
+        scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/digital_twin/joint_states", robot.findData('digital_twin_joints_states_vel'),
+                                                            sensor_msgs.msg.JointState, digital_twin_jointstate_pub))
+        
+        scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/joint_states", robot.findData('summit_xl_joints_states_vel'),
+                                                            sensor_msgs.msg.JointState, summit_xl_jointstate_recv))       
 
     return rootNode

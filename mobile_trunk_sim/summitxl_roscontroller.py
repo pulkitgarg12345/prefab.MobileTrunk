@@ -11,7 +11,7 @@ import sensor_msgs.msg
 import time
 from math import *
 import queue
-
+import json
 
 q = queue.Queue()
 
@@ -125,17 +125,22 @@ def position_and_orientation_send(data):
     msg.pose.pose.orientation.w = data[1].value[3]
     #print(msg.pose.pose.position)
     return msg
-def jointstate_pub(data):
+
+def digital_twin_jointstate_pub(data):
 
     joint_state= sensor_msgs.msg.JointState() 
-    joint_state.name = ["digital_twin_back_left_wheel_joint", "digital_twin_front_left_wheel_joint",
-                        "digital_twin_back_right_wheel_joint", "digital_twin_front_right_wheel_joint"]
+    joint_state.name = ["digital_twin_front_left_wheel_joint", "digital_twin_front_right_wheel_joint",
+                        "digital_twin_back_left_wheel_joint", "digital_twin_back_right_wheel_joint"]
     joint_state.effort = [0., 0., 0., 0.]
     joint_state.position = [0., 0., 0., 0.]
 
     joint_state.velocity = [data.value[0], data.value[1], data.value[2], data.value[3]]
 
     return joint_state
+
+def summit_xl_jointstate_recv(data, datafield):
+    datafield.value = [data.velocity[0], data.velocity[1], data.velocity[2], data.velocity[3]]
+
 def odom_send(data):
     """ Returns the odometry of
         the robot in the simulation
@@ -172,6 +177,9 @@ def odom_send(data):
     msg.twist.twist.angular.y = data[4].value[1]
     msg.twist.twist.angular.z = data[4].value[2]
     return msg
+
+digital_twin_jointstate_file_record = open('/home/fabrice/test/bagfile/read_digital_twin_joint_states.txt', 'w')
+summit_xl_jointstate_file_record = open('/home/fabrice/test/bagfile/read_summit_xl_joint_states.txt', 'w')
 
 class SummitxlROSController(Sofa.Core.Controller):
     """A Simple keyboard controller for the SummitXL
@@ -255,8 +263,13 @@ class SummitxlROSController(Sofa.Core.Controller):
                                                             self.robot.robot_linear_vel[0])
             move(self.robot.Chassis.WheelsMotors.angles.rest_position, self.wheels_angular_speed, dt)
 
-
-
+        print('-->',self.robot.summit_xl_joints_states_vel.value)
+        summit_xl_joint_state0 = json.dumps(self.robot.summit_xl_joints_states_vel[0])
+        summit_xl_joint_state1 = json.dumps(self.robot.summit_xl_joints_states_vel[1])
+        summit_xl_joint_state2 = json.dumps(self.robot.summit_xl_joints_states_vel[2])
+        summit_xl_joint_state3 = json.dumps(self.robot.summit_xl_joints_states_vel[3])
+        summit_xl_jointstate_file_record.write(str(self.robot_time) + " , " + str([summit_xl_joint_state0 , summit_xl_joint_state1, summit_xl_joint_state2,
+                                                                                      summit_xl_joint_state3]) + "\n")
         if not self.flag and not q.empty():
             if q.queue[0][0] - self.sofa_time <= 0.001:
                 # print("==== d queue ======")
@@ -272,11 +285,21 @@ class SummitxlROSController(Sofa.Core.Controller):
 
             for i in range(0,4):
                 self.robot.sim_orientation[i] = self.robot.Chassis.Base.position.position.value[0][3+i]
-                self.robot.joints_states_vel[i] = self.wheels_angular_speed[i]
+                self.robot.digital_twin_joints_states_vel[i] = self.wheels_angular_speed[i]
 
             for i in range(0,3):
                 self.robot.sim_position[i] = self.robot.Chassis.Base.position.position.value[0][i]
 
+            digital_twin_joint_state0 = json.dumps(self.wheels_angular_speed[0])
+            digital_twin_joint_state1 = json.dumps(self.wheels_angular_speed[1])
+            digital_twin_joint_state2 = json.dumps(self.wheels_angular_speed[2])
+            digital_twin_joint_state3 = json.dumps(self.wheels_angular_speed[3])
+
+            digital_twin_jointstate_file_record.write(str(self.sofa_time) + " , " + str([digital_twin_joint_state0, digital_twin_joint_state1 , digital_twin_joint_state2,
+                                                                                          digital_twin_joint_state3]) + "\n")
+
+            if q.empty():
+                digital_twin_jointstate_file_record.close()
         # Wait to start receiving data from ROS to initialize the position
         # of the robot in the simulation with the position of the real robot
         if self.robot.reel_position[0] != 0:
