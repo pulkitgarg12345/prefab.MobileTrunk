@@ -26,6 +26,11 @@ def mobileTrunk(modellingNode):
     base_position = AttachedArm.position
     parameters, cables = createEchelon(trunk,base_position,0,[0., 0.26*1000, 0.32*1000],[-90,-90,0])
 
+    ###############
+    # TO DO : Réecrire correctement le keybord controller de la trompe
+    #         en mettant le code commenté si dessous dans le fichier 
+    #         approprié :  CableController
+    ##############
     # if typeControl == 'displacement':
     #     trunk.addObject(CableController(cables, name = 'Cablecontroller'))
     # elif typeControl == 'force' :

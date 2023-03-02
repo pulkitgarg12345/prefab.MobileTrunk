@@ -107,7 +107,8 @@ def createScene(rootNode):
         scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/joint_states", robot.findData('summit_xl_joints_states_vel'),
                                                             sensor_msgs.msg.JointState, summit_xl_jointstate_recv))
 
-        scene.Modelling.SummitXL.addObject(CableROSController(name="CableROSController", cables=cables, robot=robot, robotToSim=True, test=False))
+
+        scene.Modelling.SummitXL.addObject(CableROSController(name="CableROSController", rosNode = rosNode, cables=cables, robot=robot, robotToSim=True, test=False))
 
         for i in range(1,10):
             
