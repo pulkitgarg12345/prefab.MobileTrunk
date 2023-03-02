@@ -213,7 +213,15 @@ def SummitXL(parentNode, name="SummitXL"):
     
     self.addData(name="summit_xl_joints_states_vel",value=[0, 0, 0, 0], type="Vec4d", help="Summit_xl joint_states",
                  group="Summit_xl_cmd_vel")
+    
+    self.addData(name="effector_cable_data", type="float", help="trunk displacement", group="Echelon3")
+    
+    self.addData(name="end_effector_pos", type="float", help="trunk displacement", group="Echelon3")
 
+    self.addData(name="topic_name",  type="string", help="trunk displacement", group="Echelon3")
+    
+    self.addData(name="cable_index", type="int", help="trunk displacement", group="Echelon3")
+    
     self.addChild(Chassis())
     return self
 

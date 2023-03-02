@@ -3,6 +3,7 @@ import sys
 from stlib3.scene import Scene
 from summitxl_controller import *
 from summitxl_roscontroller import *
+from echelon3.RosCableController import *
 from stlib3.physics.rigid import Floor
 #from floor import Floor
 from mobile_trunk import mobileTrunk
@@ -43,7 +44,7 @@ def createScene(rootNode):
     # add robot
     #########################################
     scale = 1000
-    self, trunk= mobileTrunk(scene.Modelling)
+    self, trunk, cables = mobileTrunk(scene.Modelling)
     scene.Simulation.addChild(trunk)
     scene.Simulation.addChild(self)
 
@@ -60,6 +61,7 @@ def createScene(rootNode):
     #animate(myAnimation, {
     #        "body" : scene.Modelling.SummitXL.Chassis.position,
     #        "target": scene.Modelling.SummitXL.Chassis.WheelsMotors.angles}, duration=2, mode="loop")
+
     if sys.argv[1] == "KeyboardController":
         scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL, test=False))
 
@@ -103,6 +105,14 @@ def createScene(rootNode):
                                                             sensor_msgs.msg.JointState, digital_twin_jointstate_pub))
         
         scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/joint_states", robot.findData('summit_xl_joints_states_vel'),
-                                                            sensor_msgs.msg.JointState, summit_xl_jointstate_recv))       
+                                                            sensor_msgs.msg.JointState, summit_xl_jointstate_recv))
+
+        scene.Modelling.SummitXL.addObject(CableROSController(name="CableROSController", cables=cables, robot=robot, robotToSim=True, test=False))
+
+        for i in range(1,10):
+            
+            topic = str("/Robot/Cable"+str(i)+"/state/displacement")
+            scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, topic, robot.findData("effector_cable_data"),Float64, cable_displacement_recv))
+            print(topic)  
 
     return rootNode

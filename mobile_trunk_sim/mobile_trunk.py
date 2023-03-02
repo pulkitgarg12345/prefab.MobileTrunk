@@ -26,15 +26,15 @@ def mobileTrunk(modellingNode):
     base_position = AttachedArm.position
     parameters, cables = createEchelon(trunk,base_position,0,[0., 0.26*1000, 0.32*1000],[-90,-90,0])
 
-    if typeControl == 'displacement':
-        trunk.addObject(CableController(cables, name = 'Cablecontroller'))
-    elif typeControl == 'force' :
-        trunk.addObject(ForceController(cables,dt,name = 'ForceController'))
+    # if typeControl == 'displacement':
+    #     trunk.addObject(CableController(cables, name = 'Cablecontroller'))
+    # elif typeControl == 'force' :
+    #     trunk.addObject(ForceController(cables,dt,name = 'ForceController'))
     
     ##########################################
     # add Camera
     ##########################################
     addCamera(AttachedArm)
-    return trunk, self
+    return trunk, self, cables
 
 
