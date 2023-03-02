@@ -2,7 +2,6 @@
 #!/usr/bin/env python3
 import Sofa
 from std_msgs.msg import Float64
-import rclpy
 
 def cable_displacement_recv(data, datafield):
 
@@ -19,7 +18,7 @@ class CableROSController(Sofa.Core.Controller):
         self.robotToSim = kwargs["robotToSim"]
         self.receiving_topic = None
         self.index = 0
-        self.Flag = False
+        self.Flag = None
 
     def get_index_by_rosNode(self): 
         
@@ -32,42 +31,31 @@ class CableROSController(Sofa.Core.Controller):
                 #get the list of publishers thanks to the get_publishers_info_by_topic method
                 publishers = self.rosNode.get_publishers_info_by_topic(topic_name)
                 if publishers:
-                    #self.Flag = False
-                    if not self.Flag:
-
-                        # If publishers is True => whe have topic which is receiving message
-                        self.receiving_topic = topic_name
-                        #print(f"Topic {receiving_topic} is receiving messages of type std_msgs/msg/Float64")
-                        print("when publishing -->",self.receiving_topic)
-                        print("-----------")
-                        topic_processing = self.receiving_topic.strip().split('/')
-                        self.index = int(topic_processing[2].strip("Cable"))
+                    self.Flag = False
+                    # If publishers is True => whe have topic which is receiving message
+                    self.receiving_topic = topic_name
+                    topic_processing = self.receiving_topic.strip().split('/')
+                    self.index = int(topic_processing[2].strip("Cable"))
+                    break
             
                 else:
                     self.Flag = True
-                    print("+++++++++++")
-        # self.Flag = False
 
-        # if self.receiving_topic is not None:
-        #     self.Flag = True
-        #     # print("-----------")
-        #     topic_processing = self.receiving_topic.strip().split('/')
-        #     self.index = int(topic_processing[2].strip("Cable"))
+        
+        return self.Flag
 
     
     # action at beginning frame
     def onAnimateBeginEvent(self, event):
                
-        self.get_index_by_rosNode()
-
-        # if not self.Flag : 
-        #     print("--------")
-        #     with self.cables[self.index].value.writeable() as t:
-        #         t[0] +=  self.robot.effector_cable_data.value
-        # else:
-        #     print("+++++++++")
-        #     self.cables[self.index].value.value = 0.
-        #     #print(self.cables[self.index].value.value)
+        state = self.get_index_by_rosNode()
+        if not state:
+            
+            with self.cables[self.index - 1].value.writeable() as t:
+                t[0] +=  [self.robot.effector_cable_data.value]
+        else:
+            with self.cables[self.index-1].value.writeable() as t:
+                t[0] = t[0]
 
 
                                                 
