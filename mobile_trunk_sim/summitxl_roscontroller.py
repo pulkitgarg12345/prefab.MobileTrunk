@@ -1,7 +1,6 @@
 # coding: utf8
 #!/usr/bin/env python3
 import numpy as np
-from turtle import distance
 import Sofa
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Twist
@@ -263,7 +262,6 @@ class SummitxlROSController(Sofa.Core.Controller):
                                                             self.robot.robot_linear_vel[0])
             move(self.robot.Chassis.WheelsMotors.angles.rest_position, self.wheels_angular_speed, dt)
 
-        print('-->',self.robot.summit_xl_joints_states_vel.value)
         summit_xl_joint_state0 = json.dumps(self.robot.summit_xl_joints_states_vel[0])
         summit_xl_joint_state1 = json.dumps(self.robot.summit_xl_joints_states_vel[1])
         summit_xl_joint_state2 = json.dumps(self.robot.summit_xl_joints_states_vel[2])
