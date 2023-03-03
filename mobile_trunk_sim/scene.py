@@ -116,4 +116,6 @@ def createScene(rootNode):
             scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, topic, robot.findData("effector_cable_data"),Float64, cable_displacement_recv))
             print(topic)  
 
+        scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/Robot/end_effector/pos", robot.findData("end_effector_pos"),Float64MultiArray, end_effector_pos_send))
+
     return rootNode
