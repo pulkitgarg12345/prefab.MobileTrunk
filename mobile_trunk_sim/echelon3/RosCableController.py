@@ -1,7 +1,7 @@
 # coding: utf8
 #!/usr/bin/env python3
 import Sofa
-from std_msgs.msg import Float64MultiArray, MultiArrayDimension, MultiArrayLayout,Float64
+from std_msgs.msg import Float64MultiArray,Float64
 
 def cable_displacement_recv(data, datafield):
 
@@ -16,15 +16,7 @@ def end_effector_pos_send(data):
         data_list.append(float(value))
     
     end_effector_pos.data = data_list
-    # dim = MultiArrayDimension()
-    # dim.label = "my_dimension"
-    # dim.size = 7
-    # dim.stride = 1
-    # layout = MultiArrayLayout()
-    # layout.dim.append(dim)
-    # end_effector_pos.layout = layout
-    
-
+   
     return end_effector_pos
 
 
@@ -41,11 +33,11 @@ class CableROSController(Sofa.Core.Controller):
 
     def get_index_by_rosNode(self): 
         
-        topic_name_format = ["/Robot/Cable1/state/displacement", "/Robot/Cable2/state/displacement",
-                             "/Robot/Cable3/state/displacement", "/Robot/Cable4/state/displacement",
-                             "/Robot/Cable5/state/displacement", "/Robot/Cable6/state/displacement",
-                             "/Robot/Cable7/state/displacement","/Robot/Cable8/state/displacement",
-                             "/Robot/Cable9/state/displacement"]
+        topic_name_format = ["/Inverse/Cable1/state/displacement", "/Inverse/Cable2/state/displacement",
+                             "/Inverse/Cable3/state/displacement", "/Inverse/Cable4/state/displacement",
+                             "/Inverse/Cable5/state/displacement", "/Inverse/Cable6/state/displacement",
+                             "/Inverse/Cable7/state/displacement","/Inverse/Cable8/state/displacement",
+                             "/Inverse/Cable9/state/displacement"]
         #Get active topic name and type
         topics_names_and_types = self.rosNode.get_topic_names_and_types()
 
