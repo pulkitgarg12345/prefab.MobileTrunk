@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(somorob)
+project(bag_recorder_nodes)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -8,7 +8,7 @@ endif()
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -19,17 +19,18 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(rosbag2_cpp REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
-add_executable(summit_xl src/summit_xl.cpp)
 
-target_include_directories(summit_xl PRIVATE ${geometry_msgs_INCLUDE_DIRS})
+add_executable(bag_recorder src/bag_recorder.cpp)
 
-ament_target_dependencies(summit_xl rclcpp geometry_msgs)
-
+ament_target_dependencies(bag_recorder rclcpp rosbag2_cpp rosidl_typesupport_cpp geometry_msgs)
 
 install(TARGETS
-  summit_xl
-  DESTINATION lib/${PROJECT_NAME})
+  bag_recorder
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 
 ament_package()
