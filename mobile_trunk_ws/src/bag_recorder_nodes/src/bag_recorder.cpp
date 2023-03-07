@@ -12,7 +12,7 @@ using std::placeholders::_1;
 class SimpleBagRecorder : public rclcpp::Node
 {
 public:
-    SimpleBagRecorder(double vitesse_angulaire=0., double vitesse_lineaire=0.) : Node("simple_bag_recorder"),
+    SimpleBagRecorder(double vitesse_angulaire=-10., double vitesse_lineaire=10.) : Node("simple_bag_recorder"),
                       m_vitesse_angulaire(vitesse_angulaire), m_vitesse_lineaire(vitesse_lineaire)
         {
           // Get parameters from launch file
@@ -32,7 +32,7 @@ public:
           std::filesystem::current_path("../../../record_folder");
 
           //Check if the velocities are different from zero bzfor creating the folder
-          if(m_vitesse_angulaire !=0. && m_vitesse_lineaire !=0.)
+          if(m_vitesse_angulaire !=-10. && m_vitesse_lineaire !=-10.)
           {
             std::string base_folder_name = "w_" + std::to_string(m_vitesse_angulaire) + "_v_"+
                                             std::to_string(m_vitesse_lineaire);
