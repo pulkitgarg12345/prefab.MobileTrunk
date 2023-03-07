@@ -93,6 +93,11 @@ class TeleopTwistTest : public rclcpp::Node
             twist.angular.x = 0.0; twist.angular.y = 0.0; twist.angular.z = m_vitesse_angulaire;
             publisher_->publish(twist);
         }
+        if(dt > 70.0 )
+        {
+          RCLCPP_INFO(this->get_logger(), "Job done = %f", dt);
+        }
+
     }
 
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher_;
