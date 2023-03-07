@@ -49,7 +49,6 @@ public:
               std::filesystem::create_directory(base_folder_name);
 
             }
-          
 
           const rosbag2_cpp::StorageOptions storage_options({base_folder_name, "sqlite3"});
 
