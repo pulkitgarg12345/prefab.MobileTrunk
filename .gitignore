@@ -9,3 +9,4 @@ install/
 log/
 *.view
 *.json
+record_folder/
