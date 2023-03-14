@@ -177,8 +177,8 @@ def odom_send(data):
     msg.twist.twist.angular.z = data[4].value[2]
     return msg
 
-digital_twin_jointstate_file_record = open('/home/fabrice/test/bagfile/read_digital_twin_joint_states.txt', 'w')
-summit_xl_jointstate_file_record = open('/home/fabrice/test/bagfile/read_summit_xl_joint_states.txt', 'w')
+digital_twin_jointstate_file_record = open("/home/fabrice/Documents/CRIStAL/prefab.MobileTrunk/test/join_states_data_processing/record_join_states/read_digital_twin_joint_states.txt", "w")
+summit_xl_jointstate_file_record = open('/home/fabrice/Documents/CRIStAL/prefab.MobileTrunk/test/join_states_data_processing/record_join_states/read_summit_xl_joint_states.txt', 'w')
 
 class SummitxlROSController(Sofa.Core.Controller):
     """A Simple keyboard controller for the SummitXL

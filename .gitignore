@@ -10,3 +10,4 @@ log/
 *.view
 *.json
 record_folder/
+*.txt
