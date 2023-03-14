@@ -1,5 +1,5 @@
 #include <rclcpp/rclcpp.hpp>
-#include <geometry_msgs/msg/twist.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 
 #include <rosbag2_cpp/typesupport_helpers.hpp>
 #include <rosbag2_cpp/writer.hpp>
@@ -61,13 +61,13 @@ public:
           writer_->open(storage_options, converter_options);
 
           writer_->create_topic(
-              {"/summit_xl/robotnik_base_control/cmd_vel",
-                   "geometry_msgs/msg/Twist",
+              {"/summit_xl/robotnik_base_control/odom",
+                   "nav_msgs/msg/Odometry",
                   rmw_get_serialization_format(),
                     ""});  
 
-          subscription_ = create_subscription<geometry_msgs::msg::Twist>(
-                "/summit_xl/robotnik_base_control/cmd_vel", 10, std::bind(&SimpleBagRecorder::topic_callback, this, _1));          
+          subscription_ = create_subscription<nav_msgs::msg::Odometry>(
+                "/summit_xl/robotnik_base_control/odom", 10, std::bind(&SimpleBagRecorder::topic_callback, this, _1));          
         } else{
                 RCLCPP_ERROR(get_logger(), "Invalid velocities");
         }
@@ -94,7 +94,7 @@ private:
       //rosbag2_cpp::typesupport_helpers::to_storage_format(
       //*msg, rmw_get_serialization_format(), *bag_message->serialized_data);
 
-      bag_message->topic_name = "/summit_xl/robotnik_base_control/cmd_vel";
+      bag_message->topic_name = "/summit_xl/robotnik_base_control/odom";
       if (rcutils_system_time_now(&bag_message->time_stamp) != RCUTILS_RET_OK) {
         RCLCPP_ERROR(get_logger(), "Error getting current time: %s",
           rcutils_get_error_string().str);
