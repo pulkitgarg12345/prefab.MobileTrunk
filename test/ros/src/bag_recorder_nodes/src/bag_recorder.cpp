@@ -1,5 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <nav_msgs/msg/odometry.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 
 #include <rosbag2_cpp/typesupport_helpers.hpp>
 #include <rosbag2_cpp/writer.hpp>
@@ -64,17 +65,27 @@ public:
               {"/summit_xl/robotnik_base_control/odom",
                    "nav_msgs/msg/Odometry",
                   rmw_get_serialization_format(),
-                    ""});  
+                    ""}); 
+          
+          writer_->create_topic(
+                  {"/summit_xl/joint_states",
+                                "sensor_msgs/msg/JointState",
+                                rmw_get_serialization_format(),
+                        ""});
 
-          subscription_ = create_subscription<nav_msgs::msg::Odometry>(
-                "/summit_xl/robotnik_base_control/odom", 10, std::bind(&SimpleBagRecorder::topic_callback, this, _1));          
-        } else{
+          subscription_odom = create_subscription<nav_msgs::msg::Odometry>(
+                "/summit_xl/robotnik_base_control/odom", 10, std::bind(&SimpleBagRecorder::odom_topic_callback, this, _1));
+
+          subscription_join_state = create_subscription<sensor_msgs::msg::JointState>(
+                "/summit_xl/joint_states", 10, std::bind(&SimpleBagRecorder::join_state_topic_callback, this, _1));           
+        } 
+        else{
                 RCLCPP_ERROR(get_logger(), "Invalid velocities");
         }
 
     }
 private:
-    void topic_callback(std::shared_ptr<rclcpp::SerializedMessage> msg) const
+    void odom_topic_callback(std::shared_ptr<rclcpp::SerializedMessage> msg) const
     {
       auto bag_message = std::make_shared<rosbag2_storage::SerializedBagMessage>();
 
@@ -103,10 +114,41 @@ private:
       writer_->write(bag_message);
     }
 
-    rclcpp::Subscription<rclcpp::SerializedMessage>::SharedPtr subscription_;
+    void join_state_topic_callback(std::shared_ptr<rclcpp::SerializedMessage> msg) const
+    {
+      auto bag_message = std::make_shared<rosbag2_storage::SerializedBagMessage>();
+
+      bag_message->serialized_data = std::shared_ptr<rcutils_uint8_array_t>(
+        new rcutils_uint8_array_t,
+        [this](rcutils_uint8_array_t *msg) {
+          auto fini_return = rcutils_uint8_array_fini(msg);
+          delete msg;
+          if (fini_return != RCUTILS_RET_OK) {
+            RCLCPP_ERROR(get_logger(),
+              "Failed to destroy serialized message %s", rcutils_get_error_string().str);
+          }
+        });
+
+      *bag_message->serialized_data = msg->release_rcl_serialized_message();
+       //Convert the received message to a serialized message and store it in the bag message
+      //rosbag2_cpp::typesupport_helpers::to_storage_format(
+      //*msg, rmw_get_serialization_format(), *bag_message->serialized_data);
+
+      bag_message->topic_name = "/summit_xl/joint_states";
+      if (rcutils_system_time_now(&bag_message->time_stamp) != RCUTILS_RET_OK) {
+        RCLCPP_ERROR(get_logger(), "Error getting current time: %s",
+          rcutils_get_error_string().str);
+      }
+
+      writer_->write(bag_message);
+    }
+
+    rclcpp::Subscription<rclcpp::SerializedMessage>::SharedPtr subscription_odom;
+    rclcpp::Subscription<rclcpp::SerializedMessage>::SharedPtr subscription_join_state;
     std::unique_ptr<rosbag2_cpp::writers::SequentialWriter> writer_;
     double  m_vitesse_angulaire, m_vitesse_lineaire;
 };
+
 
 int main(int argc, char * argv[])
 {
