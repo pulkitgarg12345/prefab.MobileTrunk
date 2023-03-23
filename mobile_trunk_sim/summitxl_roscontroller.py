@@ -79,7 +79,7 @@ def vel_recv(data, datafield):
                                 velocity
     """
     datafield[0].value = [data.linear.x ,data.linear.y, data.linear.z]
-    datafield[1].value = [data.angular.x ,data.angular.z, data.angular.y]
+    datafield[1].value = [data.angular.x ,data.angular.y, data.angular.z]
 
 def odom_recv(data, datafield):
     """ Function called by the RosReceiver. It
@@ -262,12 +262,16 @@ class SummitxlROSController(Sofa.Core.Controller):
                                                             self.robot.robot_linear_vel[0])
             move(self.robot.Chassis.WheelsMotors.angles.rest_position, self.wheels_angular_speed, dt)
 
-        summit_xl_joint_state0 = json.dumps(self.robot.summit_xl_joints_states_vel[0])
-        summit_xl_joint_state1 = json.dumps(self.robot.summit_xl_joints_states_vel[1])
-        summit_xl_joint_state2 = json.dumps(self.robot.summit_xl_joints_states_vel[2])
-        summit_xl_joint_state3 = json.dumps(self.robot.summit_xl_joints_states_vel[3])
-        summit_xl_jointstate_file_record.write(str(self.robot_time) + " , " + str([summit_xl_joint_state0 , summit_xl_joint_state1, summit_xl_joint_state2,
-                                                                                      summit_xl_joint_state3]) + "\n")
+
+        if self.robot.robot_angular_vel[2] ==0 and self.robot.robot_linear_vel[0] ==0 and self.robot_time > 10:
+            summit_xl_jointstate_file_record.close()
+        else:
+            summit_xl_joint_state0 = json.dumps(self.robot.summit_xl_joints_states_vel[0])
+            summit_xl_joint_state1 = json.dumps(self.robot.summit_xl_joints_states_vel[1])
+            summit_xl_joint_state2 = json.dumps(self.robot.summit_xl_joints_states_vel[2])
+            summit_xl_joint_state3 = json.dumps(self.robot.summit_xl_joints_states_vel[3])
+            summit_xl_jointstate_file_record.write(str(self.robot_time) + " , " + str([summit_xl_joint_state0 , summit_xl_joint_state1, summit_xl_joint_state2,
+                                                                                summit_xl_joint_state3]) + "\n")
         if not self.flag and not q.empty():
             if q.queue[0][0] - self.sofa_time <= 0.001:
                 # print("==== d queue ======")
