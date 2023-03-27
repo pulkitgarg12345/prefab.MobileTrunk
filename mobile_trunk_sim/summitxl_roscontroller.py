@@ -263,16 +263,17 @@ class SummitxlROSController(Sofa.Core.Controller):
             move(self.robot.Chassis.WheelsMotors.angles.rest_position, self.wheels_angular_speed, dt)
 
 
-        if self.robot.robot_angular_vel[2] ==0 and self.robot.robot_linear_vel[0] ==0 and self.robot_time > 10:
-            summit_xl_jointstate_file_record.close()
-        else:
-            summit_xl_joint_state0 = json.dumps(self.robot.summit_xl_joints_states_vel[0])
-            summit_xl_joint_state1 = json.dumps(self.robot.summit_xl_joints_states_vel[1])
-            summit_xl_joint_state2 = json.dumps(self.robot.summit_xl_joints_states_vel[2])
-            summit_xl_joint_state3 = json.dumps(self.robot.summit_xl_joints_states_vel[3])
-            summit_xl_jointstate_file_record.write(str(self.robot_time) + " , " + str([summit_xl_joint_state0 , summit_xl_joint_state1, summit_xl_joint_state2,
-                                                                                summit_xl_joint_state3]) + "\n")
+        # if self.robot.robot_angular_vel[2] ==0 and self.robot.robot_linear_vel[0] ==0 and self.robot_time > 10:
+        #     summit_xl_jointstate_file_record.close()
+        # else:
+        #     summit_xl_joint_state0 = json.dumps(self.robot.summit_xl_joints_states_vel[0])
+        #     summit_xl_joint_state1 = json.dumps(self.robot.summit_xl_joints_states_vel[1])
+        #     summit_xl_joint_state2 = json.dumps(self.robot.summit_xl_joints_states_vel[2])
+        #     summit_xl_joint_state3 = json.dumps(self.robot.summit_xl_joints_states_vel[3])
+        #     summit_xl_jointstate_file_record.write(str(self.robot_time) + " , " + str([summit_xl_joint_state0 , summit_xl_joint_state1, summit_xl_joint_state2,
+        #                                                                         summit_xl_joint_state3]) + "\n")
         if not self.flag and not q.empty():
+            print(q.queue[0][0] - self.sofa_time)
             if q.queue[0][0] - self.sofa_time <= 0.001:
                 # print("==== d queue ======")
                 # print(q.queue[0][0], "   ", self.sofa_time, "  " ,q.queue[0][0] - self.sofa_time)
@@ -292,13 +293,13 @@ class SummitxlROSController(Sofa.Core.Controller):
             for i in range(0,3):
                 self.robot.sim_position[i] = self.robot.Chassis.Base.position.position.value[0][i]
 
-            digital_twin_joint_state0 = json.dumps(self.wheels_angular_speed[0])
-            digital_twin_joint_state1 = json.dumps(self.wheels_angular_speed[1])
-            digital_twin_joint_state2 = json.dumps(self.wheels_angular_speed[2])
-            digital_twin_joint_state3 = json.dumps(self.wheels_angular_speed[3])
+            # digital_twin_joint_state0 = json.dumps(self.wheels_angular_speed[0])
+            # digital_twin_joint_state1 = json.dumps(self.wheels_angular_speed[1])
+            # digital_twin_joint_state2 = json.dumps(self.wheels_angular_speed[2])
+            # digital_twin_joint_state3 = json.dumps(self.wheels_angular_speed[3])
 
-            digital_twin_jointstate_file_record.write(str(self.sofa_time) + " , " + str([digital_twin_joint_state0, digital_twin_joint_state1 , digital_twin_joint_state2,
-                                                                                          digital_twin_joint_state3]) + "\n")
+            # digital_twin_jointstate_file_record.write(str(self.sofa_time) + " , " + str([digital_twin_joint_state0, digital_twin_joint_state1 , digital_twin_joint_state2,
+            #                                                                               digital_twin_joint_state3]) + "\n")
 
             if q.empty():
                 digital_twin_jointstate_file_record.close()
