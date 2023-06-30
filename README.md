@@ -52,32 +52,8 @@ Compile *SOFA*
 
 Install Required dependencies
 ------------------------------------
-For that follow these [instructions](https://www.sofa-framework.org/community/doc/getting-started/build/linux/) (We will install the linux one)
-(The best way to add plugin to SOFA is explained [here](https://www.sofa-framework.org/community/doc/getting-started/video-tutorials/how-to-compile-a-plugin/))
-
-- STLIB
-
-    ```console
-    foo@bar:~$  git clone https://github.com/SofaDefrost/STLIB.git
-    ```
-
-- SoftRobots
-
-    ```console
-    foo@bar:~$  git clone https://github.com/SofaDefrost/SoftRobots.git
-    ```
-
-- SofaPython3
-
-    ```console
-    foo@bar:~$  git clone https://github.com/sofa-framework/SofaPython3
-    ```
-    
-- BeamAdapter
-
-    ```console
-    foo@bar:~$  git clone https://github.com/SofaDefrost/BeamAdapter
-    ```
+For that follow these [instructions](https://www.sofa-framework.org/download/) (We will install the linux one)
+  ```
 
 Download and set up working space
 ---------------------------------
