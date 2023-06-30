@@ -24,6 +24,8 @@ for line in lines:
 # trier les valeurs de temps
 sorted_temps = np.sort(temps)
 
+
+
 # Supprimer les doublons dans temps et extraire les indices uniques
 unique_indices = np.unique(temps, return_index=True)[1]
 
@@ -44,20 +46,20 @@ duree = xnew[-1] - xnew[0] # durée totale de l'enregistrement
 fs = n / duree # fréquence d'échantillonnage
 fc_modifiee = 1 # nouvelle fréquence de coupure
 w = fc_modifiee / (fs / 2) # normalisation de la nouvelle fréquence de coupure
-b, a = signal.butter(2, w, 'low')
+b, a = signal.butter(1, w, 'lowpass')
 vitesses_filtre = []
 for i in range(4):
     vitesses_filtre.append(signal.filtfilt(b, a, vitesses_smooth[i]))
 
-# Plot des données brutes et des courbes interpolées
-for i in range(4):
-    fig, ax = plt.subplots()
-    #ax.plot(temps, vitesses[i], '.', label=f"Vitesse {i+1} - brutes")
-    ax.plot(xnew, vitesses_smooth[i], label=f"Vitesse {i+1} - interp")
-    ax.plot(xnew, vitesses_filtre[i], label=f"Vitesse {i+1} - filtre")
-    ax.set_xlabel("Temps (s)")
-    ax.set_ylabel(f"Vitesse de rotation(rad/s)")
-    ax.text(0,4,"pour une vitesse de 0.3 m/s et une vitesse de rotation de 90°")
-    ax.legend()
-    ax.grid()
-plt.show()
+# # Plot des données brutes et des courbes interpolées
+# for i in range(4):
+#     fig, ax = plt.subplots()
+#     ax.plot(temps, vitesses[i], label=f"Vitesse {i+1} - brutes")
+#     #ax.plot(xnew, vitesses_smooth[i], label=f"Vitesse {i+1} - interp")
+#     ax.plot(xnew, vitesses_filtre[i], label=f"Vitesse {i+1} - filtre")
+#     ax.set_xlabel("Temps (s)")
+#     ax.set_ylabel(f"Vitesse de rotation(rad/s)")
+#     ax.text(0,4,"pour une vitesse de 0.3 m/s et une vitesse de rotation de 90°")
+#     ax.legend()
+#     ax.grid()
+# plt.show()

@@ -53,7 +53,32 @@ Compile *SOFA*
 Install Required dependencies
 ------------------------------------
 For that follow these [instructions](https://www.sofa-framework.org/download/) (We will install the linux one)
-  ```
+<!--(The best way to add plugin to SOFA is explained [here](https://www.sofa-framework.org/community/doc/getting-started/video-tutorials/how-to-compile-a-plugin/)) 
+
+- STLIB
+
+    ```console
+    foo@bar:~$  git clone https://github.com/SofaDefrost/STLIB.git
+    ```
+
+- SoftRobots
+
+    ```console
+    foo@bar:~$  git clone https://github.com/SofaDefrost/SoftRobots.git
+    ```
+
+- SofaPython3
+
+    ```console
+    foo@bar:~$  git clone https://github.com/sofa-framework/SofaPython3
+    ```
+    
+- BeamAdapter
+
+    ```console
+    foo@bar:~$  git clone https://github.com/SofaDefrost/BeamAdapter
+    ``` 
+-->
 
 Download and set up working space
 ---------------------------------
@@ -83,12 +108,13 @@ Open your bashrc and add the following lines in order to setup your working spac
     ```console
         export SOFA_ROOT=/path to buid folder/build
     ```
-
+<!--
 - Tell to  *SOFAPYTHON3_ROOT* where to find the path to the plugin SofaPython3
 
     ```console
         export SOFAPYTHON3_ROOT=/path to SofaPython3 plugin folder/SofaPython3
     ```
+-->
 
 - Make an alias in order to be able to launch Sofa easily by doing a runSofa
 
