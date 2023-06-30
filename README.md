@@ -111,7 +111,7 @@ Open your bashrc and add the following lines in order to setup your working spac
 - Tell to  *SOFAPYTHON3_ROOT* where to find the path to the plugin SofaPython3
 
     ```console
-        export SOFA_ROOT=/path to SofaPython3 plugin folder/SofaPython3
+        export SOFAPYTHON3_ROOT=/path to SofaPython3 plugin folder/SofaPython3
     ```
 
 - Make an alias in order to be able to launch Sofa easily by doing a runSofa
