@@ -177,8 +177,8 @@ def odom_send(data):
     msg.twist.twist.angular.z = data[4].value[2]
     return msg
 
-digital_twin_jointstate_file_record = open("/home/fabrice/Documents/CRIStAL/prefab.MobileTrunk/test/join_states_data_processing/record_join_states/read_digital_twin_joint_states.txt", "w")
-summit_xl_jointstate_file_record = open('/home/fabrice/Documents/CRIStAL/prefab.MobileTrunk/test/join_states_data_processing/record_join_states/read_summit_xl_joint_states.txt', 'w')
+#digital_twin_jointstate_file_record = open("/home/fabrice/Documents/CRIStAL/prefab.MobileTrunk/test/join_states_data_processing/record_join_states/read_digital_twin_joint_states.txt", "w")
+#summit_xl_jointstate_file_record = open('/home/fabrice/Documents/CRIStAL/prefab.MobileTrunk/test/join_states_data_processing/record_join_states/read_summit_xl_joint_states.txt', 'w')
 
 class SummitxlROSController(Sofa.Core.Controller):
     """A Simple keyboard controller for the SummitXL
@@ -301,8 +301,8 @@ class SummitxlROSController(Sofa.Core.Controller):
             # digital_twin_jointstate_file_record.write(str(self.sofa_time) + " , " + str([digital_twin_joint_state0, digital_twin_joint_state1 , digital_twin_joint_state2,
             #                                                                               digital_twin_joint_state3]) + "\n")
 
-            if q.empty():
-                digital_twin_jointstate_file_record.close()
+            #if q.empty():
+            #    digital_twin_jointstate_file_record.close()
         # Wait to start receiving data from ROS to initialize the position
         # of the robot in the simulation with the position of the real robot
         if self.robot.reel_position[0] != 0:
