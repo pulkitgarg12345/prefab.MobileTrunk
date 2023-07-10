@@ -120,12 +120,12 @@ Open your bashrc and add the following lines in order to setup your working spac
         export PYTHONPATH=$PYTHONPATH:"/path to binary folder/plugin/SofaPython3/lib/python3/site-packages":"/path to binary folder/plugin/STLIB/lib/python3/site-packages":"/usr/local/lib/python3.8/dist-packages":"/path to binary folder/plugin/SoftRobots/share/sofa/examples/SoftRobots/sofaros"
     ```
 
-Now you can source your .bashrc file with the command:
+- Now you can source your .bashrc file with the command
     ```console
         source ~/.bashrc
     ```
 
-And run the command:
+- And run the command:
     ```console
         runSofa
     ```
