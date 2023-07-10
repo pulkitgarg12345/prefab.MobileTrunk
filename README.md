@@ -100,7 +100,7 @@ Open your bashrc and add the following lines in order to setup your working spac
 - Add to the PATH the path to the folder where the binary files are located
 
     ```console
-        export PATH="/path to binary folder/build/bin:$PATH"
+        export PATH="/path to binary folder/bin:$PATH"
     ```
 
 - Tell to  *SOFA_ROOT* the path where to find the path to the buid folder of SOFA
