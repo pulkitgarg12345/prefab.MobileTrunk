@@ -97,7 +97,7 @@ prefab.MobileTrunk repository.
 
 ### Set up working space
 Open your bashrc and add the following lines in order to setup your working space
-- Ajoute au PATH le chemin vers le dossier ou les fichiers binaires se trouvent
+- Add to the PATH the path to the folder where the binary files are located
 
     ```console
         export PATH="/path to binary folder/build/bin:$PATH"
@@ -119,6 +119,21 @@ Open your bashrc and add the following lines in order to setup your working spac
     ```console
         export PYTHONPATH=$PYTHONPATH:"/path to binary folder/plugin/SofaPython3/lib/python3/site-packages":"/path to binary folder/plugin/STLIB/lib/python3/site-packages":"/usr/local/lib/python3.8/dist-packages":"/path to binary folder/plugin/SoftRobots/share/sofa/examples/SoftRobots/sofaros"
     ```
+
+Now you can source your .bashrc file with the command:
+    ```console
+        source ~/.bashrc
+    ```
+
+And run the command:
+    ```console
+        runSofa
+    ```
+If everything went well, you should see the Sofa GUI appear.
+
+Now, click on the *Edit* button and go to *Plugin Manager*. Then click on *Add*. A window will appear. You need to navigate to the directory where the binary files are located. Go to the *plugins* directory, then to *ArticulatedSystemPlugin*, and then to *lib*. There, you will find a file named *libArticulatedSystemPlugin.so*. Click on *Open*.
+
+Repeat the same procedure to add the *.so* files for the *SofaPython3* plugin.
 
 Install *ROS* and set up working space
 --------------------------------------
