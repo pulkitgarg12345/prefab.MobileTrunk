@@ -85,7 +85,7 @@ Download and set up working space
 
 ### Download the mobile trunk's prefab
 
-Now that you have a compiled & working SOFA with the required plugins, we can clone
+Now that you have install SOFA binairy we can clone
 prefab.MobileTrunk repository.
 
 - Create a directory where you will put it
@@ -97,34 +97,27 @@ prefab.MobileTrunk repository.
 
 ### Set up working space
 Open your bashrc and add the following lines in order to setup your working space
-- Add to the PATH the path to the bin folder contained in the SOFA build folder
+- Ajoute au PATH le chemin vers le dossier ou les fichiers binaires se trouvent
 
     ```console
-        export PATH="/path to buid folder/build/bin:$PATH"
+        export PATH="/path to binary folder/build/bin:$PATH"
     ```
 
 - Tell to  *SOFA_ROOT* the path where to find the path to the buid folder of SOFA
 
     ```console
-        export SOFA_ROOT=/path to buid folder/build
+        export SOFA_ROOT=/path to binary folder
     ```
-<!--
-- Tell to  *SOFAPYTHON3_ROOT* where to find the path to the plugin SofaPython3
-
-    ```console
-        export SOFAPYTHON3_ROOT=/path to SofaPython3 plugin folder/SofaPython3
-    ```
--->
 
 - Make an alias in order to be able to launch Sofa easily by doing a runSofa
 
     ```console
-        runSofa="/path to buid folder/build/bin/runSofa"
+        runSofa="/path to binary folder/bin/runSofa"
     ```
 
-- Add to the PYTHONPATH the path to *STLIB*
+- Add to the PYTHONPATH the path to *SofaPython3*, *STLIB* , *SofaROS* , *Python3*
     ```console
-        export PYTHONPATH=$PYTHONPATH:/path to build folder/build/lib/python3/site-packages:/path to STLIB plugin folder/STLIB/python3/src:/usr/local/lib/python3.8/dist-packages
+        export PYTHONPATH=$PYTHONPATH:"/path to binary folder/plugin/SofaPython3/lib/python3/site-packages":"/path to binary folder/plugin/STLIB/lib/python3/site-packages":"/usr/local/lib/python3.8/dist-packages":"/path to binary folder/plugin/SoftRobots/share/sofa/examples/SoftRobots/sofaros"
     ```
 
 Install *ROS* and set up working space
