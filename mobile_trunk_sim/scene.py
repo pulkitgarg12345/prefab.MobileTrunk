@@ -43,15 +43,15 @@ def createScene(rootNode):
     #########################################
     # add robot
     #########################################
-    scale = 1000
+    scale = 500
     self, trunk, cables = mobileTrunk(scene.Modelling)
     scene.Simulation.addChild(trunk)
     scene.Simulation.addChild(self)
 
     floor = Floor(rootNode,
                   name="Floor",
-                  translation=[-2*1000, -0.1*1000, 2*1000],
-                  uniformScale=0.5*1000,
+                  translation=[-2*scale, -0.1*scale, 2*scale],
+                  uniformScale=0.5*scale,
                   isAStaticObject=True)
 
     #def myAnimation(target, body, factor):
