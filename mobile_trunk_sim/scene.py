@@ -8,8 +8,7 @@ from stlib3.physics.rigid import Floor
 #from floor import Floor
 from mobile_trunk import mobileTrunk
 from addCamera import addCamera
-import sofaros
-from sofaros import *
+
 
 
 def createScene(rootNode):
@@ -66,6 +65,8 @@ def createScene(rootNode):
         scene.Modelling.SummitXL.addObject(SummitxlController(name="KeyboardController", robot=scene.Modelling.SummitXL, test=False))
 
     elif sys.argv[1] == "SimToRobot":
+            import sofaros
+            from sofaros import RosReceiver  
             rosNode = sofaros.init("SofaNode")
             robot=scene.Modelling.SummitXL
             scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=robot, robotToSim=False, test=False))
@@ -81,15 +82,17 @@ def createScene(rootNode):
             # scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/summit_xl/robotnik_base_control/cmd_vel",
             #                                [robot.findData('robot_linear_vel'),robot.findData('robot_angular_vel')],
             #                                Twist, vel_send))
-            scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/cmd_vel", [robot.findData('robot_linear_vel'),
+            scene.Modelling.SummitXL.addObject(RosReceiver(rosNode, "/summit_xl/robotnik_base_control/cmd_vel", [robot.findData('robot_linear_vel'),
                                                                     robot.findData('robot_angular_vel')],
                                                                     Twist, vel_recv))
 
     elif sys.argv[1] == "RobotToSim":
+        import sofaros
+        from sofaros import RosReceiver, RosSender  
         rosNode = sofaros.init("SofaNode")
         robot=scene.Modelling.SummitXL
         scene.Modelling.SummitXL.addObject(SummitxlROSController(name="KeyboardController", robot=robot, robotToSim=True, test=False))
-        scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/robotnik_base_control/odom",
+        scene.Modelling.SummitXL.addObject(RosReceiver(rosNode, "/summit_xl/robotnik_base_control/odom",
                                                                              [robot.findData('timestamp'),
                                                                               robot.findData('reel_position'),
                                                                               robot.findData('reel_orientation'),
@@ -97,14 +100,14 @@ def createScene(rootNode):
                                                                               robot.findData('robot_angular_vel')],
                                                                                 Odometry, odom_recv))
                                                                                                                                                        
-        scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/digital_twin/odom", [robot.findData('sim_position'),
+        scene.Modelling.SummitXL.addObject(RosSender(rosNode, "/digital_twin/odom", [robot.findData('sim_position'),
                                                               robot.findData('sim_orientation')],Odometry, 
                                                               position_and_orientation_send))
         
-        scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/digital_twin/joint_states", robot.findData('digital_twin_joints_states_vel'),
+        scene.Modelling.SummitXL.addObject(RosSender(rosNode, "/digital_twin/joint_states", robot.findData('digital_twin_joints_states_vel'),
                                                             sensor_msgs.msg.JointState, digital_twin_jointstate_pub))
         
-        scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, "/summit_xl/joint_states", robot.findData('summit_xl_joints_states_vel'),
+        scene.Modelling.SummitXL.addObject(RosReceiver(rosNode, "/summit_xl/joint_states", robot.findData('summit_xl_joints_states_vel'),
                                                             sensor_msgs.msg.JointState, summit_xl_jointstate_recv))
 
 
@@ -113,9 +116,9 @@ def createScene(rootNode):
         for i in range(1,10):
             
             topic = str("/Robot/Cable"+str(i)+"/state/displacement")
-            scene.Modelling.SummitXL.addObject(sofaros.RosReceiver(rosNode, topic, robot.findData("effector_cable_data"),Float64, cable_displacement_recv))
+            scene.Modelling.SummitXL.addObject(RosReceiver(rosNode, topic, robot.findData("effector_cable_data"),Float64, cable_displacement_recv))
             print(topic)  
 
-        scene.Modelling.SummitXL.addObject(sofaros.RosSender(rosNode, "/Robot/end_effector/pos", robot.findData("end_effector_pos"),Float64MultiArray, end_effector_pos_send))
+        scene.Modelling.SummitXL.addObject(RosSender(rosNode, "/Robot/end_effector/pos", robot.findData("end_effector_pos"),Float64MultiArray, end_effector_pos_send))
 
     return rootNode
