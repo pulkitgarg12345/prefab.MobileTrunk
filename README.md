@@ -166,12 +166,11 @@ Open your bashrc and add the following lines in order to setup your working spac
         alias noetic="source /opt/ros/noetic/setup.bash"
     ```
 
-- Add to PYTHONPATH the path to sofaros api
- 
-     ```console
-        export PYTHONPATH=$PYTHONPATH:/path to SoftRobot plugin folder/SoftRobots/docs/sofapython3/examples/sofaros
-    ```
-
+- Open sofaros.py file located in plugings/SoftRobots/share/sofa/examples/SoftRobots folder.
+Then replace in the callback method of RosReceiver class the line
+    ```console
+        self.data = data.data by self.data = data
+    ``` 
 Launch test
 -----------
 To confirm all the previous steps and verify that the prefab is working properly you can :
