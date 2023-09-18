@@ -68,7 +68,9 @@ class CableROSController(Sofa.Core.Controller):
         if not state:
             #If node is active and receiving messages, state is False
             with self.cables[self.index - 1].value.writeable() as t:
-                t[0] +=  [self.robot.effector_cable_data.value]
+                t[0] =  self.robot.effector_cable_data.value/40 #Change value accordingly
+
+        
         else:
             #If no message is received, Echelon3 keeps its last position
             with self.cables[self.index-1].value.writeable() as t:
