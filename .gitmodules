@@ -1,0 +1,3 @@
+[submodule "dynamixel_trunk/DynamixelSDK"]
+	path = dynamixel_trunk/DynamixelSDK
+	url = https://github.com/pulkitgarg12345/prefab.MobileTrunk.git
